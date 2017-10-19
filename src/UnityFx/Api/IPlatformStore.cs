@@ -104,6 +104,12 @@ namespace UnityFx.Purchasing
 		event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 		/// <summary>
+		/// Returns push notification provider of the store transactions. Read only.
+		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		IObservable<StoreTransaction> Transactions { get; }
+
+		/// <summary>
 		/// Returns a collection of store items. Read only.
 		/// </summary>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>

@@ -14,7 +14,7 @@ namespace UnityFx.Purchasing
 	public class StoreTransaction
 	{
 		/// <summary>
-		/// Returns identifier of the target store. Read only.
+		/// Returns identifier of the target store (if availbale). Read only.
 		/// </summary>
 		public string StoreId { get; }
 
@@ -22,6 +22,11 @@ namespace UnityFx.Purchasing
 		/// Returns identifier of the transaction (if availbale). Read only.
 		/// </summary>
 		public string TransactionId { get; }
+
+		/// <summary>
+		/// Returns transaction receipt (if availbale). Read only.
+		/// </summary>
+		public string Receipt { get; }
 
 		/// <summary>
 		/// Returns the product selected for purchase. Read only.
@@ -36,28 +41,36 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <c>true</c> if the purchase was successful; <c>false</c> otherwise. Read only.
 		/// </summary>
-		public bool IsSucceeded { get; }
-
-		/// <summary>
-		/// Returns product validation result (<c>null</c> if not available). Read only.
-		/// </summary>
-		public PurchaseValidationResult ValidationResult { get; }
+		public bool IsSucceeded => !Error.HasValue;
 
 		/// <summary>
 		/// Returns an error code (if available). Read only.
 		/// </summary>
-		public StorePurchaseError Error { get; }
-
-		/// <summary>
-		/// Returns an exception instance with information in failure (if available). Read only.
-		/// </summary>
-		public Exception Exception { get; }
+		public StorePurchaseError? Error { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
 		/// </summary>
-		public StoreTransaction()
+		public StoreTransaction(IStoreProduct product, string transactionId, string receipt, string storeId, bool isRestored)
 		{
+			Product = product;
+			StoreId = storeId;
+			TransactionId = transactionId;
+			Receipt = receipt;
+			IsRestored = isRestored;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
+		/// </summary>
+		public StoreTransaction(IStoreProduct product, string transactionId, string receipt, string storeId, bool isRestored, StorePurchaseError error)
+		{
+			Product = product;
+			StoreId = storeId;
+			TransactionId = transactionId;
+			Receipt = receipt;
+			IsRestored = isRestored;
+			Error = error;
 		}
 	}
 }

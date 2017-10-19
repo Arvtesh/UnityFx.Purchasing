@@ -117,6 +117,15 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
+		public IObservable<StoreTransaction> Transactions
+		{
+			get
+			{
+				ThrowIfDisposed();
+				throw new NotImplementedException();
+			}
+		}
+
 		public IStoreProductCollection Products
 		{
 			get
