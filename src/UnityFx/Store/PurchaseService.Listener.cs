@@ -19,20 +19,12 @@ namespace UnityFx.Purchasing
 			try
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
-
 				_storeController = controller;
-				_initializeOpCs?.SetResult(null);
-				_initializeOpCs = null;
-
-				StoreInitialized?.Invoke(this, EventArgs.Empty);
+				_initializeOpCs.SetResult(null);
 			}
 			catch (Exception e)
 			{
 				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-			}
-			finally
-			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialized");
 			}
 		}
 
@@ -41,19 +33,11 @@ namespace UnityFx.Purchasing
 			try
 			{
 				_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, "OnInitializeFailed: " + error);
-
-				_initializeOpCs?.SetException(new StoreInitializeException(error));
-				_initializeOpCs = null;
-
-				// TODO: trigger an event
+				_initializeOpCs.SetException(new StoreInitializeException(error));
 			}
 			catch (Exception e)
 			{
 				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-			}
-			finally
-			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
 			}
 		}
 

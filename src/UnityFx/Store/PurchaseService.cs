@@ -98,20 +98,42 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
 
-				var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-				var storeConfig = await _delegate.GetStoreConfigAsync();
-
-				foreach (var product in storeConfig.Products)
+				try
 				{
-					var productDefinition = product.Definition;
-					configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
-					_products.Add(productDefinition.id, product);
+					_initializeOpCs = new TaskCompletionSource<object>();
+
+					var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
+					var storeConfig = await _delegate.GetStoreConfigAsync();
+
+					foreach (var product in storeConfig.Products)
+					{
+						var productDefinition = product.Definition;
+						configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
+						_products.Add(productDefinition.id, product);
+					}
+
+					UnityPurchasing.Initialize(this, configurationBuilder);
+					await _initializeOpCs.Task;
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
+					throw;
+				}
+				finally
+				{
+					_initializeOpCs = null;
 				}
 
-				UnityPurchasing.Initialize(this, configurationBuilder);
-
-				_initializeOpCs = new TaskCompletionSource<object>();
-				await _initializeOpCs.Task;
+				try
+				{
+					StoreInitialized?.Invoke(this, EventArgs.Empty);
+				}
+				finally
+				{
+					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize complete");
+				}
 			}
 		}
 
