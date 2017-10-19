@@ -94,6 +94,7 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
+				_purchaseOpCs = null;
 				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "PurchaseFailed: " + productId);
 			}
 		}
@@ -122,6 +123,7 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
+				_purchaseOpCs = null;
 				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "PurchaseCompleted: " + product.definition.id);
 			}
 		}

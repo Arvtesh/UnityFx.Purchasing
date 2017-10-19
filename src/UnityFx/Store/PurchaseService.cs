@@ -204,10 +204,6 @@ namespace UnityFx.Purchasing
 					InvokePurchaseFailed(null, StorePurchaseError.Unknown, null, e);
 					throw new StorePurchaseException(StorePurchaseError.Unknown, null, null, e);
 				}
-				finally
-				{
-					_purchaseOpCs = null;
-				}
 			}
 		}
 
