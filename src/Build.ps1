@@ -1,10 +1,8 @@
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 $solutionPath = Join-Path $scriptPath "UnityFx.sln"
 $configuration = $args[0]
-$packagesPath = Join-Path $scriptPath "..\Build"
-$binPath = Join-Path $scriptPath "..\Bin"
-$binPath35 = Join-Path $binPath "net35"
-$binPath46 = Join-Path $binPath "net46"
+$packagesPath = Join-Path $scriptPath "..\temp\BuildTools"
+$binPath = Join-Path $scriptPath "..\bin"
 $assetsPath35 = Join-Path $scriptPath "..\AssetStore\UnityPackage35\Assets\UnityFx"
 $assetsPath46 = Join-Path $scriptPath "..\AssetStore\UnityPackage46\Assets\UnityFx"
 $assetsPathTests = Join-Path $scriptPath "..\Tests\UnityTests\Assets\UnityFx"
@@ -17,24 +15,16 @@ Write-Host "PackagePath:" $packagesPath
 Write-Host "BinPath:" $binPath
 
 # create output folders if needed
-if (!(Test-Path $packagesPath))
-{
+if (!(Test-Path $packagesPath)) {
 	New-Item $packagesPath -ItemType Directory
 }
 
-if (!(Test-Path $binPath35))
-{
-	New-Item $binPath35 -ItemType Directory
-}
-
-if (!(Test-Path $binPath46))
-{
-	New-Item $binPath46 -ItemType Directory
+if (!(Test-Path $binPath)) {
+	New-Item $binPath -ItemType Directory
 }
 
 # download nuget.exe if not present
-if (!(Test-Path $nugetPath))
-{
+if (!(Test-Path $nugetPath)) {
 	Write-Host "Install NuGet" -Foreground Blue
 	Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -Outfile $nugetPath
 }
@@ -50,29 +40,18 @@ Write-Host "Building projects" -Foreground Blue
 & $msbuildPath $solutionPath /m /t:Build /p:Configuration=$configuration
 
 # fail if solution build failed
-if ($LastExitCode -ne 0)
-{
-	if ($env:CI -eq 'True')
-	{
+if ($LastExitCode -ne 0) {
+	if ($env:CI -eq 'True') {
 		$host.SetShouldExit($LastExitCode)
 	}
-	else
-	{
+	else {
 		exit($LastExitCode);
 	}
 }
 
 # publish build results to .\Build\Bin
-$filesToPublish35 =
-	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net35\UnityFx.Async.dll"))),
-	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net35\UnityFx.Async.xml")))
+$filesToPublish =
+	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net46\UnityFx.Purchasing.dll"))),
+	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net46\UnityFx.Purchasing.xml")))
 
-$filesToPublish46 =
-	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net46\UnityFx.Async.dll"))),
-	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net46\UnityFx.Async.xml")))
-
-Copy-Item -Path $filesToPublish35 -Destination $assetsPath35 -Force
-Copy-Item -Path $filesToPublish35 -Destination $binPath35 -Force
-Copy-Item -Path $filesToPublish46 -Destination $assetsPath46 -Force
-Copy-Item -Path $filesToPublish46 -Destination $binPath46 -Force
-Copy-Item -Path $filesToPublish46 -Destination $assetsPathTests -Force
+Copy-Item -Path $filesToPublish -Destination $binPath -Force
