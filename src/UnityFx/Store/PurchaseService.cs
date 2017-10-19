@@ -191,17 +191,17 @@ namespace UnityFx.Purchasing
 				}
 				catch (StorePurchaseException e)
 				{
-					InvokePurchaseFailed(e.Product, e.Reason, e.StoreId);
+					InvokePurchaseFailed(e.Product, e.Reason, e.StoreId, e);
 					throw;
 				}
 				catch (StoreInitializeException e)
 				{
-					InvokePurchaseFailed(null, StorePurchaseError.StoreInitializationFailed, null);
+					InvokePurchaseFailed(null, StorePurchaseError.StoreInitializationFailed, null, e);
 					throw new StorePurchaseException(StorePurchaseError.StoreInitializationFailed, null, null, e);
 				}
 				catch (Exception e)
 				{
-					InvokePurchaseFailed(null, StorePurchaseError.Unknown, null);
+					InvokePurchaseFailed(null, StorePurchaseError.Unknown, null, e);
 					throw new StorePurchaseException(StorePurchaseError.Unknown, null, null, e);
 				}
 				finally

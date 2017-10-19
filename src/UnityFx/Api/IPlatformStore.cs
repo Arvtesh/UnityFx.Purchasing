@@ -15,67 +15,67 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// A catch-all for unrecognized purchase problems (<see cref="PurchaseFailureReason.Unknown"/>).
 		/// </summary>
-		Unknown = PurchaseFailureReason.Unknown,
+		Unknown,
 
 		/// <summary>
 		/// The manager was disabled while a purchase operation was pending.
 		/// </summary>
-		StoreDisabled = 16,
+		StoreDisabled,
 
 		/// <summary>
 		/// The store initializatino failed.
 		/// </summary>
-		StoreInitializationFailed = 17,
+		StoreInitializationFailed,
 
 		/// <summary>
 		/// The system purchasing feature is unavailable (<see cref="PurchaseFailureReason.PurchasingUnavailable"/>).
 		/// </summary>
-		PurchasingUnavailable = PurchaseFailureReason.PurchasingUnavailable,
+		PurchasingUnavailable,
 
 		/// <summary>
 		/// A purchase was already in progress when a new purchase was requested (<see cref="PurchaseFailureReason.ExistingPurchasePending"/>).
 		/// </summary>
-		ExistingPurchasePending = PurchaseFailureReason.ExistingPurchasePending,
+		ExistingPurchasePending,
 
 		/// <summary>
 		/// The product is not available to purchase on the store (<see cref="PurchaseFailureReason.ProductUnavailable"/>).
 		/// </summary>
-		ProductUnavailable = PurchaseFailureReason.ProductUnavailable,
+		ProductUnavailable,
 
 		/// <summary>
 		/// Signature validation of the purchase's receipt failed (<see cref="PurchaseFailureReason.SignatureInvalid"/>).
 		/// </summary>
-		SignatureInvalid = PurchaseFailureReason.SignatureInvalid,
+		SignatureInvalid,
 
 		/// <summary>
 		/// The user opted to cancel rather than proceed with the purchase (<see cref="PurchaseFailureReason.UserCancelled"/>).
 		/// </summary>
-		UserCanceled = PurchaseFailureReason.UserCancelled,
+		UserCanceled,
 
 		/// <summary>
 		/// There was a problem with the payment (<see cref="PurchaseFailureReason.PaymentDeclined"/>).
 		/// </summary>
-		PaymentDeclined = PurchaseFailureReason.PaymentDeclined,
+		PaymentDeclined,
 
 		/// <summary>
 		/// A duplicate transaction error when the transaction has already been completed successfully (<see cref="PurchaseFailureReason.DuplicateTransaction"/>).
 		/// </summary>
-		DuplicateTransaction = PurchaseFailureReason.DuplicateTransaction,
+		DuplicateTransaction,
 
 		/// <summary>
 		/// Purchase receipt is null or an empty string.
 		/// </summary>
-		ReceiptNullOrEmpty = 32,
+		ReceiptNullOrEmpty,
 
 		/// <summary>
 		/// Store validation of purchase receipt failed.
 		/// </summary>
-		ReceiptValidationFailed = 33,
+		ReceiptValidationFailed,
 
 		/// <summary>
 		/// Store validation of purchase receipt not available.
 		/// </summary>
-		ReceiptValidationNotAvailable = 34,
+		ReceiptValidationNotAvailable
 	}
 
 	/// <summary>

@@ -39,41 +39,7 @@ namespace UnityFx.Purchasing
 			StoreId = storeId;
 			Product = product;
 			IsRestored = restored;
-
-			switch (error)
-			{
-				case PurchaseFailureReason.PurchasingUnavailable:
-					Error = StorePurchaseError.PurchasingUnavailable;
-					break;
-
-				case PurchaseFailureReason.ExistingPurchasePending:
-					Error = StorePurchaseError.ExistingPurchasePending;
-					break;
-
-				case PurchaseFailureReason.ProductUnavailable:
-					Error = StorePurchaseError.ProductUnavailable;
-					break;
-
-				case PurchaseFailureReason.SignatureInvalid:
-					Error = StorePurchaseError.SignatureInvalid;
-					break;
-
-				case PurchaseFailureReason.UserCancelled:
-					Error = StorePurchaseError.UserCanceled;
-					break;
-
-				case PurchaseFailureReason.PaymentDeclined:
-					Error = StorePurchaseError.PaymentDeclined;
-					break;
-
-				case PurchaseFailureReason.DuplicateTransaction:
-					Error = StorePurchaseError.DuplicateTransaction;
-					break;
-
-				default:
-					Error = StorePurchaseError.Unknown;
-					break;
-			}
+			Error = PurchaseService.GetPurchaseError(error);
 		}
 
 		/// <summary>
