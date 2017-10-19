@@ -7,7 +7,7 @@ AppVeyor | develop | [![Build status](https://ci.appveyor.com/api/projects/statu
 
 ## Synopsis
 
-Unity3d purchasing wrapper. The library provides a set of classes and interfaces that extend Unity IAP plugin.
+Unity3d IAP wrapper. The library provides a set of classes and interfaces that extend Unity IAP plugin.
 
 Please see [CHANGELOG](CHANGELOG.md) for information on recent changes.
 
@@ -21,7 +21,7 @@ Please see the links below for extended information on the product:
 ## Software requirements
 
 - [Microsoft Visual Studio 2017](https://www.visualstudio.com/vs/community/)
-- [Unity3d](https://store.unity.com/)
+- [Unity3d 2017+](https://store.unity.com/)
 
 ## Contributing
 
