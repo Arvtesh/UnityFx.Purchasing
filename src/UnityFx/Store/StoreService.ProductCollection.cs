@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace UnityFx.Purchasing
 {
-	partial class PurchaseService : IStoreProductCollection
+	partial class StoreService : IStoreProductCollection
 	{
 		#region data
 		#endregion

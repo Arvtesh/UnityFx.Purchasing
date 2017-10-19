@@ -7,7 +7,7 @@ using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
-	partial class PurchaseService : IStoreListener
+	partial class StoreService : IStoreListener
 	{
 		#region data
 		#endregion

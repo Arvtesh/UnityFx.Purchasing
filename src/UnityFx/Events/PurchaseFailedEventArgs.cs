@@ -39,7 +39,7 @@ namespace UnityFx.Purchasing
 			StoreId = storeId;
 			Product = product;
 			IsRestored = restored;
-			Error = PurchaseService.GetPurchaseError(error);
+			Error = StoreService.GetPurchaseError(error);
 		}
 
 		/// <summary>

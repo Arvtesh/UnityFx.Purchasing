@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	internal sealed partial class PurchaseService : IStoreService
+	internal sealed partial class StoreService : IStoreService
 	{
 		#region data
 
@@ -42,7 +42,7 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal PurchaseService(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
+		internal StoreService(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
 		{
 			_delegate = storeDelegate;
 			_purchasingModule = purchasingModule;
