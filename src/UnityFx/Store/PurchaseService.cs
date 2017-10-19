@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	internal sealed partial class PurchaseService : MonoBehaviour, IStoreService
+	internal sealed partial class PurchaseService : IStoreService
 	{
 		#region data
 
@@ -28,67 +28,33 @@ namespace UnityFx.Purchasing
 		private const string _errorManagerNotInitialized = "The manager is not initialized";
 		private const string _errorManagerIsBusy = "Another purchase operation is pending";
 
-		private static PurchaseService _instance;
+		private readonly TraceSource _console = new TraceSource(_serviceName);
+		private readonly IStoreDelegate _delegate;
+		private readonly IPurchasingModule _purchasingModule;
 
 		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<Product> _purchaseOpCs;
-		private bool _disposed;
-
-		private TraceSource _console;
-		private IStoreDelegate _delegate;
-		private IPurchasingModule _purchasingModule;
 		private IStoreController _storeController;
+		private bool _disposed;
 
 		#endregion
 
 		#region interface
 
-		internal void Initialize(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
+		internal PurchaseService(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
 		{
-			_console = new TraceSource(_serviceName);
 			_delegate = storeDelegate;
 			_purchasingModule = purchasingModule;
 		}
 
 		#endregion
 
-		#region MonoBehaviour
-
-		private void Awake()
-		{
-			if (!ReferenceEquals(_instance, null))
-			{
-				throw new InvalidOperationException(_serviceName + " instance is already created");
-			}
-
-			_instance = this;
-		}
-
-		private void OnDisable()
-		{
-			if (_purchaseOpCs != null)
-			{
-				InvokePurchaseFailed(null, StorePurchaseError.StoreDisabled, string.Empty);
-			}
-		}
-
-		private void OnDestroy()
-		{
-			_products.Clear();
-			_purchaseOpCs = null;
-			_initializeOpCs = null;
-			_instance = null;
-		}
-
-		#endregion
-
-		#region IStoreManager
+		#region IStoreService
 
 		public async Task InitializeAsync()
 		{
 			ThrowIfDisposed();
-			ThrowIfDisabled();
 
 			if (_storeController == null)
 			{
@@ -156,7 +122,6 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
-			ThrowIfDisabled();
 
 			if (_purchaseOpCs != null)
 			{
@@ -211,10 +176,12 @@ namespace UnityFx.Purchasing
 
 		public void Dispose()
 		{
-			if (this && !_disposed)
+			if (!_disposed)
 			{
+				_products.Clear();
+				_purchaseOpCs = null;
+				_initializeOpCs = null;
 				_disposed = true;
-				Destroy(gameObject);
 			}
 		}
 
@@ -224,7 +191,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfDisposed()
 		{
-			if (_disposed || !this)
+			if (_disposed)
 			{
 				throw new ObjectDisposedException(_serviceName);
 			}
@@ -243,14 +210,6 @@ namespace UnityFx.Purchasing
 			if (_storeController == null)
 			{
 				throw new InvalidOperationException(_serviceName + " is not initialized");
-			}
-		}
-
-		private void ThrowIfDisabled()
-		{
-			if (!isActiveAndEnabled)
-			{
-				throw new InvalidOperationException(_serviceName + " is disabled");
 			}
 		}
 

@@ -8,16 +8,24 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Default implementation for <see cref="IStoreProduct"/>.
+	/// Default implementation of <see cref="IStoreProduct"/>.
 	/// </summary>
 	internal class DefaultProduct : IStoreProduct
 	{
-		public ProductDefinition Definition { get; }
-		public ProductMetadata Metadata { get; set; }
+		#region interface
 
 		public DefaultProduct(ProductDefinition productDefinition)
 		{
 			Definition = productDefinition;
 		}
+
+		#endregion
+
+		#region IStoreProduct
+
+		public ProductDefinition Definition { get; }
+		public ProductMetadata Metadata { get; set; }
+
+		#endregion
 	}
 }

@@ -29,21 +29,7 @@ namespace UnityFx.Purchasing
 				throw new ArgumentNullException(nameof(storeDelegate));
 			}
 
-			const string goName = "UnityFx";
-			var go = GameObject.Find(goName);
-
-			if (ReferenceEquals(go, null))
-			{
-				go = new GameObject(goName);
-				GameObject.DontDestroyOnLoad(go);
-			}
-
-			var purchasingGo = new GameObject();
-			purchasingGo.transform.SetParent(go.transform, false);
-
-			var store = purchasingGo.AddComponent<PurchaseService>();
-			store.Initialize(purchasingModule, storeDelegate);
-			return store;
+			return new PurchaseService(purchasingModule, storeDelegate);
 		}
 	}
 }
