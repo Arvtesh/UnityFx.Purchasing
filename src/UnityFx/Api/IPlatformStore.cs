@@ -18,9 +18,9 @@ namespace UnityFx.Purchasing
 		Unknown,
 
 		/// <summary>
-		/// The manager was disabled while a purchase operation was pending.
+		/// The manager was disposed while a purchase operation was pending.
 		/// </summary>
-		StoreDisabled,
+		StoreDisposed,
 
 		/// <summary>
 		/// The store initializatino failed.
