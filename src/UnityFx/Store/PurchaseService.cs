@@ -64,6 +64,10 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
 
+				// The initialization includes 2 essential steps:
+				// 1) Get store configuration (_delegate.GetStoreConfigAsync()). Should be provided by the service user.
+				// 2) Initialize the store (UnityPurchasing.Initialize(). This connects to real store and retrieves 
+				//    information on products specified in the previous step.
 				try
 				{
 					_initializeOpCs = new TaskCompletionSource<object>();
@@ -92,6 +96,7 @@ namespace UnityFx.Purchasing
 					_initializeOpCs = null;
 				}
 
+				// Trigger user-defined events.
 				try
 				{
 					StoreInitialized?.Invoke(this, EventArgs.Empty);
@@ -112,11 +117,32 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
-		public IStoreProductCollection Products => this;
+		public IStoreProductCollection Products
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return this;
+			}
+		}
 
-		public IStoreController Controller => _storeController;
+		public IStoreController Controller
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _storeController;
+			}
+		}
 
-		public bool IsInitialized => _storeController != null;
+		public bool IsInitialized
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _storeController != null;
+			}
+		}
 
 		public async Task<Product> PurchaseAsync(string productId)
 		{

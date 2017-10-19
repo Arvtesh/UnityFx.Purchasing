@@ -106,26 +106,29 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns a collection of store items. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreProductCollection Products { get; }
 
 		/// <summary>
 		/// Returns Unity3d store controller. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreController Controller { get; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the manager is initialized (the product list is loaded from native store); <c>false</c> otherwise. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsInitialized { get; }
 
 		/// <summary>
 		/// Initiates purchasing a product.
 		/// </summary>
 		/// <param name="productId">Product identifier as specified in the store.</param>
-		/// <exception cref="StorePurchaseException">Throw if an purchase-related errors.</exception>
+		/// <exception cref="StorePurchaseException">Thrown if an purchase-related errors.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the method is called on a disposed store instance.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task<Product> PurchaseAsync(string productId);
 	}
 }
