@@ -16,21 +16,45 @@ namespace UnityFx.Purchasing
 
 		public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
-			_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialized");
+			try
+			{
+				_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
 
-			_storeController = controller;
-			_initializeOpCs?.SetResult(null);
-			_initializeOpCs = null;
+				_storeController = controller;
+				_initializeOpCs?.SetResult(null);
+				_initializeOpCs = null;
+
+				StoreInitialized?.Invoke(this, EventArgs.Empty);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+			}
+			finally
+			{
+				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialized");
+			}
 		}
 
 		public void OnInitializeFailed(InitializationFailureReason error)
 		{
-			_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, "OnInitializeFailed: " + error);
-			_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
+			try
+			{
+				_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, "OnInitializeFailed: " + error);
 
-			_initializeOpCs?.SetException(new StoreInitializeException(error));
-			_initializeOpCs = null;
+				_initializeOpCs?.SetException(new StoreInitializeException(error));
+				_initializeOpCs = null;
+
+				// TODO: trigger an event
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+			}
+			finally
+			{
+				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
+			}
 		}
 
 		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
@@ -53,14 +77,10 @@ namespace UnityFx.Purchasing
 					{
 						InvokePurchaseFailed(args.purchasedProduct, StorePurchaseError.ReceiptNullOrEmpty, storeId);
 					}
-					else if (_delegate != null)
+					else
 					{
 						ValidatePurchase(product, storeId, nativeReceipt);
 						return PurchaseProcessingResult.Pending;
-					}
-					else
-					{
-						InvokePurchaseCompleted(product, storeId, null, false);
 					}
 				}
 			}
@@ -91,7 +111,7 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId={product.transactionID}");
 
-				var validationResult = await _delegate.ValidatePurchase(product, storeId, nativeReceipt);
+				var validationResult = await _delegate.ValidatePurchaseAsync(product, storeId, nativeReceipt);
 
 				if (validationResult == null)
 				{

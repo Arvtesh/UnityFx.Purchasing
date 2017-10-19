@@ -14,16 +14,22 @@ namespace UnityFx.Purchasing
 	public interface IStoreDelegate
 	{
 		/// <summary>
-		/// Shows some kind of wait popup while purchase operation is in progress. The popup should be dissmissed when the returned handle is disposed.
+		/// Shows a wait popup while purchase operation is in progress. The popup should be dissmissed when the returned handle is disposed.
+		/// If not needed method can just return <c>null</c>.
 		/// </summary>
 		IDisposable BeginWait();
 
 		/// <summary>
-		/// Validates the purchase.
+		/// Requests the store configuration.
+		/// </summary>
+		Task<StoreConfig> GetStoreConfigAsync();
+
+		/// <summary>
+		/// Validates the purchase. May return a <see cref="Task"/> with <c>null</c> result to indicate that no validation is needed.
 		/// </summary>
 		/// <param name="product">The product to validate.</param>
 		/// <param name="storeId">Store identifier.</param>
 		/// <param name="nativeReceipt">Native platform-specific purchase receipt (differs from the one supplied by <see cref="Product"/>).</param>
-		Task<PurchaseValidationResult> ValidatePurchase(Product product, string storeId, string nativeReceipt);
+		Task<PurchaseValidationResult> ValidatePurchaseAsync(Product product, string storeId, string nativeReceipt);
 	}
 }

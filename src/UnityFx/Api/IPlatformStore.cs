@@ -84,6 +84,11 @@ namespace UnityFx.Purchasing
 	public interface IPlatformStore
 	{
 		/// <summary>
+		/// Triggered when the store has been initialized.
+		/// </summary>
+		event EventHandler StoreInitialized;
+
+		/// <summary>
 		/// Triggered when a new purchase is initiated.
 		/// </summary>
 		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;

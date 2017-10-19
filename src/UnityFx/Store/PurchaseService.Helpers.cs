@@ -55,6 +55,7 @@ namespace UnityFx.Purchasing
 			try
 			{
 				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "PurchaseInitiated: " + productId);
+
 				PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId));
 			}
 			catch (Exception e)

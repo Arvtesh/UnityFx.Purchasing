@@ -15,13 +15,18 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Creates a new <see cref="IStoreService"/> instance.
 		/// </summary>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="purchasingModule"/> is <c>null</c>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="purchasingModule"/> or <paramref name="storeDelegate"/> is <c>null</c>.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if an instance of <see cref="IStoreService"/> already exists.</exception>
 		public static IStoreService CreateStore(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
 		{
 			if (purchasingModule == null)
 			{
 				throw new ArgumentNullException(nameof(purchasingModule));
+			}
+
+			if (storeDelegate == null)
+			{
+				throw new ArgumentNullException(nameof(storeDelegate));
 			}
 
 			const string goName = "UnityFx";

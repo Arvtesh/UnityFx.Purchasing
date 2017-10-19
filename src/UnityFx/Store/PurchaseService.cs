@@ -24,16 +24,13 @@ namespace UnityFx.Purchasing
 
 		private const string _serviceName = "Purchasing";
 
-		private const string _errorProductIdInvalid = "Product identifier cannot be null or empty string";
 		private const string _errorProductNotAvailable = "Product in not available for purchase";
-		private const string _errorManagerDisabled = "The manager is disabled";
-		private const string _errorManagerAlreadyInitialized = "The manager is already initialized";
 		private const string _errorManagerNotInitialized = "The manager is not initialized";
 		private const string _errorManagerIsBusy = "Another purchase operation is pending";
-		private const string _errorStoreAlreadyExists = "IStoreManager instance is already created";
 
 		private static PurchaseService _instance;
 
+		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<Product> _purchaseOpCs;
 		private bool _disposed;
@@ -62,7 +59,7 @@ namespace UnityFx.Purchasing
 		{
 			if (!ReferenceEquals(_instance, null))
 			{
-				throw new InvalidOperationException(_errorStoreAlreadyExists);
+				throw new InvalidOperationException(_serviceName + " instance is already created");
 			}
 
 			_instance = this;
@@ -78,14 +75,9 @@ namespace UnityFx.Purchasing
 
 		private void OnDestroy()
 		{
+			_products.Clear();
 			_purchaseOpCs = null;
 			_initializeOpCs = null;
-
-			_storeController = null;
-			_purchasingModule = null;
-			_delegate = null;
-			_console = null;
-
 			_instance = null;
 		}
 
@@ -93,44 +85,41 @@ namespace UnityFx.Purchasing
 
 		#region IStoreManager
 
-		public Task InitializeAsync(IEnumerable<ProductDefinition> items)
+		public async Task InitializeAsync()
 		{
 			ThrowIfDisposed();
+			ThrowIfDisabled();
 
-			if (items == null)
+			if (_storeController == null)
 			{
-				throw new ArgumentNullException(nameof(items));
+				// Already initialized, do nothing.
 			}
-
-			if (!isActiveAndEnabled)
-			{
-				throw new InvalidOperationException(_errorManagerDisabled);
-			}
-
-			if (_storeController != null)
-			{
-				throw new InvalidOperationException(_errorManagerAlreadyInitialized);
-			}
-
-			if (Application.isMobilePlatform || Application.isEditor)
+			else if (Application.isMobilePlatform || Application.isEditor)
 			{
 				_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
 
 				var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-				configurationBuilder.AddProducts(items);
+				var storeConfig = await _delegate.GetStoreConfigAsync();
+
+				foreach (var product in storeConfig.Products)
+				{
+					var productDefinition = product.Definition;
+					configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
+					_products.Add(productDefinition.id, product);
+				}
+
 				UnityPurchasing.Initialize(this, configurationBuilder);
 
 				_initializeOpCs = new TaskCompletionSource<object>();
-				return _initializeOpCs.Task;
+				await _initializeOpCs.Task;
 			}
-
-			return Task.CompletedTask;
 		}
 
 		#endregion
 
 		#region IPlatformStore
 
+		public event EventHandler StoreInitialized;
 		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
 		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
@@ -143,29 +132,16 @@ namespace UnityFx.Purchasing
 
 		public async Task<Product> PurchaseAsync(string productId)
 		{
+			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
-
-			if (string.IsNullOrEmpty(productId))
-			{
-				throw new ArgumentException(_errorProductIdInvalid, nameof(productId));
-			}
-
-			if (!isActiveAndEnabled)
-			{
-				throw new InvalidOperationException(_errorManagerDisabled);
-			}
-
-			if (_storeController == null && _initializeOpCs == null)
-			{
-				throw new InvalidOperationException(_errorManagerNotInitialized);
-			}
+			ThrowIfDisabled();
 
 			if (_purchaseOpCs != null)
 			{
 				throw new InvalidOperationException(_errorManagerIsBusy);
 			}
 
-			using (_delegate?.BeginWait())
+			using (_delegate.BeginWait())
 			{
 				// 1) Notify user of the purchase.
 				InvokePurchaseInitiated(productId);
@@ -173,8 +149,8 @@ namespace UnityFx.Purchasing
 				try
 				{
 					// 2) Wait untill the store initialization is finished. If the initialization fails for any reason
-					// an exception will be thrown, so no need to null-check _storeController again.
-					await _initializeOpCs?.Task;
+					// an exception will be thrown, so no need to null-check _storeController.
+					await InitializeAsync();
 
 					// 3) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
 					var product = _storeController.products.WithID(productId);
@@ -229,6 +205,30 @@ namespace UnityFx.Purchasing
 			if (_disposed || !this)
 			{
 				throw new ObjectDisposedException(_serviceName);
+			}
+		}
+
+		private void ThrowIfInvalidProductId(string productId)
+		{
+			if (string.IsNullOrEmpty(productId))
+			{
+				throw new ArgumentException(_serviceName + " product identifier cannot be null or empty string", nameof(productId));
+			}
+		}
+
+		private void ThrowIfNotInitialized()
+		{
+			if (_storeController == null)
+			{
+				throw new InvalidOperationException(_serviceName + " is not initialized");
+			}
+		}
+
+		private void ThrowIfDisabled()
+		{
+			if (!isActiveAndEnabled)
+			{
+				throw new InvalidOperationException(_serviceName + " is disabled");
 			}
 		}
 

@@ -8,9 +8,20 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A collection of <see cref="Product"/> instances.
+	/// A read-only collection of <see cref="IPlatformStore"/> products.
 	/// </summary>
-	public interface IStoreProductCollection : IReadOnlyCollection<Product>
+	public interface IStoreProductCollection : IReadOnlyCollection<IStoreProduct>
 	{
+		/// <summary>
+		/// Returns product for the specified identifier. Read only.
+		/// </summary>
+		/// <param name="productId">The store product identifier.</param>
+		IStoreProduct this[string productId] { get; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="productId">The store product identifier.</param>
+		bool ContainsKey(string productId);
 	}
 }

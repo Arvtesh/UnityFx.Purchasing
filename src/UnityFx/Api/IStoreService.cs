@@ -14,10 +14,9 @@ namespace UnityFx.Purchasing
 	public interface IStoreService : IPlatformStore, IDisposable
 	{
 		/// <summary>
-		/// Initializes the manager. The method should only be called once.
+		/// Initializes the manager (if not initialized already).
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if store initializatino fails.</exception>
-		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="items"/> is <c>null</c>.</exception>
-		Task InitializeAsync(IEnumerable<ProductDefinition> items);
+		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
+		Task InitializeAsync();
 	}
 }
