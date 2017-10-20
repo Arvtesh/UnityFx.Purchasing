@@ -52,10 +52,10 @@ namespace UnityFx.Purchasing
 
 		private void InvokePurchaseInitiated(string productId)
 		{
+			_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "Purchase: " + productId);
+
 			try
 			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "PurchaseInitiated: " + productId);
-
 				PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId));
 			}
 			catch (Exception e)
@@ -87,7 +87,7 @@ namespace UnityFx.Purchasing
 				}
 
 				// Trigger completion event.
-				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(storeId, product, failReason, _purchaseOpCs == null));
+				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(product, failReason, storeId, _purchaseOpCs == null));
 			}
 			catch (Exception e)
 			{
@@ -95,28 +95,24 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_purchaseOpCs = null;
 				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "PurchaseFailed: " + productId);
 			}
 		}
 
-		private void InvokePurchaseCompleted(Product product, string storeId, PurchaseValidationResult validationResult, bool confirmPurchase = true)
+		private void InvokePurchaseCompleted(Product product, StoreTransaction transaction, PurchaseValidationResult validationResult)
 		{
 			try
 			{
 				_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
 
-				// Confirm the purchase on the store. If called from ProcessPurchase with PurchaseProcessingResult.Complete result this step should be skipped.
-				if (confirmPurchase)
-				{
-					_storeController.ConfirmPendingPurchase(product);
-				}
+				// Confirm the purchase on the store.
+				_storeController.ConfirmPendingPurchase(product);
 
 				// Finish the corresponding Task.
-				_purchaseOpCs?.SetResult(product);
+				_purchaseOpCs?.SetResult(transaction);
 
 				// Trigger completion event.
-				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(product, storeId, _purchaseOpCs == null, validationResult));
+				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(transaction, validationResult));
 			}
 			catch (Exception e)
 			{
@@ -124,17 +120,8 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_purchaseOpCs = null;
 				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "PurchaseCompleted: " + product.definition.id);
 			}
-		}
-
-		private Task<Product> InitiatePurchase(Product product)
-		{
-			_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-			_purchaseOpCs = new TaskCompletionSource<Product>(product);
-			_storeController.InitiatePurchase(product);
-			return _purchaseOpCs.Task;
 		}
 
 		private void ConfirmPendingPurchase(Product product)

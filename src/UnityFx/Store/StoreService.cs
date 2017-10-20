@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 
 		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 		private TaskCompletionSource<object> _initializeOpCs;
-		private TaskCompletionSource<Product> _purchaseOpCs;
+		private TaskCompletionSource<StoreTransaction> _purchaseOpCs;
 		private IStoreController _storeController;
 		private bool _disposed;
 
@@ -47,63 +47,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region IStoreService
-
-		public async Task InitializeAsync()
-		{
-			ThrowIfDisposed();
-
-			if (_storeController == null)
-			{
-				// Already initialized, do nothing.
-			}
-			else if (Application.isMobilePlatform || Application.isEditor)
-			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
-
-				// The initialization includes 2 essential steps:
-				// 1) Get store configuration (_delegate.GetStoreConfigAsync()). Should be provided by the service user.
-				// 2) Initialize the store (UnityPurchasing.Initialize(). This connects to real store and retrieves 
-				//    information on products specified in the previous step.
-				try
-				{
-					_initializeOpCs = new TaskCompletionSource<object>();
-
-					var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-					var storeConfig = await _delegate.GetStoreConfigAsync();
-
-					foreach (var product in storeConfig.Products)
-					{
-						var productDefinition = product.Definition;
-						configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
-						_products.Add(productDefinition.id, product);
-					}
-
-					UnityPurchasing.Initialize(this, configurationBuilder);
-					await _initializeOpCs.Task;
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
-					throw;
-				}
-				finally
-				{
-					_initializeOpCs = null;
-				}
-
-				// Trigger user-defined events.
-				try
-				{
-					StoreInitialized?.Invoke(this, EventArgs.Empty);
-				}
-				finally
-				{
-					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize complete");
-				}
-			}
-		}
-
 		#endregion
 
 		#region IPlatformStore
@@ -158,30 +101,94 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public async Task<Product> PurchaseAsync(string productId)
+		public async Task InitializeAsync()
+		{
+			ThrowIfDisposed();
+
+			if (_storeController == null)
+			{
+				// Already initialized, do nothing.
+			}
+			else if (Application.isMobilePlatform || Application.isEditor)
+			{
+				_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
+
+				try
+				{
+					_initializeOpCs = new TaskCompletionSource<object>();
+
+					// 1) Get store configuration. Should be provided by the service user.
+					var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
+					var storeConfig = await _delegate.GetStoreConfigAsync();
+
+					// 2) Initialize the store.This connects to real store and retrieves information on products specified in the previous step.
+					foreach (var product in storeConfig.Products)
+					{
+						var productDefinition = product.Definition;
+						configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
+						_products.Add(productDefinition.id, product);
+					}
+
+					UnityPurchasing.Initialize(this, configurationBuilder);
+					await _initializeOpCs.Task;
+
+					// 3) Initialize metadata in _products.
+					foreach (var product in _storeController.products.all)
+					{
+						_products[product.definition.id].Metadata = product.metadata;
+					}
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
+					throw;
+				}
+				finally
+				{
+					_initializeOpCs = null;
+				}
+
+				// Trigger user-defined events.
+				try
+				{
+					StoreInitialized?.Invoke(this, EventArgs.Empty);
+				}
+				finally
+				{
+					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize complete");
+				}
+			}
+		}
+
+		public async Task<StoreTransaction> PurchaseAsync(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
+			// 1) Turn on user-defined wait animation (if any).
 			using (_delegate.BeginWait())
 			{
-				// 1) Notify user of the purchase.
+				// 2) Notify user of the purchase.
 				InvokePurchaseInitiated(productId);
 
 				try
 				{
-					// 2) Wait untill the store initialization is finished. If the initialization fails for any reason
+					// 3) Wait untill the store initialization is finished. If the initialization fails for any reason
 					// an exception will be thrown, so no need to null-check _storeController.
 					await InitializeAsync();
 
-					// 3) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
+					// 4) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
 					var product = _storeController.products.WithID(productId);
 
-					// 4) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
+					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
 					if (product != null && product.availableToPurchase)
 					{
-						return await InitiatePurchase(product);
+						_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+						_purchaseOpCs = new TaskCompletionSource<StoreTransaction>(product);
+						_storeController.InitiatePurchase(product);
+						return await _purchaseOpCs.Task;
 					}
 					else
 					{
@@ -202,6 +209,10 @@ namespace UnityFx.Purchasing
 				{
 					InvokePurchaseFailed(null, StorePurchaseError.Unknown, null, e);
 					throw new StorePurchaseException(StorePurchaseError.Unknown, null, null, e);
+				}
+				finally
+				{
+					_purchaseOpCs = null;
 				}
 			}
 		}

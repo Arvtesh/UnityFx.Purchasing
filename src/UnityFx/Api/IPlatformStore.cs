@@ -134,6 +134,13 @@ namespace UnityFx.Purchasing
 		bool IsBusy { get; }
 
 		/// <summary>
+		/// Initializes the store (if not initialized already).
+		/// </summary>
+		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		Task InitializeAsync();
+
+		/// <summary>
 		/// Initiates purchasing a product.
 		/// </summary>
 		/// <param name="productId">Product identifier as specified in the store.</param>
@@ -141,6 +148,6 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		Task<Product> PurchaseAsync(string productId);
+		Task<StoreTransaction> PurchaseAsync(string productId);
 	}
 }

@@ -12,19 +12,9 @@ namespace UnityFx.Purchasing
 	public class PurchaseCompletedEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Returns identifier of the target store. Read only.
+		/// Returns the transaction info. Read only.
 		/// </summary>
-		public string StoreId { get; }
-
-		/// <summary>
-		/// Returns the product selected for purchase. Read only.
-		/// </summary>
-		public Product Product { get; }
-
-		/// <summary>
-		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
-		/// </summary>
-		public bool IsRestored { get; }
+		public StoreTransaction TransactionInfo { get; }
 
 		/// <summary>
 		/// Returns product validation result (<c>null</c> if not available). Read only.
@@ -34,11 +24,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
 		/// </summary>
-		public PurchaseCompletedEventArgs(Product product, string storeId, bool restored, PurchaseValidationResult validationResult)
+		public PurchaseCompletedEventArgs(StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
 		{
-			StoreId = storeId;
-			Product = product;
-			IsRestored = restored;
+			TransactionInfo = transactionInfo;
 			ValidationResult = validationResult;
 		}
 	}

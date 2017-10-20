@@ -13,11 +13,5 @@ namespace UnityFx.Purchasing
 	/// </summary>
 	public interface IStoreService : IPlatformStore, IDisposable
 	{
-		/// <summary>
-		/// Initializes the manager (if not initialized already).
-		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		Task InitializeAsync();
 	}
 }

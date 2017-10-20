@@ -25,11 +25,9 @@ namespace UnityFx.Purchasing
 		Task<StoreConfig> GetStoreConfigAsync();
 
 		/// <summary>
-		/// Validates the purchase. May return a <see cref="Task"/> with <c>null</c> result to indicate that no validation is needed.
+		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed.
 		/// </summary>
-		/// <param name="product">The product to validate.</param>
-		/// <param name="storeId">Store identifier.</param>
-		/// <param name="nativeReceipt">Native platform-specific purchase receipt (differs from the one supplied by <see cref="Product"/>).</param>
-		Task<PurchaseValidationResult> ValidatePurchaseAsync(Product product, string storeId, string nativeReceipt);
+		/// <param name="transactionInfo">The transaction data to validate.</param>
+		Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo);
 	}
 }

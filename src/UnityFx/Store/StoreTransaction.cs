@@ -2,8 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -14,24 +12,24 @@ namespace UnityFx.Purchasing
 	public class StoreTransaction
 	{
 		/// <summary>
-		/// Returns identifier of the target store (if availbale). Read only.
+		/// Returns the product selected for purchase. Read only.
 		/// </summary>
-		public string StoreId { get; }
+		public IStoreProduct Product { get; }
 
 		/// <summary>
-		/// Returns identifier of the transaction (if availbale). Read only.
+		/// Returns identifier of the transaction. Read only.
 		/// </summary>
 		public string TransactionId { get; }
 
 		/// <summary>
-		/// Returns transaction receipt (if availbale). Read only.
+		/// Returns identifier of the target store. Read only.
 		/// </summary>
-		public string Receipt { get; }
+		public string StoreId { get; }
 
 		/// <summary>
-		/// Returns the product selected for purchase. Read only.
+		/// Returns native transaction receipt (differs from Unity receipt). Read only.
 		/// </summary>
-		public IStoreProduct Product { get; }
+		public string Receipt { get; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
@@ -39,38 +37,15 @@ namespace UnityFx.Purchasing
 		public bool IsRestored { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the purchase was successful; <c>false</c> otherwise. Read only.
-		/// </summary>
-		public bool IsSucceeded => !Error.HasValue;
-
-		/// <summary>
-		/// Returns an error code (if available). Read only.
-		/// </summary>
-		public StorePurchaseError? Error { get; }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
 		/// </summary>
-		public StoreTransaction(IStoreProduct product, string transactionId, string receipt, string storeId, bool isRestored)
+		public StoreTransaction(IStoreProduct product, string transactionId, string storeId, string receipt, bool isRestored)
 		{
 			Product = product;
 			StoreId = storeId;
 			TransactionId = transactionId;
 			Receipt = receipt;
 			IsRestored = isRestored;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
-		/// </summary>
-		public StoreTransaction(IStoreProduct product, string transactionId, string receipt, string storeId, bool isRestored, StorePurchaseError error)
-		{
-			Product = product;
-			StoreId = storeId;
-			TransactionId = transactionId;
-			Receipt = receipt;
-			IsRestored = isRestored;
-			Error = error;
 		}
 	}
 }

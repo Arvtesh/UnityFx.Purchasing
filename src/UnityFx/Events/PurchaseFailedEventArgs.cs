@@ -12,19 +12,9 @@ namespace UnityFx.Purchasing
 	public class PurchaseFailedEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Returns identifier of the target store. Read only.
-		/// </summary>
-		public string StoreId { get; }
-
-		/// <summary>
 		/// Returns the <see cref="UnityEngine.Purchasing.Product"/> reference (if available). Read only.
 		/// </summary>
 		public Product Product { get; }
-
-		/// <summary>
-		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
-		/// </summary>
-		public bool IsRestored { get; }
 
 		/// <summary>
 		/// Returns an error that caused the purchase to fail. Read only.
@@ -32,24 +22,23 @@ namespace UnityFx.Purchasing
 		public StorePurchaseError Error { get; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseFailedEventArgs"/> class.
+		/// Returns identifier of the target store. Read only.
 		/// </summary>
-		public PurchaseFailedEventArgs(string storeId, Product product, PurchaseFailureReason error, bool restored)
-		{
-			StoreId = storeId;
-			Product = product;
-			IsRestored = restored;
-			Error = StoreService.GetPurchaseError(error);
-		}
+		public string StoreId { get; }
+
+		/// <summary>
+		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
+		/// </summary>
+		public bool IsRestored { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseFailedEventArgs"/> class.
 		/// </summary>
-		public PurchaseFailedEventArgs(string storeId, Product product, StorePurchaseError error, bool restored)
+		public PurchaseFailedEventArgs(Product product, StorePurchaseError error, string storeId, bool restored)
 		{
-			StoreId = storeId;
 			Product = product;
 			Error = error;
+			StoreId = storeId;
 			IsRestored = restored;
 		}
 	}

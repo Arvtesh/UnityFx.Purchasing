@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing
 
 					if (string.IsNullOrEmpty(nativeReceipt))
 					{
-						InvokePurchaseFailed(args.purchasedProduct, StorePurchaseError.ReceiptNullOrEmpty, storeId);
+						InvokePurchaseFailed(product, StorePurchaseError.ReceiptNullOrEmpty, storeId);
 					}
 					else
 					{
@@ -95,12 +95,14 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId={product.transactionID}");
 
-				var validationResult = await _delegate.ValidatePurchaseAsync(product, storeId, nativeReceipt);
+				var userProduct = _products[product.definition.id];
+				var transactionInfo = new StoreTransaction(userProduct, product.transactionID, storeId, nativeReceipt, _purchaseOpCs == null);
+				var validationResult = await _delegate.ValidatePurchaseAsync(transactionInfo);
 
 				if (validationResult == null)
 				{
 					// No result returned from the validator means validation succeeded.
-					InvokePurchaseCompleted(product, storeId, null);
+					InvokePurchaseCompleted(product, transactionInfo, null);
 				}
 				else
 				{
@@ -109,7 +111,7 @@ namespace UnityFx.Purchasing
 					if (resultStatus == PurchaseValidationStatus.Ok)
 					{
 						// The purchase validation succeeded.
-						InvokePurchaseCompleted(product, storeId, validationResult);
+						InvokePurchaseCompleted(product, transactionInfo, validationResult);
 					}
 					else if (resultStatus == PurchaseValidationStatus.Failure)
 					{
