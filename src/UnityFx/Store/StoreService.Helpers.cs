@@ -64,29 +64,35 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		private void InvokePurchaseCompleted(PurchaseResult purchaseResult)
+		{
+			try
+			{
+				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult.TransactionInfo, purchaseResult.ValidationResult));
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+			}
+			finally
+			{
+				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "Purchase completed: " + purchaseResult.Product.definition.id);
+			}
+		}
+
 		private void InvokePurchaseFailed(Product product, StorePurchaseError failReason, string storeId, Exception innerException = null)
 		{
 			var productId = product != null ? product.definition.id : "<null>";
 
+			if (innerException != null)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, innerException);
+			}
+
+			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason={failReason}");
+
 			try
 			{
-				_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"PurchaseFailed: {productId}, reason={failReason}");
-
-				// Finish the corresponding Task.
-				if (failReason == StorePurchaseError.UserCanceled)
-				{
-					_purchaseOpCs?.SetCanceled();
-				}
-				else if (innerException != null)
-				{
-					_purchaseOpCs?.SetException(new StorePurchaseException(failReason, product, storeId, innerException));
-				}
-				else
-				{
-					_purchaseOpCs?.SetException(new StorePurchaseException(failReason, product, storeId));
-				}
-
-				// Trigger completion event.
 				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(product, failReason, storeId, _purchaseOpCs == null));
 			}
 			catch (Exception e)
@@ -95,32 +101,7 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "PurchaseFailed: " + productId);
-			}
-		}
-
-		private void InvokePurchaseCompleted(Product product, StoreTransaction transaction, PurchaseValidationResult validationResult)
-		{
-			try
-			{
-				_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
-
-				// Confirm the purchase on the store.
-				_storeController.ConfirmPendingPurchase(product);
-
-				// Finish the corresponding Task.
-				_purchaseOpCs?.SetResult(transaction);
-
-				// Trigger completion event.
-				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(transaction, validationResult));
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-			}
-			finally
-			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "PurchaseCompleted: " + product.definition.id);
+				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "Purchase failed: " + productId);
 			}
 		}
 

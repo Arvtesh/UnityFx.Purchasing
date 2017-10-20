@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 
 		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 		private TaskCompletionSource<object> _initializeOpCs;
-		private TaskCompletionSource<StoreTransaction> _purchaseOpCs;
+		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
 		private IStoreController _storeController;
 		private bool _disposed;
 
@@ -186,9 +186,13 @@ namespace UnityFx.Purchasing
 					if (product != null && product.availableToPurchase)
 					{
 						_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-						_purchaseOpCs = new TaskCompletionSource<StoreTransaction>(product);
+						_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
 						_storeController.InitiatePurchase(product);
-						return await _purchaseOpCs.Task;
+
+						// 6) Wait for the purchase and validation process to complete, notify users and return.
+						var purchaseResult = await _purchaseOpCs.Task;
+						InvokePurchaseCompleted(purchaseResult);
+						return purchaseResult.TransactionInfo;
 					}
 					else
 					{
