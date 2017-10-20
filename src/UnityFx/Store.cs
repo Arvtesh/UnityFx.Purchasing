@@ -29,7 +29,7 @@ namespace UnityFx.Purchasing
 				throw new ArgumentNullException(nameof(storeDelegate));
 			}
 
-			return new StoreService(purchasingModule, storeDelegate);
+			return new StoreService(string.Empty, purchasingModule, storeDelegate);
 		}
 	}
 }

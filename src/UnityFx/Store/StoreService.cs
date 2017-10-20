@@ -22,9 +22,8 @@ namespace UnityFx.Purchasing
 		private const int _traceEventInitialize = 1;
 		private const int _traceEventPurchase = 2;
 
-		private const string _serviceName = "Purchasing";
-
-		private readonly TraceSource _console = new TraceSource(_serviceName);
+		private readonly string _serviceName;
+		private readonly TraceSource _console;
 		private readonly IStoreDelegate _delegate;
 		private readonly IPurchasingModule _purchasingModule;
 
@@ -38,8 +37,10 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal StoreService(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
+		internal StoreService(string name, IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
 		{
+			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
+			_console = new TraceSource(_serviceName);
 			_delegate = storeDelegate;
 			_purchasingModule = purchasingModule;
 		}
@@ -108,6 +109,11 @@ namespace UnityFx.Purchasing
 			if (_storeController == null)
 			{
 				// Already initialized, do nothing.
+			}
+			else if (_initializeOpCs != null)
+			{
+				// Initialization is pending.
+				await _initializeOpCs?.Task;
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
