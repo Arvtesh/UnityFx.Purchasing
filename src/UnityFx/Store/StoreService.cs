@@ -24,10 +24,6 @@ namespace UnityFx.Purchasing
 
 		private const string _serviceName = "Purchasing";
 
-		private const string _errorProductNotAvailable = "Product in not available for purchase";
-		private const string _errorManagerNotInitialized = "The manager is not initialized";
-		private const string _errorManagerIsBusy = "Another purchase operation is pending";
-
 		private readonly TraceSource _console = new TraceSource(_serviceName);
 		private readonly IStoreDelegate _delegate;
 		private readonly IPurchasingModule _purchasingModule;
@@ -153,15 +149,20 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		public bool IsBusy
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _purchaseOpCs != null;
+			}
+		}
+
 		public async Task<Product> PurchaseAsync(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
-
-			if (_purchaseOpCs != null)
-			{
-				throw new InvalidOperationException(_errorManagerIsBusy);
-			}
+			ThrowIfBusy();
 
 			using (_delegate.BeginWait())
 			{
@@ -245,6 +246,14 @@ namespace UnityFx.Purchasing
 			if (_storeController == null)
 			{
 				throw new InvalidOperationException(_serviceName + " is not initialized");
+			}
+		}
+
+		private void ThrowIfBusy()
+		{
+			if (_purchaseOpCs != null)
+			{
+				throw new InvalidOperationException(_serviceName + " is busy");
 			}
 		}
 

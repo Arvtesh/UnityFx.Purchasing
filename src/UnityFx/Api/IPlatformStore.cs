@@ -122,10 +122,16 @@ namespace UnityFx.Purchasing
 		IStoreController Controller { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the manager is initialized (the product list is loaded from native store); <c>false</c> otherwise. Read only.
+		/// Returns <c>true</c> if the store is initialized (the product list is loaded from native store); <c>false</c> otherwise. Read only.
 		/// </summary>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsInitialized { get; }
+
+		/// <summary>
+		/// Returns <c>true</c> if the store has pending purchase operation; <c>false</c> otherwise. Read only.
+		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		bool IsBusy { get; }
 
 		/// <summary>
 		/// Initiates purchasing a product.
