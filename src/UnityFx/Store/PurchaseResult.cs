@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -12,9 +11,9 @@ namespace UnityFx.Purchasing
 	public class PurchaseResult
 	{
 		/// <summary>
-		/// Returns the <see cref="UnityEngine.Purchasing.Product"/> reference. Read only.
+		/// Returns the purchased product. Read only.
 		/// </summary>
-		public Product Product { get; }
+		public IStoreProduct Product { get; }
 
 		/// <summary>
 		/// Returns the transaction info. Read only.
@@ -29,7 +28,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
 		/// </summary>
-		public PurchaseResult(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
+		public PurchaseResult(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
 		{
 			Product = product;
 			TransactionInfo = transactionInfo;

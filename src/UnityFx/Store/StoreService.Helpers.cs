@@ -50,6 +50,8 @@ namespace UnityFx.Purchasing
 
 		private void InvokePurchaseInitiated(string productId, bool restored)
 		{
+			Debug.Assert(!string.IsNullOrEmpty(productId));
+
 			if (restored)
 			{
 				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "Purchase (auto-restored): " + productId);
@@ -71,9 +73,11 @@ namespace UnityFx.Purchasing
 
 		private void InvokePurchaseCompleted(PurchaseResult purchaseResult)
 		{
+			Debug.Assert(purchaseResult != null);
+
 			try
 			{
-				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult.TransactionInfo, purchaseResult.ValidationResult));
+				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult));
 			}
 			catch (Exception e)
 			{
@@ -81,13 +85,13 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "Purchase completed: " + purchaseResult.Product.definition.id);
+				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "Purchase completed: " + purchaseResult.Product.Definition.id);
 			}
 		}
 
-		private void InvokePurchaseFailed(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
+		private void InvokePurchaseFailed(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
 		{
-			var productId = product != null ? product.definition.id : "<null>";
+			var productId = product != null ? product.Definition.id : "<null>";
 
 			if (innerException != null)
 			{
@@ -112,28 +116,27 @@ namespace UnityFx.Purchasing
 
 		private void ConfirmPendingPurchase(Product product)
 		{
+			Debug.Assert(product != null);
+
 			_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
 			_storeController.ConfirmPendingPurchase(product);
 		}
 
-		private void InitializeTransaction(string productId)
+		private Product InitializeTransaction(string productId)
 		{
-			Debug.Assert(_purchaseTransaction == null, "The transaction is already initialized");
+			Debug.Assert(_purchaseProduct == null);
 
-			if (_products.TryGetValue(productId, out var product))
+			if (!_products.TryGetValue(productId, out _purchaseProduct))
 			{
-				_purchaseTransaction = new StoreTransaction(product);
-			}
-			else
-			{
-				_purchaseTransaction = new StoreTransaction(null);
 				_console.TraceEvent(TraceEventType.Warning, _traceEventPurchase, "No product found for id: " + productId);
 			}
+
+			return _storeController.products.WithID(productId);
 		}
 
 		private void ReleaseTransaction()
 		{
-			_purchaseTransaction = null;
+			_purchaseProduct = null;
 			_purchaseOpCs = null;
 		}
 

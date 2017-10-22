@@ -13,9 +13,9 @@ namespace UnityFx.Purchasing
 	public class StoreTransaction
 	{
 		/// <summary>
-		/// Returns the product selected for purchase. Read only.
+		/// Returns the Unity product selected for purchase. Read only.
 		/// </summary>
-		public IStoreProduct Product { get; }
+		public Product Product { get; }
 
 		/// <summary>
 		/// Returns identifier of the transaction. Read only.
@@ -40,15 +40,18 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
 		/// </summary>
-		public StoreTransaction(IStoreProduct product)
+		public StoreTransaction(Product product, bool isRestored)
 		{
 			Product = product;
+			TransactionId = product.transactionID;
+			Receipt = product.GetNativeReceipt(out var storeId);
+			StoreId = storeId;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
 		/// </summary>
-		public StoreTransaction(IStoreProduct product, string transactionId, string storeId, string receipt, bool isRestored)
+		public StoreTransaction(Product product, string transactionId, string storeId, string receipt, bool isRestored)
 		{
 			Product = product;
 			StoreId = storeId;

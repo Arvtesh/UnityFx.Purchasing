@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the <see cref="UnityEngine.Purchasing.Product"/> reference. Read only.
 		/// </summary>
-		public Product Product { get; }
+		public IStoreProduct Product { get; }
 
 		/// <summary>
 		/// Returns the transaction info. Read only.
@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason)
+		public StorePurchaseException(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason)
 			: base(reason.ToString())
 		{
 			Product = product;
@@ -71,7 +71,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason, Exception innerException)
+		public StorePurchaseException(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason, Exception innerException)
 			: base(reason.ToString(), innerException)
 		{
 			Product = product;

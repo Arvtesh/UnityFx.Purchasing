@@ -16,6 +16,9 @@ namespace UnityFx.Purchasing
 
 		public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
 		{
+			Debug.Assert(controller != null);
+			Debug.Assert(extensions != null);
+
 			try
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
@@ -49,6 +52,9 @@ namespace UnityFx.Purchasing
 
 		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 		{
+			Debug.Assert(args != null);
+			Debug.Assert(args.purchasedProduct != null);
+
 			var product = args.purchasedProduct;
 			var productId = product.definition.id;
 			var isRestored = _purchaseOpCs == null;
@@ -69,25 +75,22 @@ namespace UnityFx.Purchasing
 				// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
 				if (isRestored || _purchaseOpCs.Task.AsyncState.Equals(product))
 				{
-					var nativeReceipt = product.GetNativeReceipt(out string storeId);
+					var transactionInfo = new StoreTransaction(product, isRestored);
 
-					_purchaseTransaction.Receipt = nativeReceipt;
-					_purchaseTransaction.StoreId = storeId;
-
-					if (string.IsNullOrEmpty(nativeReceipt))
+					if (string.IsNullOrEmpty(transactionInfo.Receipt))
 					{
-						SetPurchaseFailed(product, _purchaseTransaction, null, StorePurchaseError.ReceiptNullOrEmpty);
+						SetPurchaseFailed(_purchaseProduct, transactionInfo, null, StorePurchaseError.ReceiptNullOrEmpty);
 					}
 					else
 					{
-						ValidatePurchase(product, _purchaseTransaction);
+						ValidatePurchase(product, transactionInfo);
 						return PurchaseProcessingResult.Pending;
 					}
 				}
 			}
 			catch (Exception e)
 			{
-				SetPurchaseFailed(product, _purchaseTransaction, null, StorePurchaseError.Unknown, e);
+				SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, StorePurchaseError.Unknown, e);
 			}
 
 			return PurchaseProcessingResult.Complete;
@@ -107,7 +110,7 @@ namespace UnityFx.Purchasing
 
 			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
 
-			SetPurchaseFailed(product, _purchaseTransaction, null, GetPurchaseError(failReason), null);
+			SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), null);
 		}
 
 		#endregion
@@ -128,7 +131,7 @@ namespace UnityFx.Purchasing
 				{
 					// No result returned from the validator means validation succeeded.
 					ConfirmPendingPurchase(product);
-					SetPurchaseCompleted(product, transactionInfo, validationResult);
+					SetPurchaseCompleted(_purchaseProduct, transactionInfo, validationResult);
 				}
 				else
 				{
@@ -138,18 +141,18 @@ namespace UnityFx.Purchasing
 					{
 						// The purchase validation succeeded.
 						ConfirmPendingPurchase(product);
-						SetPurchaseCompleted(product, transactionInfo, validationResult);
+						SetPurchaseCompleted(_purchaseProduct, transactionInfo, validationResult);
 					}
 					else if (resultStatus == PurchaseValidationStatus.Failure)
 					{
 						// The purchase validation failed: confirm to avoid processing it again.
 						ConfirmPendingPurchase(product);
-						SetPurchaseFailed(product, transactionInfo, validationResult, StorePurchaseError.ReceiptValidationFailed);
+						SetPurchaseFailed(_purchaseProduct, transactionInfo, validationResult, StorePurchaseError.ReceiptValidationFailed);
 					}
 					else
 					{
 						// Need to re-validate the purchase: do not confirm.
-						SetPurchaseFailed(product, transactionInfo, validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
+						SetPurchaseFailed(_purchaseProduct, transactionInfo, validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
 					}
 				}
 			}
@@ -157,11 +160,11 @@ namespace UnityFx.Purchasing
 			{
 				// NOTE: Should not really get here (do we need to confirm it in this case?).
 				ConfirmPendingPurchase(product);
-				SetPurchaseFailed(product, transactionInfo, null, StorePurchaseError.ReceiptValidationFailed, e);
+				SetPurchaseFailed(_purchaseProduct, transactionInfo, null, StorePurchaseError.ReceiptValidationFailed, e);
 			}
 		}
 
-		private void SetPurchaseCompleted(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
+		private void SetPurchaseCompleted(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
 		{
 			var result = new PurchaseResult(product, transactionInfo, validationResult);
 
@@ -176,7 +179,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private void SetPurchaseFailed(Product product, StoreTransaction transactioInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
+		private void SetPurchaseFailed(IStoreProduct product, StoreTransaction transactioInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
 		{
 			if (_purchaseOpCs != null)
 			{

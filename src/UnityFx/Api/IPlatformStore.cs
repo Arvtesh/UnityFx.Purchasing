@@ -148,6 +148,6 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		Task<StoreTransaction> PurchaseAsync(string productId);
+		Task<PurchaseResult> PurchaseAsync(string productId);
 	}
 }

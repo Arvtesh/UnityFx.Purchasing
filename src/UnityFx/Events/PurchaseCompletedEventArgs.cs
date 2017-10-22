@@ -12,22 +12,16 @@ namespace UnityFx.Purchasing
 	public class PurchaseCompletedEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Returns the transaction info. Read only.
+		/// Returns the purchase result. Read only.
 		/// </summary>
-		public StoreTransaction TransactionInfo { get; }
-
-		/// <summary>
-		/// Returns product validation result (<c>null</c> if not available). Read only.
-		/// </summary>
-		public PurchaseValidationResult ValidationResult { get; }
+		public PurchaseResult Result { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
 		/// </summary>
-		public PurchaseCompletedEventArgs(StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
+		public PurchaseCompletedEventArgs(PurchaseResult result)
 		{
-			TransactionInfo = transactionInfo;
-			ValidationResult = validationResult;
+			Result = result;
 		}
 	}
 }

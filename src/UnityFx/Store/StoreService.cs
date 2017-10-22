@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
-		private StoreTransaction _purchaseTransaction;
+		private IStoreProduct _purchaseProduct;
 		private IStoreController _storeController;
 		private bool _disposed;
 
@@ -162,7 +162,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public async Task<StoreTransaction> PurchaseAsync(string productId)
+		public async Task<PurchaseResult> PurchaseAsync(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
@@ -180,27 +180,24 @@ namespace UnityFx.Purchasing
 					// an exception will be thrown, so no need to null-check _storeController.
 					await InitializeAsync();
 
-					// 4) Initialize a new transaction.
-					InitializeTransaction(productId);
+					// 4) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
+					var product = InitializeTransaction(productId);
 
-					// 5) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
-					var product = _storeController.products.WithID(productId);
-
-					// 6) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
+					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
 					if (product != null && product.availableToPurchase)
 					{
 						_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 						_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
 						_storeController.InitiatePurchase(product);
 
-						// 7) Wait for the purchase and validation process to complete, notify users and return.
+						// 6) Wait for the purchase and validation process to complete, notify users and return.
 						var purchaseResult = await _purchaseOpCs.Task;
 						InvokePurchaseCompleted(purchaseResult);
-						return purchaseResult.TransactionInfo;
+						return purchaseResult;
 					}
 					else
 					{
-						throw new StorePurchaseException(product, _purchaseTransaction, null, StorePurchaseError.ProductUnavailable);
+						throw new StorePurchaseException(_purchaseProduct, null, null, StorePurchaseError.ProductUnavailable);
 					}
 				}
 				catch (StorePurchaseException e)
@@ -210,13 +207,13 @@ namespace UnityFx.Purchasing
 				}
 				catch (StoreInitializeException e)
 				{
-					InvokePurchaseFailed(null, null, null, StorePurchaseError.StoreInitializationFailed, e);
-					throw new StorePurchaseException(null, null, null, StorePurchaseError.StoreInitializationFailed, e);
+					InvokePurchaseFailed(_purchaseProduct, null, null, StorePurchaseError.StoreInitializationFailed, e);
+					throw new StorePurchaseException(_purchaseProduct, null, null, StorePurchaseError.StoreInitializationFailed, e);
 				}
 				catch (Exception e)
 				{
-					InvokePurchaseFailed(null, _purchaseTransaction, null, StorePurchaseError.Unknown, e);
-					throw new StorePurchaseException(null, _purchaseTransaction, null, StorePurchaseError.Unknown, e);
+					InvokePurchaseFailed(_purchaseProduct, null, null, StorePurchaseError.Unknown, e);
+					throw new StorePurchaseException(_purchaseProduct, null, null, StorePurchaseError.Unknown, e);
 				}
 				finally
 				{
@@ -271,7 +268,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfBusy()
 		{
-			if (_purchaseOpCs != null || _purchaseTransaction != null)
+			if (_purchaseOpCs != null || _purchaseProduct != null)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy");
 			}
