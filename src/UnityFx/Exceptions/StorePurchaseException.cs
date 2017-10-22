@@ -14,36 +14,30 @@ namespace UnityFx.Purchasing
 	public sealed class StorePurchaseException : StoreException
 	{
 		/// <summary>
-		/// Returns the purchase error identifier. Read only.
-		/// </summary>
-		public StorePurchaseError Reason { get; }
-
-		/// <summary>
-		/// Returns the <see cref="Product"/> reference that caused the error (or <c>null</c>). Read only.
+		/// Returns the <see cref="UnityEngine.Purchasing.Product"/> reference. Read only.
 		/// </summary>
 		public Product Product { get; }
 
 		/// <summary>
-		/// Returns name of the target store (if available). Read only.
+		/// Returns the transaction info. Read only.
 		/// </summary>
-		public string StoreId { get; }
+		public StoreTransaction TransactionInfo { get; }
+
+		/// <summary>
+		/// Returns product validation result (<c>null</c> if not available). Read only.
+		/// </summary>
+		public PurchaseValidationResult ValidationResult { get; }
+
+		/// <summary>
+		/// Returns the purchase error identifier. Read only.
+		/// </summary>
+		public StorePurchaseError Reason { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		public StorePurchaseException()
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
-		/// </summary>
-		public StorePurchaseException(StorePurchaseError reason, Product product, string storeId)
-			: base(reason.ToString())
-		{
-			Reason = reason;
-			Product = product;
-			StoreId = storeId;
 		}
 
 		/// <summary>
@@ -65,12 +59,25 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(StorePurchaseError reason, Product product, string storeId, Exception innerException)
+		public StorePurchaseException(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason)
+			: base(reason.ToString())
+		{
+			Product = product;
+			TransactionInfo = transactionInfo;
+			ValidationResult = validationResult;
+			Reason = reason;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
+		/// </summary>
+		public StorePurchaseException(Product product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason, Exception innerException)
 			: base(reason.ToString(), innerException)
 		{
-			Reason = reason;
 			Product = product;
-			StoreId = storeId;
+			TransactionInfo = transactionInfo;
+			ValidationResult = validationResult;
+			Reason = reason;
 		}
 
 		/// <summary>

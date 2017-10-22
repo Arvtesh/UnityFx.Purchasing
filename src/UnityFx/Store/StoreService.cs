@@ -30,6 +30,7 @@ namespace UnityFx.Purchasing
 		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
+		private StoreTransaction _purchaseTransaction;
 		private IStoreController _storeController;
 		private bool _disposed;
 
@@ -127,7 +128,7 @@ namespace UnityFx.Purchasing
 					var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
 					var storeConfig = await _delegate.GetStoreConfigAsync();
 
-					// 2) Initialize the store.This connects to real store and retrieves information on products specified in the previous step.
+					// 2) Initialize the store. This connects to real store and retrieves information on products specified in the previous step.
 					foreach (var product in storeConfig.Products)
 					{
 						var productDefinition = product.Definition;
@@ -137,12 +138,6 @@ namespace UnityFx.Purchasing
 
 					UnityPurchasing.Initialize(this, configurationBuilder);
 					await _initializeOpCs.Task;
-
-					// 3) Initialize metadata in _products.
-					foreach (var product in _storeController.products.all)
-					{
-						_products[product.definition.id].Metadata = product.metadata;
-					}
 				}
 				catch (Exception e)
 				{
@@ -177,7 +172,7 @@ namespace UnityFx.Purchasing
 			using (_delegate.BeginWait())
 			{
 				// 2) Notify user of the purchase.
-				InvokePurchaseInitiated(productId);
+				InvokePurchaseInitiated(productId, false);
 
 				try
 				{
@@ -185,44 +180,47 @@ namespace UnityFx.Purchasing
 					// an exception will be thrown, so no need to null-check _storeController.
 					await InitializeAsync();
 
-					// 4) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
+					// 4) Initialize a new transaction.
+					InitializeTransaction(productId);
+
+					// 5) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
 					var product = _storeController.products.WithID(productId);
 
-					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
+					// 6) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
 					if (product != null && product.availableToPurchase)
 					{
 						_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 						_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
 						_storeController.InitiatePurchase(product);
 
-						// 6) Wait for the purchase and validation process to complete, notify users and return.
+						// 7) Wait for the purchase and validation process to complete, notify users and return.
 						var purchaseResult = await _purchaseOpCs.Task;
 						InvokePurchaseCompleted(purchaseResult);
 						return purchaseResult.TransactionInfo;
 					}
 					else
 					{
-						throw new StorePurchaseException(StorePurchaseError.ProductUnavailable, product, null);
+						throw new StorePurchaseException(product, _purchaseTransaction, null, StorePurchaseError.ProductUnavailable);
 					}
 				}
 				catch (StorePurchaseException e)
 				{
-					InvokePurchaseFailed(e.Product, e.Reason, e.StoreId, e);
+					InvokePurchaseFailed(e.Product, e.TransactionInfo, e.ValidationResult, e.Reason, e);
 					throw;
 				}
 				catch (StoreInitializeException e)
 				{
-					InvokePurchaseFailed(null, StorePurchaseError.StoreInitializationFailed, null, e);
-					throw new StorePurchaseException(StorePurchaseError.StoreInitializationFailed, null, null, e);
+					InvokePurchaseFailed(null, null, null, StorePurchaseError.StoreInitializationFailed, e);
+					throw new StorePurchaseException(null, null, null, StorePurchaseError.StoreInitializationFailed, e);
 				}
 				catch (Exception e)
 				{
-					InvokePurchaseFailed(null, StorePurchaseError.Unknown, null, e);
-					throw new StorePurchaseException(StorePurchaseError.Unknown, null, null, e);
+					InvokePurchaseFailed(null, _purchaseTransaction, null, StorePurchaseError.Unknown, e);
+					throw new StorePurchaseException(null, _purchaseTransaction, null, StorePurchaseError.Unknown, e);
 				}
 				finally
 				{
-					_purchaseOpCs = null;
+					ReleaseTransaction();
 				}
 			}
 		}
@@ -235,6 +233,7 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
+				_console.Close();
 				_products.Clear();
 				_purchaseOpCs = null;
 				_initializeOpCs = null;
@@ -272,7 +271,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfBusy()
 		{
-			if (_purchaseOpCs != null)
+			if (_purchaseOpCs != null || _purchaseTransaction != null)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy");
 			}

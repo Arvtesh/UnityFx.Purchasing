@@ -16,11 +16,17 @@ namespace UnityFx.Purchasing
 		public string ProductId { get; }
 
 		/// <summary>
+		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
+		/// </summary>
+		public bool IsRestored { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseInitiatedEventArgs"/> class.
 		/// </summary>
-		public PurchaseInitiatedEventArgs(string productId)
+		public PurchaseInitiatedEventArgs(string productId, bool restored)
 		{
 			ProductId = productId;
+			IsRestored = restored;
 		}
 	}
 }

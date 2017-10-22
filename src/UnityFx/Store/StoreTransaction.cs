@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -19,22 +20,30 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns identifier of the transaction. Read only.
 		/// </summary>
-		public string TransactionId { get; }
+		public string TransactionId { get; internal set; }
 
 		/// <summary>
 		/// Returns identifier of the target store. Read only.
 		/// </summary>
-		public string StoreId { get; }
+		public string StoreId { get; internal set; }
 
 		/// <summary>
 		/// Returns native transaction receipt (differs from Unity receipt). Read only.
 		/// </summary>
-		public string Receipt { get; }
+		public string Receipt { get; internal set; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
 		/// </summary>
-		public bool IsRestored { get; }
+		public bool IsRestored { get; internal set; }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
+		/// </summary>
+		public StoreTransaction(IStoreProduct product)
+		{
+			Product = product;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.

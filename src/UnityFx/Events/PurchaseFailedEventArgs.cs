@@ -12,9 +12,14 @@ namespace UnityFx.Purchasing
 	public class PurchaseFailedEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Returns the <see cref="UnityEngine.Purchasing.Product"/> reference (if available). Read only.
+		/// Returns the transaction info. Read only.
 		/// </summary>
-		public Product Product { get; }
+		public StoreTransaction TransactionInfo { get; }
+
+		/// <summary>
+		/// Returns product validation result (<c>null</c> if not available). Read only.
+		/// </summary>
+		public PurchaseValidationResult ValidationResult { get; }
 
 		/// <summary>
 		/// Returns an error that caused the purchase to fail. Read only.
@@ -22,24 +27,13 @@ namespace UnityFx.Purchasing
 		public StorePurchaseError Error { get; }
 
 		/// <summary>
-		/// Returns identifier of the target store. Read only.
-		/// </summary>
-		public string StoreId { get; }
-
-		/// <summary>
-		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
-		/// </summary>
-		public bool IsRestored { get; }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseFailedEventArgs"/> class.
 		/// </summary>
-		public PurchaseFailedEventArgs(Product product, StorePurchaseError error, string storeId, bool restored)
+		public PurchaseFailedEventArgs(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError error)
 		{
-			Product = product;
+			TransactionInfo = transactionInfo;
+			ValidationResult = validationResult;
 			Error = error;
-			StoreId = storeId;
-			IsRestored = restored;
 		}
 	}
 }

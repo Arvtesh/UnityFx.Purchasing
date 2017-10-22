@@ -19,6 +19,12 @@ namespace UnityFx.Purchasing
 			try
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
+
+				foreach (var product in controller.products.all)
+				{
+					_products[product.definition.id].Metadata = product.metadata;
+				}
+
 				_storeController = controller;
 				_initializeOpCs.SetResult(null);
 			}
@@ -43,15 +49,17 @@ namespace UnityFx.Purchasing
 
 		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 		{
+			var product = args.purchasedProduct;
+			var productId = product.definition.id;
+			var isRestored = _purchaseOpCs == null;
+
 			try
 			{
-				var product = args.purchasedProduct;
-				var productId = product.definition.id;
-
-				// If the purchase operation has been auto-restored, _purchaseOpCs would be null.
-				if (_purchaseOpCs == null)
+				// If the purchase operation has been auto-restored _purchaseOpCs would be null.
+				if (isRestored)
 				{
-					_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "Purchase: " + productId);
+					InvokePurchaseInitiated(productId, true);
+					InitializeTransaction(productId);
 				}
 
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, "ProcessPurchase: " + productId);
@@ -59,24 +67,27 @@ namespace UnityFx.Purchasing
 
 				// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
 				// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
-				if (_purchaseOpCs == null || _purchaseOpCs.Task.AsyncState.Equals(product))
+				if (isRestored || _purchaseOpCs.Task.AsyncState.Equals(product))
 				{
-					var nativeReceipt = ProductExtensions.GetNativeReceipt(product, out string storeId);
+					var nativeReceipt = product.GetNativeReceipt(out string storeId);
+
+					_purchaseTransaction.Receipt = nativeReceipt;
+					_purchaseTransaction.StoreId = storeId;
 
 					if (string.IsNullOrEmpty(nativeReceipt))
 					{
-						SetPurchaseFailed(product, StorePurchaseError.ReceiptNullOrEmpty, storeId);
+						SetPurchaseFailed(product, _purchaseTransaction, null, StorePurchaseError.ReceiptNullOrEmpty);
 					}
 					else
 					{
-						ValidatePurchase(product, storeId, nativeReceipt);
+						ValidatePurchase(product, _purchaseTransaction);
 						return PurchaseProcessingResult.Pending;
 					}
 				}
 			}
 			catch (Exception e)
 			{
-				SetPurchaseFailed(args.purchasedProduct, StorePurchaseError.Unknown, null, e);
+				SetPurchaseFailed(product, _purchaseTransaction, null, StorePurchaseError.Unknown, e);
 			}
 
 			return PurchaseProcessingResult.Complete;
@@ -84,24 +95,26 @@ namespace UnityFx.Purchasing
 
 		public void OnPurchaseFailed(Product product, PurchaseFailureReason failReason)
 		{
-			var productId = product.definition.id;
+			var productId = product != null ? product.definition.id : "null";
+			var isRestored = _purchaseOpCs == null;
 
 			// If the purchase operation has been auto-restored, _purchaseOpCs would be null.
-			if (_purchaseOpCs == null)
+			if (isRestored)
 			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "Purchase: " + productId);
+				InvokePurchaseInitiated(productId, true);
+				InitializeTransaction(productId);
 			}
 
 			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
 
-			SetPurchaseFailed(product, GetPurchaseError(failReason), null);
+			SetPurchaseFailed(product, _purchaseTransaction, null, GetPurchaseError(failReason), null);
 		}
 
 		#endregion
 
 		#region implementation
 
-		private async void ValidatePurchase(Product product, string storeId, string nativeReceipt)
+		private async void ValidatePurchase(Product product, StoreTransaction transactionInfo)
 		{
 			var resultStatus = PurchaseValidationStatus.Failure;
 
@@ -109,8 +122,6 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId={product.transactionID}");
 
-				var userProduct = _products[product.definition.id];
-				var transactionInfo = new StoreTransaction(userProduct, product.transactionID, storeId, nativeReceipt, _purchaseOpCs == null);
 				var validationResult = await _delegate.ValidatePurchaseAsync(transactionInfo);
 
 				if (validationResult == null)
@@ -133,12 +144,12 @@ namespace UnityFx.Purchasing
 					{
 						// The purchase validation failed: confirm to avoid processing it again.
 						ConfirmPendingPurchase(product);
-						SetPurchaseFailed(product, StorePurchaseError.ReceiptValidationFailed, storeId);
+						SetPurchaseFailed(product, transactionInfo, validationResult, StorePurchaseError.ReceiptValidationFailed);
 					}
 					else
 					{
 						// Need to re-validate the purchase: do not confirm.
-						SetPurchaseFailed(product, StorePurchaseError.ReceiptValidationNotAvailable, storeId);
+						SetPurchaseFailed(product, transactionInfo, validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
 					}
 				}
 			}
@@ -146,7 +157,7 @@ namespace UnityFx.Purchasing
 			{
 				// NOTE: Should not really get here (do we need to confirm it in this case?).
 				ConfirmPendingPurchase(product);
-				SetPurchaseFailed(product, StorePurchaseError.ReceiptValidationFailed, storeId, e);
+				SetPurchaseFailed(product, transactionInfo, null, StorePurchaseError.ReceiptValidationFailed, e);
 			}
 		}
 
@@ -161,10 +172,11 @@ namespace UnityFx.Purchasing
 			else
 			{
 				InvokePurchaseCompleted(result);
+				ReleaseTransaction();
 			}
 		}
 
-		private void SetPurchaseFailed(Product product, StorePurchaseError failReason, string storeId, Exception innerException = null)
+		private void SetPurchaseFailed(Product product, StoreTransaction transactioInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
 		{
 			if (_purchaseOpCs != null)
 			{
@@ -174,16 +186,17 @@ namespace UnityFx.Purchasing
 				}
 				else if (innerException != null)
 				{
-					_purchaseOpCs.SetException(new StorePurchaseException(failReason, product, storeId, innerException));
+					_purchaseOpCs.SetException(new StorePurchaseException(product, transactioInfo, validationResult, failReason, innerException));
 				}
 				else
 				{
-					_purchaseOpCs.SetException(new StorePurchaseException(failReason, product, storeId));
+					_purchaseOpCs.SetException(new StorePurchaseException(product, transactioInfo, validationResult, failReason));
 				}
 			}
 			else
 			{
-				InvokePurchaseFailed(product, failReason, storeId, innerException);
+				InvokePurchaseFailed(product, transactioInfo, validationResult, failReason, innerException);
+				ReleaseTransaction();
 			}
 		}
 
