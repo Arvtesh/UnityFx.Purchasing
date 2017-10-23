@@ -14,6 +14,24 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
+		internal static StoreInitializeError GetInitializeError(InitializationFailureReason error)
+		{
+			switch (error)
+			{
+				case InitializationFailureReason.AppNotKnown:
+					return StoreInitializeError.AppNotKnown;
+
+				case InitializationFailureReason.NoProductsAvailable:
+					return StoreInitializeError.NoProductsAvailable;
+
+				case InitializationFailureReason.PurchasingUnavailable:
+					return StoreInitializeError.PurchasingUnavailable;
+
+				default:
+					return StoreInitializeError.Unknown;
+			}
+		}
+
 		internal static StorePurchaseError GetPurchaseError(PurchaseFailureReason error)
 		{
 			switch (error)
@@ -64,7 +82,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private void InvokeInitializeFailed(InitializationFailureReason? reason, Exception ex)
+		private void InvokeInitializeFailed(StoreInitializeError reason, Exception ex = null)
 		{
 			_console.TraceData(TraceEventType.Error, _traceEventInitialize, ex);
 			_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, $"Initialize error: {reason}");

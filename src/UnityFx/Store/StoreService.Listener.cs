@@ -19,40 +19,46 @@ namespace UnityFx.Purchasing
 			Debug.Assert(controller != null);
 			Debug.Assert(extensions != null);
 
-			if (!_disposed)
+			// Quick return if the store has been disposed.
+			if (_disposed)
 			{
-				try
-				{
-					_console.TraceEvent(TraceEventType.Information, _traceEventInitialize, "OnInitialized");
+				return;
+			}
 
-					foreach (var product in controller.products.all)
-					{
-						_products[product.definition.id].Metadata = product.metadata;
-					}
+			try
+			{
+				_console.TraceEvent(TraceEventType.Information, _traceEventInitialize, "OnInitialized");
 
-					_storeController = controller;
-					_initializeOpCs.SetResult(null);
-				}
-				catch (Exception e)
+				foreach (var product in controller.products.all)
 				{
-					_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+					_products[product.definition.id].Metadata = product.metadata;
 				}
+
+				_storeController = controller;
+				_initializeOpCs.SetResult(null);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
 			}
 		}
 
 		public void OnInitializeFailed(InitializationFailureReason error)
 		{
-			if (!_disposed)
+			// Quick return if the store has been disposed.
+			if (_disposed)
 			{
-				try
-				{
-					_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, "OnInitializeFailed: " + error);
-					_initializeOpCs.SetException(new StoreInitializeException(error));
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
-				}
+				return;
+			}
+
+			try
+			{
+				_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, "OnInitializeFailed: " + error);
+				_initializeOpCs.SetException(new StoreInitializeException(error));
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
 			}
 		}
 
@@ -61,7 +67,12 @@ namespace UnityFx.Purchasing
 			Debug.Assert(args != null);
 			Debug.Assert(args.purchasedProduct != null);
 
-			if (!_disposed)
+			if (_disposed)
+			{
+				// Quick return if the store has been disposed.
+				return PurchaseProcessingResult.Pending;
+			}
+			else
 			{
 				var product = args.purchasedProduct;
 				var productId = product.definition.id;
@@ -103,28 +114,29 @@ namespace UnityFx.Purchasing
 
 				return PurchaseProcessingResult.Complete;
 			}
-
-			return PurchaseProcessingResult.Pending;
 		}
 
 		public void OnPurchaseFailed(Product product, PurchaseFailureReason failReason)
 		{
-			if (!_disposed)
+			// Quick return if the store has been disposed.
+			if (_disposed)
 			{
-				var productId = product != null ? product.definition.id : "null";
-				var isRestored = _purchaseOpCs == null;
-
-				// If the purchase operation has been auto-restored, _purchaseOpCs would be null.
-				if (isRestored)
-				{
-					InvokePurchaseInitiated(productId, true);
-					InitializeTransaction(productId);
-				}
-
-				_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
-
-				SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), null);
+				return;
 			}
+
+			var productId = product != null ? product.definition.id : "null";
+			var isRestored = _purchaseOpCs == null;
+
+			// If the purchase operation has been auto-restored, _purchaseOpCs would be null.
+			if (isRestored)
+			{
+				InvokePurchaseInitiated(productId, true);
+				InitializeTransaction(productId);
+			}
+
+			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
+
+			SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), null);
 		}
 
 		#endregion

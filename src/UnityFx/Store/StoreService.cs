@@ -116,12 +116,12 @@ namespace UnityFx.Purchasing
 				}
 				catch (StoreInitializeException e)
 				{
-					InvokeInitializeFailed(e.Reason, e);
+					InvokeInitializeFailed(GetInitializeError(e.Reason), e);
 					throw;
 				}
 				catch (Exception e)
 				{
-					InvokeInitializeFailed(null, e);
+					InvokeInitializeFailed(StoreInitializeError.Unknown, e);
 					throw new StoreInitializeException("Initialize error", e);
 				}
 				finally
@@ -201,11 +201,23 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
+				if (_initializeOpCs != null)
+				{
+					InvokeInitializeFailed(StoreInitializeError.StoreDisposed);
+					_initializeOpCs = null;
+				}
+
+				if (_purchaseOpCs != null)
+				{
+					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.StoreDisposed);
+					_purchaseProduct = null;
+					_purchaseOpCs = null;
+				}
+
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
 				_console.Close();
 				_products.Clear();
-				_purchaseOpCs = null;
-				_initializeOpCs = null;
+				_storeController = null;
 				_disposed = true;
 			}
 		}

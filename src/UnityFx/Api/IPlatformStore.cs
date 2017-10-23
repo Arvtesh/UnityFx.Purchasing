@@ -8,6 +8,37 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
+	/// Enumerates possible initialization errors.
+	/// </summary>
+	public enum StoreInitializeError
+	{
+		/// <summary>
+		/// A catch-all for unrecognized initialize problems.
+		/// </summary>
+		Unknown,
+
+		/// <summary>
+		/// The manager was disposed while an initialize operation was pending.
+		/// </summary>
+		StoreDisposed,
+
+		/// <summary>
+		/// In-App Purchases disabled in device settings (<see cref="InitializationFailureReason.PurchasingUnavailable"/>).
+		/// </summary>
+		PurchasingUnavailable,
+
+		/// <summary>
+		/// No products available for purchase (<see cref="InitializationFailureReason.NoProductsAvailable"/>).
+		/// </summary>
+		NoProductsAvailable,
+
+		/// <summary>
+		/// The store reported the app as unknown (<see cref="InitializationFailureReason.AppNotKnown"/>).
+		/// </summary>
+		AppNotKnown
+	}
+
+	/// <summary>
 	/// Enumerates possible purchase errors.
 	/// </summary>
 	public enum StorePurchaseError
@@ -23,7 +54,7 @@ namespace UnityFx.Purchasing
 		StoreDisposed,
 
 		/// <summary>
-		/// The store initializatino failed.
+		/// The store initialization failed.
 		/// </summary>
 		StoreInitializationFailed,
 

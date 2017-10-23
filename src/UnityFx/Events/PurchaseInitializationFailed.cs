@@ -14,12 +14,12 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
 		/// </summary>
-		public InitializationFailureReason? Reason { get; }
+		public StoreInitializeError Reason { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseInitializationFailed"/> class.
 		/// </summary>
-		public PurchaseInitializationFailed(InitializationFailureReason? reason)
+		public PurchaseInitializationFailed(StoreInitializeError reason)
 		{
 			Reason = reason;
 		}
