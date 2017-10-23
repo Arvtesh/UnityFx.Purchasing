@@ -179,26 +179,28 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private void SetPurchaseFailed(IStoreProduct product, StoreTransaction transactioInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
+		private void SetPurchaseFailed(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e = null)
 		{
+			var result = new PurchaseResult(product, transactionInfo, validationResult);
+
 			if (_purchaseOpCs != null)
 			{
 				if (failReason == StorePurchaseError.UserCanceled)
 				{
 					_purchaseOpCs.SetCanceled();
 				}
-				else if (innerException != null)
+				else if (e != null)
 				{
-					_purchaseOpCs.SetException(new StorePurchaseException(product, transactioInfo, validationResult, failReason, innerException));
+					_purchaseOpCs.SetException(new StorePurchaseException(result, failReason, e));
 				}
 				else
 				{
-					_purchaseOpCs.SetException(new StorePurchaseException(product, transactioInfo, validationResult, failReason));
+					_purchaseOpCs.SetException(new StorePurchaseException(result, failReason));
 				}
 			}
 			else
 			{
-				InvokePurchaseFailed(product, transactioInfo, validationResult, failReason, innerException);
+				InvokePurchaseFailed(result, failReason, e);
 				ReleaseTransaction();
 			}
 		}

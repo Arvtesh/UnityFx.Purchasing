@@ -14,19 +14,9 @@ namespace UnityFx.Purchasing
 	public sealed class StorePurchaseException : StoreException
 	{
 		/// <summary>
-		/// Returns the <see cref="UnityEngine.Purchasing.Product"/> reference. Read only.
+		/// Returns the purchase result. Read only.
 		/// </summary>
-		public IStoreProduct Product { get; }
-
-		/// <summary>
-		/// Returns the transaction info. Read only.
-		/// </summary>
-		public StoreTransaction TransactionInfo { get; }
-
-		/// <summary>
-		/// Returns product validation result (<c>null</c> if not available). Read only.
-		/// </summary>
-		public PurchaseValidationResult ValidationResult { get; }
+		public PurchaseResult Result { get; }
 
 		/// <summary>
 		/// Returns the purchase error identifier. Read only.
@@ -59,24 +49,20 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason)
+		public StorePurchaseException(PurchaseResult result, StorePurchaseError reason)
 			: base(reason.ToString())
 		{
-			Product = product;
-			TransactionInfo = transactionInfo;
-			ValidationResult = validationResult;
+			Result = result;
 			Reason = reason;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError reason, Exception innerException)
+		public StorePurchaseException(PurchaseResult result, StorePurchaseError reason, Exception innerException)
 			: base(reason.ToString(), innerException)
 		{
-			Product = product;
-			TransactionInfo = transactionInfo;
-			ValidationResult = validationResult;
+			Result = result;
 			Reason = reason;
 		}
 

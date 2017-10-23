@@ -28,6 +28,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
 		/// </summary>
+		public PurchaseResult(IStoreProduct product)
+		{
+			Product = product;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
+		/// </summary>
 		public PurchaseResult(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
 		{
 			Product = product;

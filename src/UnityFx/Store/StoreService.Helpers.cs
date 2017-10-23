@@ -112,6 +112,15 @@ namespace UnityFx.Purchasing
 
 			try
 			{
+				// TODO: update Purchases 
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+			}
+
+			try
+			{
 				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult));
 			}
 			catch (Exception e)
@@ -124,20 +133,30 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private void InvokePurchaseFailed(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception innerException = null)
+		private void InvokePurchaseFailed(PurchaseResult purchaseResult, StorePurchaseError failReason, Exception ex = null)
 		{
-			var productId = product != null ? product.Definition.id : "<null>";
+			var product = purchaseResult.TransactionInfo.Product;
+			var productId = product != null ? product.definition.id : "<null>";
 
-			if (innerException != null)
+			if (ex != null)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, innerException);
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, ex);
 			}
 
 			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason = {failReason}");
 
 			try
 			{
-				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(transactionInfo, validationResult, failReason));
+				// TODO: update Purchases 
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+			}
+
+			try
+			{
+				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(purchaseResult, failReason, ex));
 			}
 			catch (Exception e)
 			{

@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -12,14 +11,9 @@ namespace UnityFx.Purchasing
 	public class PurchaseFailedEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Returns the transaction info. Read only.
+		/// Returns the purchase result. Read only.
 		/// </summary>
-		public StoreTransaction TransactionInfo { get; }
-
-		/// <summary>
-		/// Returns product validation result (<c>null</c> if not available). Read only.
-		/// </summary>
-		public PurchaseValidationResult ValidationResult { get; }
+		public PurchaseResult Result { get; }
 
 		/// <summary>
 		/// Returns an error that caused the purchase to fail. Read only.
@@ -27,13 +21,18 @@ namespace UnityFx.Purchasing
 		public StorePurchaseError Error { get; }
 
 		/// <summary>
+		/// Returns exception that caused the failure (if any). Read only.
+		/// </summary>
+		public Exception Exception { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseFailedEventArgs"/> class.
 		/// </summary>
-		public PurchaseFailedEventArgs(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError error)
+		public PurchaseFailedEventArgs(PurchaseResult result, StorePurchaseError error, Exception e)
 		{
-			TransactionInfo = transactionInfo;
-			ValidationResult = validationResult;
+			Result = result;
 			Error = error;
+			Exception = e;
 		}
 	}
 }

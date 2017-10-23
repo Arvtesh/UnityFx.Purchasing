@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
-		public IObservable<StoreTransaction> Transactions
+		public IObservable<PurchaseInfo> Purchases
 		{
 			get
 			{
@@ -166,23 +166,25 @@ namespace UnityFx.Purchasing
 					}
 					else
 					{
-						throw new StorePurchaseException(_purchaseProduct, null, null, StorePurchaseError.ProductUnavailable);
+						throw new StorePurchaseException(new PurchaseResult(_purchaseProduct), StorePurchaseError.ProductUnavailable);
 					}
 				}
 				catch (StorePurchaseException e)
 				{
-					InvokePurchaseFailed(e.Product, e.TransactionInfo, e.ValidationResult, e.Reason, e);
+					InvokePurchaseFailed(e.Result, e.Reason, e);
 					throw;
 				}
 				catch (StoreInitializeException e)
 				{
-					InvokePurchaseFailed(_purchaseProduct, null, null, StorePurchaseError.StoreInitializationFailed, e);
-					throw new StorePurchaseException(_purchaseProduct, null, null, StorePurchaseError.StoreInitializationFailed, e);
+					var result = new PurchaseResult(_purchaseProduct);
+					InvokePurchaseFailed(result, StorePurchaseError.StoreInitializationFailed, e);
+					throw new StorePurchaseException(result, StorePurchaseError.StoreInitializationFailed, e);
 				}
 				catch (Exception e)
 				{
-					InvokePurchaseFailed(_purchaseProduct, null, null, StorePurchaseError.Unknown, e);
-					throw new StorePurchaseException(_purchaseProduct, null, null, StorePurchaseError.Unknown, e);
+					var result = new PurchaseResult(_purchaseProduct);
+					InvokePurchaseFailed(result, StorePurchaseError.Unknown, e);
+					throw new StorePurchaseException(result, StorePurchaseError.Unknown, e);
 				}
 				finally
 				{
