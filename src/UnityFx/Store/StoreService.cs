@@ -54,6 +54,7 @@ namespace UnityFx.Purchasing
 		#region IPlatformStore
 
 		public event EventHandler StoreInitialized;
+		public event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;
 		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
 		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
@@ -62,46 +63,17 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
 				throw new NotImplementedException();
 			}
 		}
 
-		public IStoreProductCollection Products
-		{
-			get
-			{
-				ThrowIfDisposed();
-				return this;
-			}
-		}
+		public IStoreProductCollection Products => this;
 
-		public IStoreController Controller
-		{
-			get
-			{
-				ThrowIfDisposed();
-				return _storeController;
-			}
-		}
+		public IStoreController Controller => _storeController;
 
-		public bool IsInitialized
-		{
-			get
-			{
-				ThrowIfDisposed();
-				return _storeController != null;
-			}
-		}
+		public bool IsInitialized => _storeController != null;
 
-		public bool IsBusy
-		{
-			get
-			{
-				ThrowIfDisposed();
-				return _purchaseOpCs != null;
-			}
-		}
+		public bool IsBusy => _purchaseOpCs != null;
 
 		public async Task InitializeAsync()
 		{
@@ -138,26 +110,23 @@ namespace UnityFx.Purchasing
 
 					UnityPurchasing.Initialize(this, configurationBuilder);
 					await _initializeOpCs.Task;
+
+					// 3) Trigger user-defined events.
+					InvokeInitializeCompleted();
+				}
+				catch (StoreInitializeException e)
+				{
+					InvokeInitializeFailed(e.Reason, e);
+					throw;
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
-					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
-					throw;
+					InvokeInitializeFailed(null, e);
+					throw new StoreInitializeException("Initialize error", e);
 				}
 				finally
 				{
 					_initializeOpCs = null;
-				}
-
-				// Trigger user-defined events.
-				try
-				{
-					StoreInitialized?.Invoke(this, EventArgs.Empty);
-				}
-				finally
-				{
-					_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize complete");
 				}
 			}
 		}

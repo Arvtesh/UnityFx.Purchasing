@@ -89,6 +89,11 @@ namespace UnityFx.Purchasing
 		event EventHandler StoreInitialized;
 
 		/// <summary>
+		/// Triggered when the store initializzation has failed.
+		/// </summary>
+		event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;
+
+		/// <summary>
 		/// Triggered when a new purchase is initiated.
 		/// </summary>
 		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
@@ -106,31 +111,26 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IObservable<StoreTransaction> Transactions { get; }
 
 		/// <summary>
 		/// Returns a collection of store items. Read only.
 		/// </summary>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreProductCollection Products { get; }
 
 		/// <summary>
 		/// Returns Unity3d store controller. Read only.
 		/// </summary>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreController Controller { get; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the store is initialized (the product list is loaded from native store); <c>false</c> otherwise. Read only.
 		/// </summary>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsInitialized { get; }
 
 		/// <summary>
 		/// Returns <c>true</c> if the store has pending purchase operation; <c>false</c> otherwise. Read only.
 		/// </summary>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsBusy { get; }
 
 		/// <summary>

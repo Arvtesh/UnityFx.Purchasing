@@ -48,6 +48,41 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
+		private void InvokeInitializeCompleted()
+		{
+			try
+			{
+				StoreInitialized?.Invoke(this, EventArgs.Empty);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+			}
+			finally
+			{
+				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize complete");
+			}
+		}
+
+		private void InvokeInitializeFailed(InitializationFailureReason? reason, Exception ex)
+		{
+			_console.TraceData(TraceEventType.Error, _traceEventInitialize, ex);
+			_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, $"Initialize error: {reason}");
+
+			try
+			{
+				StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason));
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+			}
+			finally
+			{
+				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
+			}
+		}
+
 		private void InvokePurchaseInitiated(string productId, bool restored)
 		{
 			Debug.Assert(!string.IsNullOrEmpty(productId));
@@ -98,7 +133,7 @@ namespace UnityFx.Purchasing
 				_console.TraceData(TraceEventType.Error, _traceEventPurchase, innerException);
 			}
 
-			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason={failReason}");
+			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason = {failReason}");
 
 			try
 			{
@@ -117,6 +152,7 @@ namespace UnityFx.Purchasing
 		private void ConfirmPendingPurchase(Product product)
 		{
 			Debug.Assert(product != null);
+			Debug.Assert(_storeController != null);
 
 			_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
 			_storeController.ConfirmPendingPurchase(product);
@@ -125,6 +161,7 @@ namespace UnityFx.Purchasing
 		private Product InitializeTransaction(string productId)
 		{
 			Debug.Assert(_purchaseProduct == null);
+			Debug.Assert(_storeController != null);
 
 			if (!_products.TryGetValue(productId, out _purchaseProduct))
 			{

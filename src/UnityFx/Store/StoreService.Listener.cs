@@ -21,7 +21,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
+				_console.TraceEvent(TraceEventType.Information, _traceEventInitialize, "OnInitialized");
 
 				foreach (var product in controller.products.all)
 				{
@@ -68,7 +68,7 @@ namespace UnityFx.Purchasing
 					InitializeTransaction(productId);
 				}
 
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, "ProcessPurchase: " + productId);
+				_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ProcessPurchase: " + productId);
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
 				// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
