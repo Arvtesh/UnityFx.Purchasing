@@ -201,6 +201,7 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
+				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
 				_console.Close();
 				_products.Clear();
 				_purchaseOpCs = null;
