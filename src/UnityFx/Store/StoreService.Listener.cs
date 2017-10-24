@@ -102,7 +102,7 @@ namespace UnityFx.Purchasing
 						}
 						else
 						{
-							ValidatePurchase(product, transactionInfo);
+							ValidatePurchase(_purchaseProduct, transactionInfo);
 							return PurchaseProcessingResult.Pending;
 						}
 					}
@@ -143,15 +143,16 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private async void ValidatePurchase(Product product, StoreTransaction transactionInfo)
+		private async void ValidatePurchase(IStoreProduct userProduct, StoreTransaction transactionInfo)
 		{
+			var product = transactionInfo.Product;
 			var resultStatus = PurchaseValidationStatus.Failure;
 
 			try
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId={product.transactionID}");
 
-				var validationResult = await _delegate.ValidatePurchaseAsync(transactionInfo);
+				var validationResult = await _delegate.ValidatePurchaseAsync(userProduct, transactionInfo);
 
 				if (!_disposed)
 				{

@@ -27,7 +27,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed.
 		/// </summary>
+		/// <param name="product">Reference to a product being purchased.</param>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
-		Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo);
+		Task<PurchaseValidationResult> ValidatePurchaseAsync(IStoreProduct product, StoreTransaction transactionInfo);
 	}
 }
