@@ -25,10 +25,10 @@ namespace UnityFx.Purchasing
 				return;
 			}
 
+			_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
+
 			try
 			{
-				_console.TraceEvent(TraceEventType.Information, _traceEventInitialize, "OnInitialized");
-
 				foreach (var product in controller.products.all)
 				{
 					_products[product.definition.id].Metadata = product.metadata;
@@ -51,9 +51,10 @@ namespace UnityFx.Purchasing
 				return;
 			}
 
+			_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitializeFailed: " + error);
+
 			try
 			{
-				_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, "OnInitializeFailed: " + error);
 				_initializeOpCs.SetException(new StoreInitializeException(error));
 			}
 			catch (Exception e)
@@ -87,7 +88,7 @@ namespace UnityFx.Purchasing
 						InitializeTransaction(productId);
 					}
 
-					_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ProcessPurchase: " + productId);
+					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, "ProcessPurchase: " + productId);
 					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
 					// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
@@ -134,7 +135,7 @@ namespace UnityFx.Purchasing
 				InitializeTransaction(productId);
 			}
 
-			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
+			_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
 
 			SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), null);
 		}
