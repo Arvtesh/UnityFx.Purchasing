@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	internal sealed partial class StoreService : IStoreService
+	internal sealed partial class StoreService : IStoreService, IObservable<PurchaseInfo>
 	{
 		#region data
 
@@ -28,6 +28,7 @@ namespace UnityFx.Purchasing
 		private readonly IPurchasingModule _purchasingModule;
 
 		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
+		private List<IObserver<PurchaseInfo>> _observers;
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
 		private IStoreProduct _purchaseProduct;
@@ -59,13 +60,7 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
-		public IObservable<PurchaseInfo> Purchases
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public IObservable<PurchaseInfo> Purchases => this;
 
 		public TraceListenerCollection TraceListeners => _console.Listeners;
 
@@ -197,6 +192,54 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IObservable
+
+		private class Subscription : IDisposable
+		{
+			private readonly List<IObserver<PurchaseInfo>> _observers;
+			private readonly IObserver<PurchaseInfo> _observer;
+
+			public Subscription(List<IObserver<PurchaseInfo>> observers, IObserver<PurchaseInfo> observer)
+			{
+				_observers = observers;
+				_observer = observer;
+			}
+
+			public void Dispose()
+			{
+				lock (_observers)
+				{
+					_observers.Remove(_observer);
+				}
+			}
+		}
+
+		public IDisposable Subscribe(IObserver<PurchaseInfo> observer)
+		{
+			if (observer == null)
+			{
+				throw new ArgumentNullException(nameof(observer));
+			}
+
+			ThrowIfDisposed();
+
+			if (_observers == null)
+			{
+				_observers = new List<IObserver<PurchaseInfo>>() { observer };
+			}
+			else
+			{
+				lock (_observers)
+				{
+					_observers.Add(observer);
+				}
+			}
+
+			return new Subscription(_observers, observer);
+		}
+
+		#endregion
+
 		#region IDisposable
 
 		public void Dispose()
@@ -214,6 +257,26 @@ namespace UnityFx.Purchasing
 					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.StoreDisposed);
 					_purchaseProduct = null;
 					_purchaseOpCs = null;
+				}
+
+				try
+				{
+					if (_observers != null)
+					{
+						lock (_observers)
+						{
+							foreach (var item in _observers)
+							{
+								item.OnCompleted();
+							}
+
+							_observers.Clear();
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, 0, e);
 				}
 
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");

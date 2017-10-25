@@ -130,7 +130,16 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				// TODO: update Purchases 
+				if (_observers != null)
+				{
+					lock (_observers)
+					{
+						foreach (var item in _observers)
+						{
+							item.OnNext(new PurchaseInfo(purchaseResult, null, null));
+						}
+					}
+				}
 			}
 			catch (Exception e)
 			{
@@ -165,7 +174,16 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				// TODO: update Purchases 
+				if (_observers != null)
+				{
+					lock (_observers)
+					{
+						foreach (var item in _observers)
+						{
+							item.OnNext(new PurchaseInfo(purchaseResult, failReason, ex));
+						}
+					}
+				}
 			}
 			catch (Exception e)
 			{
