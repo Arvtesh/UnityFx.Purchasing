@@ -151,7 +151,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId={product.transactionID}");
+				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
 
 				var validationResult = await _delegate.ValidatePurchaseAsync(userProduct, transactionInfo);
 

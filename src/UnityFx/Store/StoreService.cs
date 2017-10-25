@@ -152,7 +152,7 @@ namespace UnityFx.Purchasing
 					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
 					if (product != null && product.availableToPurchase)
 					{
-						_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+						_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 						_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
 						_storeController.InitiatePurchase(product);
 

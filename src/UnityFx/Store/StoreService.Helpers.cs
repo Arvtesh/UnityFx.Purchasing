@@ -209,7 +209,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(product != null);
 			Debug.Assert(_storeController != null);
 
-			_console.TraceEvent(TraceEventType.Information, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
+			_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
 			_storeController.ConfirmPendingPurchase(product);
 		}
 
