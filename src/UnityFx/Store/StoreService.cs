@@ -41,7 +41,7 @@ namespace UnityFx.Purchasing
 		internal StoreService(string name, IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
-			_console = new TraceSource(_serviceName);
+			_console = new TraceSource(_serviceName, SourceLevels.All);
 			_delegate = storeDelegate;
 			_purchasingModule = purchasingModule;
 		}
@@ -67,6 +67,8 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		public TraceListenerCollection TraceListeners => _console.Listeners;
+
 		public IStoreProductCollection Products => this;
 
 		public IStoreController Controller => _storeController;
@@ -79,7 +81,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			if (_storeController == null)
+			if (_storeController != null)
 			{
 				// Already initialized, do nothing.
 			}

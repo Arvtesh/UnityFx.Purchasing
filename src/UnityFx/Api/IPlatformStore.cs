@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using UnityEngine.Purchasing;
 
@@ -138,6 +139,11 @@ namespace UnityFx.Purchasing
 		/// Triggered when a purchase has failed.
 		/// </summary>
 		event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
+
+		/// <summary>
+		/// Returns a collection of <see cref="TraceListener"/> instances attached to the <see cref="TraceSource"/> used by the store. Read only.
+		/// </summary>
+		TraceListenerCollection TraceListeners { get; }
 
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
