@@ -84,7 +84,6 @@ namespace UnityFx.Purchasing
 
 		private void InvokeInitializeFailed(StoreInitializeError reason, Exception ex = null)
 		{
-			_console.TraceData(TraceEventType.Error, _traceEventInitialize, ex);
 			_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, $"Initialize error: {reason}");
 
 			try
@@ -162,13 +161,8 @@ namespace UnityFx.Purchasing
 
 		private void InvokePurchaseFailed(PurchaseResult purchaseResult, StorePurchaseError failReason, Exception ex = null)
 		{
-			var product = purchaseResult.TransactionInfo.Product;
-			var productId = product != null ? product.definition.id : "<null>";
-
-			if (ex != null)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, ex);
-			}
+			var product = purchaseResult.TransactionInfo?.Product;
+			var productId = product?.definition.id ?? "<null>";
 
 			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason = {failReason}");
 

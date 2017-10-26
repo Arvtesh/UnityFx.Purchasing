@@ -118,8 +118,9 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
+					_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
 					InvokeInitializeFailed(StoreInitializeError.Unknown, e);
-					throw new StoreInitializeException("Initialize error", e);
+					throw;
 				}
 				finally
 				{
@@ -173,15 +174,14 @@ namespace UnityFx.Purchasing
 				}
 				catch (StoreInitializeException e)
 				{
-					var result = new PurchaseResult(_purchaseProduct);
-					InvokePurchaseFailed(result, StorePurchaseError.StoreInitializationFailed, e);
-					throw new StorePurchaseException(result, StorePurchaseError.StoreInitializationFailed, e);
+					_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason = {e.Message}");
+					throw;
 				}
 				catch (Exception e)
 				{
-					var result = new PurchaseResult(_purchaseProduct);
-					InvokePurchaseFailed(result, StorePurchaseError.Unknown, e);
-					throw new StorePurchaseException(result, StorePurchaseError.Unknown, e);
+					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.Unknown, e);
+					throw;
 				}
 				finally
 				{

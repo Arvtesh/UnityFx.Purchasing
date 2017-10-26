@@ -55,11 +55,6 @@ namespace UnityFx.Purchasing
 		StoreDisposed,
 
 		/// <summary>
-		/// The store initialization failed.
-		/// </summary>
-		StoreInitializationFailed,
-
-		/// <summary>
 		/// The system purchasing feature is unavailable (<see cref="PurchaseFailureReason.PurchasingUnavailable"/>).
 		/// </summary>
 		PurchasingUnavailable,
