@@ -59,6 +59,8 @@ namespace UnityFx.Purchasing
 
 		public IObservable<PurchaseInfo> Purchases => this;
 
+		public SourceSwitch TraceSwitch => _console.Switch;
+
 		public TraceListenerCollection TraceListeners => _console.Listeners;
 
 		public IStoreProductCollection Products => this;

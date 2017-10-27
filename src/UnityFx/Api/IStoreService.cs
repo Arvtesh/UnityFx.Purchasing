@@ -136,6 +136,11 @@ namespace UnityFx.Purchasing
 		event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 		/// <summary>
+		/// Returns the <see cref="SourceSwitch"/> instance attached to the <see cref="TraceSource"/> used by the store. Read only.
+		/// </summary>
+		SourceSwitch TraceSwitch { get; }
+
+		/// <summary>
 		/// Returns a collection of <see cref="TraceListener"/> instances attached to the <see cref="TraceSource"/> used by the store. Read only.
 		/// </summary>
 		TraceListenerCollection TraceListeners { get; }
