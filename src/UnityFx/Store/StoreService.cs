@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	internal sealed partial class StoreService : IStoreService, IObservable<PurchaseInfo>
+	internal sealed partial class StoreService : IStoreService, IStoreProductCollection, IObservable<PurchaseInfo>
 	{
 		#region data
 
@@ -187,6 +187,47 @@ namespace UnityFx.Purchasing
 					ReleaseTransaction();
 				}
 			}
+		}
+
+		#endregion
+
+		#region IReadOnlyCollection
+
+		public IStoreProduct this[string productId]
+		{
+			get
+			{
+				ThrowIfInvalidProductId(productId);
+				return _products[productId];
+			}
+		}
+
+		public int Count => _products.Count;
+
+		public bool ContainsKey(string productId)
+		{
+			ThrowIfInvalidProductId(productId);
+			return _products.ContainsKey(productId);
+		}
+
+		public bool TryGetValue(string productId, out IStoreProduct product)
+		{
+			ThrowIfInvalidProductId(productId);
+			return _products.TryGetValue(productId, out product);
+		}
+
+		#endregion
+
+		#region IEnumerable
+
+		public IEnumerator<IStoreProduct> GetEnumerator()
+		{
+			return _products.Values.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return _products.Values.GetEnumerator();
 		}
 
 		#endregion
