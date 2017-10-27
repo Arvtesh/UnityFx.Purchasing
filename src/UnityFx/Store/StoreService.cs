@@ -203,64 +203,60 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			// 1) Turn on user-defined wait animation (if any).
-			using (_delegate.BeginWait())
+			// 1) Notify user of the purchase.
+			InvokePurchaseInitiated(productId, false);
+
+			try
 			{
-				// 2) Notify user of the purchase.
-				InvokePurchaseInitiated(productId, false);
+				// 2) Wait untill the store initialization is finished. If the initialization fails for any reason
+				// an exception will be thrown, so no need to null-check _storeController.
+				await InitializeAsync();
 
-				try
+				// 3) Wait for the fetch operation to complete (if any).
+				if (_fetchOpCs != null)
 				{
-					// 3) Wait untill the store initialization is finished. If the initialization fails for any reason
-					// an exception will be thrown, so no need to null-check _storeController.
-					await InitializeAsync();
+					await _fetchOpCs.Task;
+				}
 
-					// 4) Wait for the fetch operation to complete (if any).
-					if (_fetchOpCs != null)
-					{
-						await _fetchOpCs.Task;
-					}
+				// 4) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
+				var product = InitializeTransaction(productId);
 
-					// 5) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
-					var product = InitializeTransaction(productId);
+				// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
+				if (product != null && product.availableToPurchase)
+				{
+					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+					_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
+					_storeController.InitiatePurchase(product);
 
-					// 6) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
-					if (product != null && product.availableToPurchase)
-					{
-						_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-						_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
-						_storeController.InitiatePurchase(product);
-
-						// 7) Wait for the purchase and validation process to complete, notify users and return.
-						var purchaseResult = await _purchaseOpCs.Task;
-						InvokePurchaseCompleted(purchaseResult);
-						return purchaseResult;
-					}
-					else
-					{
-						throw new StorePurchaseException(new PurchaseResult(_purchaseProduct), StorePurchaseError.ProductUnavailable);
-					}
+					// 6) Wait for the purchase and validation process to complete, notify users and return.
+					var purchaseResult = await _purchaseOpCs.Task;
+					InvokePurchaseCompleted(purchaseResult);
+					return purchaseResult;
 				}
-				catch (StorePurchaseException e)
+				else
 				{
-					InvokePurchaseFailed(e.Result, e.Reason, e);
-					throw;
+					throw new StorePurchaseException(new PurchaseResult(_purchaseProduct), StorePurchaseError.ProductUnavailable);
 				}
-				catch (StoreInitializeException e)
-				{
-					_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {e.Message}");
-					throw;
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.Unknown, e);
-					throw;
-				}
-				finally
-				{
-					ReleaseTransaction();
-				}
+			}
+			catch (StorePurchaseException e)
+			{
+				InvokePurchaseFailed(e.Result, e.Reason, e);
+				throw;
+			}
+			catch (StoreInitializeException e)
+			{
+				_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {e.Message}");
+				throw;
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+				InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.Unknown, e);
+				throw;
+			}
+			finally
+			{
+				ReleaseTransaction();
 			}
 		}
 
