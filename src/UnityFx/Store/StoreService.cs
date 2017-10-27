@@ -360,13 +360,13 @@ namespace UnityFx.Purchasing
 			{
 				if (_initializeOpCs != null)
 				{
-					InvokeInitializeFailed(_traceEventInitialize, StoreInitializeError.StoreDisposed);
+					InvokeInitializeFailed(_traceEventInitialize, StoreInitializeError.StoreDisposed, null);
 					_initializeOpCs = null;
 				}
 
 				if (_fetchOpCs != null)
 				{
-					InvokeInitializeFailed(_traceEventFetch, StoreInitializeError.StoreDisposed);
+					InvokeInitializeFailed(_traceEventFetch, StoreInitializeError.StoreDisposed, null);
 					_fetchOpCs = null;
 				}
 

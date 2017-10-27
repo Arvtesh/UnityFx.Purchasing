@@ -17,11 +17,17 @@ namespace UnityFx.Purchasing
 		public StoreInitializeError Reason { get; }
 
 		/// <summary>
+		/// Returns exception that caused the failure (if any). Read only.
+		/// </summary>
+		public Exception Exception { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseInitializationFailed"/> class.
 		/// </summary>
-		public PurchaseInitializationFailed(StoreInitializeError reason)
+		public PurchaseInitializationFailed(StoreInitializeError reason, Exception e)
 		{
 			Reason = reason;
+			Exception = e;
 		}
 	}
 }

@@ -82,13 +82,13 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private void InvokeInitializeFailed(int opId, StoreInitializeError reason, Exception ex = null)
+		private void InvokeInitializeFailed(int opId, StoreInitializeError reason, Exception ex)
 		{
 			_console.TraceEvent(TraceEventType.Error, opId, GetEventName(opId) + " error: " + reason);
 
 			try
 			{
-				StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason));
+				StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason, ex));
 			}
 			catch (Exception e)
 			{
