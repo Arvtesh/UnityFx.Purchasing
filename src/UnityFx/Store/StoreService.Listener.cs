@@ -31,7 +31,10 @@ namespace UnityFx.Purchasing
 			{
 				foreach (var product in controller.products.all)
 				{
-					_products[product.definition.id].Metadata = product.metadata;
+					if (_products.TryGetValue(product.definition.id, out var userProduct))
+					{
+						userProduct.Metadata = product.metadata;
+					}
 				}
 
 				_storeController = controller;
@@ -40,6 +43,7 @@ namespace UnityFx.Purchasing
 			catch (Exception e)
 			{
 				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+				_initializeOpCs.SetException(e);
 			}
 		}
 
@@ -143,6 +147,55 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
+
+		private void OnFetch()
+		{
+			// Quick return if the store has been disposed.
+			if (_disposed)
+			{
+				return;
+			}
+
+			_console.TraceEvent(TraceEventType.Verbose, _traceEventFetch, "OnFetch");
+
+			try
+			{
+				foreach (var product in _storeController.products.all)
+				{
+					if (_products.TryGetValue(product.definition.id, out var userProduct))
+					{
+						userProduct.Metadata = product.metadata;
+					}
+				}
+
+				_fetchOpCs.SetResult(null);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventFetch, e);
+				_fetchOpCs.SetException(e);
+			}
+		}
+
+		public void OnFetchFailed(InitializationFailureReason error)
+		{
+			// Quick return if the store has been disposed.
+			if (_disposed)
+			{
+				return;
+			}
+
+			_console.TraceEvent(TraceEventType.Verbose, _traceEventFetch, "OnFetchFailed: " + error);
+
+			try
+			{
+				_fetchOpCs.SetException(new StoreInitializeException(error));
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, _traceEventFetch, e);
+			}
+		}
 
 		private async void ValidatePurchase(IStoreProduct userProduct, StoreTransaction transactionInfo)
 		{

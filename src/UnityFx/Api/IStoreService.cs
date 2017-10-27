@@ -178,6 +178,13 @@ namespace UnityFx.Purchasing
 		Task InitializeAsync();
 
 		/// <summary>
+		/// Fetches product information from the store.
+		/// </summary>
+		/// <exception cref="StoreInitializeException">Thrown if operation fails.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		Task FetchAsync();
+
+		/// <summary>
 		/// Initiates purchasing a product.
 		/// </summary>
 		/// <param name="productId">Product identifier as specified in the store.</param>

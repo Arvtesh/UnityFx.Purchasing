@@ -66,7 +66,7 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private void InvokeInitializeCompleted()
+		private void InvokeInitializeCompleted(int opId)
 		{
 			try
 			{
@@ -74,17 +74,17 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+				_console.TraceData(TraceEventType.Error, opId, e);
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize complete");
+				_console.TraceEvent(TraceEventType.Stop, opId, GetEventName(opId) + " complete");
 			}
 		}
 
-		private void InvokeInitializeFailed(StoreInitializeError reason, Exception ex = null)
+		private void InvokeInitializeFailed(int opId, StoreInitializeError reason, Exception ex = null)
 		{
-			_console.TraceEvent(TraceEventType.Error, _traceEventInitialize, $"Initialize error: {reason}");
+			_console.TraceEvent(TraceEventType.Error, opId, GetEventName(opId) + " error: " + reason);
 
 			try
 			{
@@ -92,11 +92,11 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+				_console.TraceData(TraceEventType.Error, opId, e);
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventInitialize, "Initialize failed");
+				_console.TraceEvent(TraceEventType.Stop, opId, GetEventName(opId) + " failed");
 			}
 		}
 
@@ -106,11 +106,11 @@ namespace UnityFx.Purchasing
 
 			if (restored)
 			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "Purchase (auto-restored): " + productId);
+				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, GetEventName(_traceEventPurchase) + " (auto-restored): " + productId);
 			}
 			else
 			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, "Purchase: " + productId);
+				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, GetEventName(_traceEventPurchase) + ": " + productId);
 			}
 
 			try
@@ -155,7 +155,7 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "Purchase completed: " + purchaseResult.Product.Definition.id);
+				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, GetEventName(_traceEventPurchase) + " completed: " + purchaseResult.Product.Definition.id);
 			}
 		}
 
@@ -164,7 +164,7 @@ namespace UnityFx.Purchasing
 			var product = purchaseResult.TransactionInfo?.Product;
 			var productId = product?.definition.id ?? "<null>";
 
-			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason = {failReason}");
+			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {failReason}");
 
 			try
 			{
@@ -194,7 +194,7 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, "Purchase failed: " + productId);
+				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, GetEventName(_traceEventPurchase) + " failed: " + productId);
 			}
 		}
 
@@ -218,6 +218,23 @@ namespace UnityFx.Purchasing
 			}
 
 			return _storeController.products.WithID(productId);
+		}
+
+		private string GetEventName(int eventId)
+		{
+			switch (eventId)
+			{
+				case _traceEventInitialize:
+					return "Initialize";
+
+				case _traceEventFetch:
+					return "Fetch";
+
+				case _traceEventPurchase:
+					return "Purchase";
+			}
+
+			return "<Unknown>";
 		}
 
 		private void ReleaseTransaction()
