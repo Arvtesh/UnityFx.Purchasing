@@ -11,6 +11,11 @@ namespace UnityFx.Purchasing
 	public class PurchaseFailedEventArgs : EventArgs
 	{
 		/// <summary>
+		/// Returns the product identifier. Read only.
+		/// </summary>
+		public string ProductId { get; }
+
+		/// <summary>
 		/// Returns the purchase result. Read only.
 		/// </summary>
 		public PurchaseResult Result { get; }
@@ -28,8 +33,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseFailedEventArgs"/> class.
 		/// </summary>
-		public PurchaseFailedEventArgs(PurchaseResult result, StorePurchaseError error, Exception e)
+		public PurchaseFailedEventArgs(string productId, PurchaseResult result, StorePurchaseError error, Exception e)
 		{
+			ProductId = productId;
 			Result = result;
 			Error = error;
 			Exception = e;

@@ -11,6 +11,11 @@ namespace UnityFx.Purchasing
 	public class PurchaseInfo : PurchaseResult
 	{
 		/// <summary>
+		/// Returns the product identifier. Read only.
+		/// </summary>
+		public string ProductId { get; }
+
+		/// <summary>
 		/// Returns the purchase error (if any). Read only.
 		/// </summary>
 		public StorePurchaseError? Error { get; }
@@ -38,19 +43,10 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseInfo"/> class.
 		/// </summary>
-		public PurchaseInfo(IStoreProduct product, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError? error, Exception e)
-			: base(product, transactionInfo, validationResult)
-		{
-			Error = error;
-			Exception = e;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseInfo"/> class.
-		/// </summary>
-		public PurchaseInfo(PurchaseResult purchaseResult, StorePurchaseError? error, Exception e)
+		public PurchaseInfo(string productId, PurchaseResult purchaseResult, StorePurchaseError? error, Exception e)
 			: base(purchaseResult.Product, purchaseResult.TransactionInfo, purchaseResult.ValidationResult)
 		{
+			ProductId = productId;
 			Error = error;
 			Exception = e;
 		}

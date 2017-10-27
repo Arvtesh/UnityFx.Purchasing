@@ -23,6 +23,7 @@ namespace UnityFx.Purchasing
 
 		#region IStoreProduct
 
+		public string Id => Definition.id;
 		public ProductDefinition Definition { get; }
 		public ProductMetadata Metadata { get; set; }
 

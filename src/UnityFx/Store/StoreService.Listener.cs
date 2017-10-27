@@ -129,19 +129,26 @@ namespace UnityFx.Purchasing
 				return;
 			}
 
-			var productId = product != null ? product.definition.id : "null";
+			var productId = product?.definition.id ?? "null";
 			var isRestored = _purchaseOpCs == null;
 
-			// If the purchase operation has been auto-restored, _purchaseOpCs would be null.
-			if (isRestored)
+			try
 			{
-				InvokePurchaseInitiated(productId, true);
-				InitializeTransaction(productId);
+				// If the purchase operation has been auto-restored, _purchaseOpCs would be null.
+				if (isRestored)
+				{
+					InvokePurchaseInitiated(productId, true);
+					InitializeTransaction(productId);
+				}
+
+				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
+
+				SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), null);
 			}
-
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"OnPurchaseFailed: {productId}, reason={failReason}");
-
-			SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), null);
+			catch (Exception e)
+			{
+				SetPurchaseFailed(_purchaseProduct, new StoreTransaction(product, isRestored), null, GetPurchaseError(failReason), e);
+			}
 		}
 
 		#endregion

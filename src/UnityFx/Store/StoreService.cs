@@ -33,6 +33,7 @@ namespace UnityFx.Purchasing
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<object> _fetchOpCs;
 		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
+		private string _purchaseProductId;
 		private IStoreProduct _purchaseProduct;
 		private IStoreController _storeController;
 		private bool _disposed;
@@ -244,7 +245,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (StoreInitializeException e)
 				{
-					_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"Purchase error: {productId}, reason = {e.Message}");
+					_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {e.Message}");
 					throw;
 				}
 				catch (Exception e)
@@ -371,9 +372,8 @@ namespace UnityFx.Purchasing
 
 				if (_purchaseOpCs != null)
 				{
-					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.StoreDisposed);
-					_purchaseProduct = null;
-					_purchaseOpCs = null;
+					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.StoreDisposed, null);
+					ReleaseTransaction();
 				}
 
 				try

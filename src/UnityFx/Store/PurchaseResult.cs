@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	public class PurchaseResult
 	{
 		/// <summary>
-		/// Returns the purchased product. Read only.
+		/// Returns the purchased product (or <c>null</c>). Read only.
 		/// </summary>
 		public IStoreProduct Product { get; }
 

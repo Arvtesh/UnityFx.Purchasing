@@ -13,6 +13,11 @@ namespace UnityFx.Purchasing
 	public interface IStoreProduct
 	{
 		/// <summary>
+		/// Return the product identifier. Read only.
+		/// </summary>
+		string Id { get; }
+
+		/// <summary>
 		/// Returns the IAP product definition info. Read only.
 		/// </summary>
 		ProductDefinition Definition { get; }

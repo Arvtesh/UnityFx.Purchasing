@@ -113,6 +113,8 @@ namespace UnityFx.Purchasing
 				_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, GetEventName(_traceEventPurchase) + ": " + productId);
 			}
 
+			_purchaseProductId = productId;
+
 			try
 			{
 				PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId, restored));
@@ -127,22 +129,22 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(purchaseResult != null);
 
-			try
+			if (_observers != null)
 			{
-				if (_observers != null)
+				lock (_observers)
 				{
-					lock (_observers)
+					foreach (var item in _observers)
 					{
-						foreach (var item in _observers)
+						try
 						{
-							item.OnNext(new PurchaseInfo(purchaseResult, null, null));
+							item.OnNext(new PurchaseInfo(_purchaseProductId, purchaseResult, null, null));
+						}
+						catch (Exception e)
+						{
+							_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
 						}
 					}
 				}
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
 			}
 
 			try
@@ -155,38 +157,38 @@ namespace UnityFx.Purchasing
 			}
 			finally
 			{
-				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, GetEventName(_traceEventPurchase) + " completed: " + purchaseResult.Product.Definition.id);
+				_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, GetEventName(_traceEventPurchase) + " completed: " + _purchaseProductId);
 			}
 		}
 
-		private void InvokePurchaseFailed(PurchaseResult purchaseResult, StorePurchaseError failReason, Exception ex = null)
+		private void InvokePurchaseFailed(PurchaseResult purchaseResult, StorePurchaseError failReason, Exception ex)
 		{
 			var product = purchaseResult.TransactionInfo?.Product;
-			var productId = product?.definition.id ?? "<null>";
+			var productId = _purchaseProductId ?? "null";
 
 			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {failReason}");
 
-			try
+			if (_observers != null)
 			{
-				if (_observers != null)
+				lock (_observers)
 				{
-					lock (_observers)
+					foreach (var item in _observers)
 					{
-						foreach (var item in _observers)
+						try
 						{
-							item.OnNext(new PurchaseInfo(purchaseResult, failReason, ex));
+							item.OnNext(new PurchaseInfo(productId, purchaseResult, failReason, ex));
+						}
+						catch (Exception e)
+						{
+							_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
 						}
 					}
 				}
 			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-			}
 
 			try
 			{
-				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(purchaseResult, failReason, ex));
+				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(productId, purchaseResult, failReason, ex));
 			}
 			catch (Exception e)
 			{
@@ -212,12 +214,16 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_purchaseProduct == null);
 			Debug.Assert(_storeController != null);
 
-			if (!_products.TryGetValue(productId, out _purchaseProduct))
+			if (_products.TryGetValue(productId, out _purchaseProduct))
+			{
+				return _storeController.products.WithID(productId);
+			}
+			else
 			{
 				_console.TraceEvent(TraceEventType.Warning, _traceEventPurchase, "No product found for id: " + productId);
 			}
 
-			return _storeController.products.WithID(productId);
+			return null;
 		}
 
 		private string GetEventName(int eventId)
@@ -239,6 +245,7 @@ namespace UnityFx.Purchasing
 
 		private void ReleaseTransaction()
 		{
+			_purchaseProductId = null;
 			_purchaseProduct = null;
 			_purchaseOpCs = null;
 		}
