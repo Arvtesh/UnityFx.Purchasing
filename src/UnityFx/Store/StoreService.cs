@@ -50,9 +50,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region IStoreService
-		#endregion
-
-		#region IPlatformStore
 
 		public event EventHandler StoreInitialized;
 		public event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;

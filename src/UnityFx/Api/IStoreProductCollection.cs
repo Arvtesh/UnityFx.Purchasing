@@ -8,7 +8,7 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A read-only collection of <see cref="IPlatformStore"/> products.
+	/// A read-only collection of <see cref="IStoreService"/> products.
 	/// </summary>
 	public interface IStoreProductCollection : IReadOnlyCollection<IStoreProduct>
 	{
