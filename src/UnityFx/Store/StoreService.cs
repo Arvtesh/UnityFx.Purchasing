@@ -216,7 +216,10 @@ namespace UnityFx.Purchasing
 					await InitializeAsync();
 
 					// 4) Wait for the fetch operation to complete (if any).
-					await _fetchOpCs?.Task;
+					if (_fetchOpCs != null)
+					{
+						await _fetchOpCs.Task;
+					}
 
 					// 5) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
 					var product = InitializeTransaction(productId);
