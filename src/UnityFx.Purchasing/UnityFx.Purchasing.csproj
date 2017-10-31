@@ -22,10 +22,10 @@
 
 	<ItemGroup>
 		<Reference Include="UnityEngine">
-			<HintPath>Dependencies\UnityEngine.dll</HintPath>
+			<HintPath>..\Dependencies\UnityEngine.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.Purchasing">
-		  <HintPath>Dependencies\UnityEngine.Purchasing.dll</HintPath>
+		  <HintPath>..\Dependencies\UnityEngine.Purchasing.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 

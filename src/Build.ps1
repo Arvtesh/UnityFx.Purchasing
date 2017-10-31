@@ -48,7 +48,7 @@ if ($LastExitCode -ne 0) {
 
 # publish build results to .\Build\Bin
 $filesToPublish =
-	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net46\UnityFx.Purchasing.dll"))),
-	(Join-Path $scriptPath (Join-Path "bin" (Join-Path $configuration "net46\UnityFx.Purchasing.xml")))
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.dll"))),
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.xml")))
 
 Copy-Item -Path $filesToPublish -Destination $binPath -Force
