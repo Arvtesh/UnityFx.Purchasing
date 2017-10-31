@@ -78,5 +78,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UnityFx.Purchasing\UnityFx.Purchasing.csproj">
+      <Project>{c7d875e0-b7de-4f90-9931-2d879b1ce32e}</Project>
+      <Name>UnityFx.Purchasing</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
