@@ -11,6 +11,7 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -64,6 +65,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -79,9 +81,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UnityFx.Purchasing\UnityFx.Purchasing.csproj">
-      <Project>{c7d875e0-b7de-4f90-9931-2d879b1ce32e}</Project>
-      <Name>UnityFx.Purchasing</Name>
+    <ProjectReference Include="..\UnityFx.Purchasing.Validation\UnityFx.Purchasing.Validation.csproj">
+      <Project>{dccbc694-9e83-495d-80ed-b234a38160f0}</Project>
+      <Name>UnityFx.Purchasing.Validation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

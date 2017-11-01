@@ -1,8 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
 using System.Windows.Forms;
 
 namespace ReceiptValidator
@@ -26,11 +22,11 @@ namespace ReceiptValidator
 				}
 				else if (RadioPlatformIos.Checked)
 				{
-					TextResult.Text = await UnityFx.Purchasing.Store.ValidatePurchaseReceiptIos(TextReceipt.Text, false);
+					TextResult.Text = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text, false);
 				}
 				else if (RadioPlatformIosSandbox.Checked)
 				{
-					TextResult.Text = await UnityFx.Purchasing.Store.ValidatePurchaseReceiptIos(TextReceipt.Text, true);
+					TextResult.Text = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text, true);
 				}
 				else if (RadioPlatformAndroid.Checked)
 				{
