@@ -22,11 +22,8 @@ namespace ReceiptValidator
 				}
 				else if (RadioPlatformIos.Checked)
 				{
-					TextResult.Text = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text, false);
-				}
-				else if (RadioPlatformIosSandbox.Checked)
-				{
-					TextResult.Text = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text, true);
+					var result = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
+					TextResult.Text = result.RawResult;
 				}
 				else if (RadioPlatformAndroid.Checked)
 				{

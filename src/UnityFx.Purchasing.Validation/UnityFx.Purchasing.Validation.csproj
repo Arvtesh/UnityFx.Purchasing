@@ -20,4 +20,8 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="System.Json" Version="4.4.0" />
+	</ItemGroup>
+
 </Project>
