@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Json;
 using System.IO;
 using System.Net;
@@ -18,6 +20,47 @@ namespace UnityFx.Purchasing.Validation
 	/// </summary>
 	internal static class AppStoreValidator
 	{
+		#region data
+
+		private const string _statusValueName = "status";
+		private const string _receiptValueName = "receipt";
+		private const string _environmentValueName = "environment";
+		private const string _bundleIdValueName = "bundle_id";
+		private const string _appVersionValueName = "application_version";
+		private const string _originalAppVersionValueName = "original_application_version";
+		private const string _receiptCreationDateValueName = "receipt_creation_date";
+		private const string _expirationDateValueName = "expiration_date";
+		private const string _inAppValueName = "in_app";
+		private const string _quantityValueName = "quantity";
+		private const string _productIdValueName = "product_id";
+		private const string _transactionIdValueName = "transaction_id";
+		private const string _originalTransactionIdValueName = "original_transaction_id";
+		private const string _purchaseDateValueName = "purchase_date";
+		private const string _originalPurchaseDateValueName = "original_purchase_date";
+
+		private static string[] _rfc3339DateTimePatterns = new string[]
+		{
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ffffffK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ffffK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ffK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fK",
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ssK",
+
+			// Fall back patterns
+			"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK",
+			"yyyy'-'MM'-'dd HH':'mm':'ss",
+			"yyyy'-'MM'-'dd HH':'mm':'ss' Etc/GMT'",
+			DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern,
+			DateTimeFormatInfo.InvariantInfo.SortableDateTimePattern
+		};
+
+		#endregion
+
+		#region interface
+
 		internal const string TestReceipt = @"MIISpgYJKoZIhvcNAQcCoIISlzCCEpMCAQExCzAJBgUrDgMCGgUAMIICRwYJKoZIhvcNAQcBoIICOASCAjQxggIwMAoCARQCAQEEAgwAMAsCAQ4CAQEEAwIBTjALAgEZAgEBBAMCAQMwDQIBCgIBAQQFFgMxMiswDQIBCwIBAQQFAgMETJIwDQIBDQIBAQQFAgMBOawwDgIBAQIBAQQGAgRCzLtSMA4CAQkCAQEEBgIEUDI0NzAOAgEQAgEBBAYCBDDuF88wEAIBDwIBAQQIAgYilYYST3gwEwIBAwIBAQQLDAkxMDcwNDAwMTEwEwIBEwIBAQQLDAkxMDYwMjA0NTEwFAIBAAIBAQQMDApQcm9kdWN0aW9uMBgCAQQCAQIEEN5vz31AX36y1xhxCCVk0F8wHAIBBQIBAQQU1qctljZKsomrtNVup369nUcFCrUwHgIBCAIBAQQWFhQyMDE3LTAyLTIwVDIzOjU5OjIzWjAeAgEMAgEBBBYWFDIwMTctMDItMjBUMjM6NTk6MjNaMB4CARICAQEEFhYUMjAxNy0wMS0yMFQwMDowNzoyM1owIgIBAgIBAQQaDBhjb20uZ3NuLlZlZ2FzRG9sbGFyU2xvdHMwSQIBBgIBAQRBv7bLIcE+P4IC\/lMN5wICZ73gg77W0kGnnyDAjGVhWRpfXqaAip1uH9Jo9Ux70mYxv\/WAndmW5H9I1sADSEynqXQwUgIBBwIBAQRK0ltZm5p8zZjVDC55+9zQpXjiIxwDIAoyBiCdPVlzpxQdriSDFxM\/AlobF5\/o1VROd5jpsBvDZvLdK2e\/4fkIG+d1IIrs6wUbmaWggg5lMIIFfDCCBGSgAwIBAgIIDutXh+eeCY0wDQYJKoZIhvcNAQEFBQAwgZYxCzAJBgNVBAYTAlVTMRMwEQYDVQQKDApBcHBsZSBJbmMuMSwwKgYDVQQLDCNBcHBsZSBXb3JsZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9uczFEMEIGA1UEAww7QXBwbGUgV29ybGR3aWRlIERldmVsb3BlciBSZWxhdGlvbnMgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTUxMTEzMDIxNTA5WhcNMjMwMjA3MjE0ODQ3WjCBiTE3MDUGA1UEAwwuTWFjIEFwcCBTdG9yZSBhbmQgaVR1bmVzIFN0b3JlIFJlY2VpcHQgU2lnbmluZzEsMCoGA1UECwwjQXBwbGUgV29ybGR3aWRlIERldmVsb3BlciBSZWxhdGlvbnMxEzARBgNVBAoMCkFwcGxlIEluYy4xCzAJBgNVBAYTAlVTMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApc+B\/SWigVvWh+0j2jMcjuIjwKXEJss9xp\/sSg1Vhv+kAteXyjlUbX1\/slQYncQsUnGOZHuCzom6SdYI5bSIcc8\/W0YuxsQduAOpWKIEPiF41du30I4SjYNMWypoN5PC8r0exNKhDEpYUqsS4+3dH5gVkDUtwswSyo1IgfdYeFRr6IwxNh9KBgxHVPM3kLiykol9X6SFSuHAnOC6pLuCl2P0K5PB\/T5vysH1PKmPUhrAJQp2Dt7+mf7\/wmv1W16sc1FJCFaJzEOQzI6BAtCgl7ZcsaFpaYeQEGgmJjm4HRBzsApdxXPQ33Y72C3ZiB7j7AfP4o7Q0\/omVYHv4gNJIwIDAQABo4IB1zCCAdMwPwYIKwYBBQUHAQEEMzAxMC8GCCsGAQUFBzABhiNodHRwOi8vb2NzcC5hcHBsZS5jb20vb2NzcDAzLXd3ZHIwNDAdBgNVHQ4EFgQUkaSc\/MR2t5+givRN9Y82Xe0rBIUwDAYDVR0TAQH\/BAIwADAfBgNVHSMEGDAWgBSIJxcJqbYYYIvs67r2R1nFUlSjtzCCAR4GA1UdIASCARUwggERMIIBDQYKKoZIhvdjZAUGATCB\/jCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5jZSBvbiB0aGlzIGNlcnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ugb2YgdGhlIHRoZW4gYXBwbGljYWJsZSBzdGFuZGFyZCB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBvbGljeSBhbmQgY2VydGlmaWNhdGlvbiBwcmFjdGljZSBzdGF0ZW1lbnRzLjA2BggrBgEFBQcCARYqaHR0cDovL3d3dy5hcHBsZS5jb20vY2VydGlmaWNhdGVhdXRob3JpdHkvMA4GA1UdDwEB\/wQEAwIHgDAQBgoqhkiG92NkBgsBBAIFADANBgkqhkiG9w0BAQUFAAOCAQEADaYb0y4941srB25ClmzT6IxDMIJf4FzRjb69D70a\/CWS24yFw4BZ3+Pi1y4FFKwN27a4\/vw1LnzLrRdrjn8f5He5sWeVtBNephmGdvhaIJXnY4wPc\/zo7cYfrpn4ZUhcoOAoOsAQNy25oAQ5H3O5yAX98t5\/GioqbisB\/KAgXNnrfSemM\/j1mOC+RNuxTGf8bgpPyeIGqNKX86eOa1GiWoR1ZdEWBGLjwV\/1CKnPaNmSAMnBjLP4jQBkulhgwHyvj3XKablbKtYdaG6YQvVMpzcZm8w7HHoZQ\/Ojbb9IYAYMNpIr7N4YtRHaLSPQjvygaZwXG56AezlHRTBhL8cTqDCCBCIwggMKoAMCAQICCAHevMQ5baAQMA0GCSqGSIb3DQEBBQUAMGIxCzAJBgNVBAYTAlVTMRMwEQYDVQQKEwpBcHBsZSBJbmMuMSYwJAYDVQQLEx1BcHBsZSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTEWMBQGA1UEAxMNQXBwbGUgUm9vdCBDQTAeFw0xMzAyMDcyMTQ4NDdaFw0yMzAyMDcyMTQ4NDdaMIGWMQswCQYDVQQGEwJVUzETMBEGA1UECgwKQXBwbGUgSW5jLjEsMCoGA1UECwwjQXBwbGUgV29ybGR3aWRlIERldmVsb3BlciBSZWxhdGlvbnMxRDBCBgNVBAMMO0FwcGxlIFdvcmxkd2lkZSBEZXZlbG9wZXIgUmVsYXRpb25zIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyjhUpstWqsgkOUjpjO7sX7h\/JpG8NFN6znxjgGF3ZF6lByO2Of5QLRVWWHAtfsRuwUqFPi\/w3oQaoVfJr3sY\/2r6FRJJFQgZrKrbKjLtlmNoUhU9jIrsv2sYleADrAF9lwVnzg6FlTdq7Qm2rmfNUWSfxlzRvFduZzWAdjakh4FuOI\/YKxVOeyXYWr9Og8GN0pPVGnG1YJydM05V+RJYDIa4Fg3B5XdFjVBIuist5JSF4ejEncZopbCj\/Gd+cLoCWUt3QpE5ufXN4UzvwDtIjKblIV39amq7pxY1YNLmrfNGKcnow4vpecBqYWcVsvD95Wi8Yl9uz5nd7xtj\/pJlqwIDAQABo4GmMIGjMB0GA1UdDgQWBBSIJxcJqbYYYIvs67r2R1nFUlSjtzAPBgNVHRMBAf8EBTADAQH\/MB8GA1UdIwQYMBaAFCvQaUeUdgn+9GuNLkCm90dNfwheMC4GA1UdHwQnMCUwI6AhoB+GHWh0dHA6Ly9jcmwuYXBwbGUuY29tL3Jvb3QuY3JsMA4GA1UdDwEB\/wQEAwIBhjAQBgoqhkiG92NkBgIBBAIFADANBgkqhkiG9w0BAQUFAAOCAQEAT8\/vWb4s9bJsL4\/uE4cy6AU1qG6LfclpDLnZF7x3LNRn4v2abTpZXN+DAb2yriphcrGvzcNFMI+jgw3OHUe08ZOKo3SbpMOYcoc7Pq9FC5JUuTK7kBhTawpOELbZHVBsIYAKiU5XjGtbPD2m\/d73DSMdC0omhz+6kZJMpBkSGW1X9XpYh3toiuSGjErr4kkUqqXdVQCprrtLMK7hoLG8KYDmCXflvjSiAcp\/3OIK5ju4u+y6YpXzBWNBgs0POx1MlaTbq\/nJlelP5E3nJpmB6bz5tCnSAXpm4S6M9iGKxfh44YGuv9OQnamt86\/9OBqWZzAcUaVc7HGKgrRsDwwVHzCCBLswggOjoAMCAQICAQIwDQYJKoZIhvcNAQEFBQAwYjELMAkGA1UEBhMCVVMxEzARBgNVBAoTCkFwcGxlIEluYy4xJjAkBgNVBAsTHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRYwFAYDVQQDEw1BcHBsZSBSb290IENBMB4XDTA2MDQyNTIxNDAzNloXDTM1MDIwOTIxNDAzNlowYjELMAkGA1UEBhMCVVMxEzARBgNVBAoTCkFwcGxlIEluYy4xJjAkBgNVBAsTHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRYwFAYDVQQDEw1BcHBsZSBSb290IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5JGpCR+R2x5HUOsF7V55hC3rNqJXTFXsixmJ3vlLbPUHqyIwAugYPvhQCdN\/QaiY+dHKZpwkaxHQo7vkGyrDH5WeegykR4tb1BY3M8vED03OFGnRyRly9V0O1X9fm\/IlA7pVj01dDfFkNSMVSxVZHbOU9\/acns9QusFYUGePCLQg98usLCBvcLY\/ATCMt0PPD5098ytJKBrI\/s61uQ7ZXhzWyz21Oq30Dw4AkguxIRYudNU8DdtiFqujcZJHU1XBry9Bs\/j743DN5qNMRX4fTGtQlkGJxHRiCxCDQYczioGxMFjsWgQyjGizjx3eZXP\/Z15lvEnYdp8zFGWhd5TJLQIDAQABo4IBejCCAXYwDgYDVR0PAQH\/BAQDAgEGMA8GA1UdEwEB\/wQFMAMBAf8wHQYDVR0OBBYEFCvQaUeUdgn+9GuNLkCm90dNfwheMB8GA1UdIwQYMBaAFCvQaUeUdgn+9GuNLkCm90dNfwheMIIBEQYDVR0gBIIBCDCCAQQwggEABgkqhkiG92NkBQEwgfIwKgYIKwYBBQUHAgEWHmh0dHBzOi8vd3d3LmFwcGxlLmNvbS9hcHBsZWNhLzCBwwYIKwYBBQUHAgIwgbYagbNSZWxpYW5jZSBvbiB0aGlzIGNlcnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ugb2YgdGhlIHRoZW4gYXBwbGljYWJsZSBzdGFuZGFyZCB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBvbGljeSBhbmQgY2VydGlmaWNhdGlvbiBwcmFjdGljZSBzdGF0ZW1lbnRzLjANBgkqhkiG9w0BAQUFAAOCAQEAXDaZTC14t+2Mm9zzd5vydtJ3ME\/BH4WDhRuZPUc38qmbQI4s1LGQEti+9HOb7tJkD8t5TzTYoj75eP9ryAfsfTmDi1Mg0zjEsb+aTwpr\/yv8WacFCXwXQFYRHnTTt4sjO0ej1W8k4uvRt3DfD0XhJ8rxbXjt57UXF6jcfiI1yiXV2Q\/Wa9SiJCMR96Gsj3OBYMYbWwkvkrL4REjwYDieFfU9JmcgijNq9w2Cz97roy\/5U2pbZMBjM3f3OgcsVuvaDyEO2rpzGU+12TZ\/wYdV2aeZuTJC+9jVcZ5+oVK3G72TQiQSKscPHbZNnF5jyEuAF1CqitXa5PzQCQc3sHV1ITGCAcswggHHAgEBMIGjMIGWMQswCQYDVQQGEwJVUzETMBEGA1UECgwKQXBwbGUgSW5jLjEsMCoGA1UECwwjQXBwbGUgV29ybGR3aWRlIERldmVsb3BlciBSZWxhdGlvbnMxRDBCBgNVBAMMO0FwcGxlIFdvcmxkd2lkZSBEZXZlbG9wZXIgUmVsYXRpb25zIENlcnRpZmljYXRpb24gQXV0aG9yaXR5AggO61eH554JjTAJBgUrDgMCGgUAMA0GCSqGSIb3DQEBAQUABIIBAF\/SwmE\/g89dLI\/aTpJgXfClI4qN74L+tZZZ7xg8hUWnBwrVVzUfMYx58m2rhOra\/\/FsiniWr8N2WvdFtDasDIPRWEY4qlI0\/bg\/bJX+8WMVvPOQWE4Dz7jNlwKgJ39\/iGZdDJIak\/ws7rctQ9jktYzxoHEvRKrKujSr9zr2S8xnrxa+h+HIa4FmV0pKv1GC1jlmud4pSkYCfdGErJcXrXCVkLs5BsoARXsltZVGSmgVcnyPKeDOHHostUMTKRfIIyzSLOuV8QIRdKqhRLde7KSussVAcOkxwFpvA43HlhCPuzd5Sgp9Dc6l6+AI7wXxCsqMwNG0RoGkgM1IEYc15IE=";
 
 		internal static async Task<string> ValidateReceiptRawAsync(string receipt, bool sandboxStore)
@@ -65,7 +108,7 @@ namespace UnityFx.Purchasing.Validation
 			var responseString = await ValidateReceiptRawAsync(receipt, false);
 			var result = new AppStoreValidationResult(responseString);
 			var json = JsonValue.Parse(responseString);
-			int status = json["status"];
+			int status = json[_statusValueName];
 
 			if (status == 0)
 			{
@@ -76,7 +119,7 @@ namespace UnityFx.Purchasing.Validation
 				// This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.
 				responseString = await ValidateReceiptRawAsync(receipt, true);
 				json = JsonValue.Parse(responseString);
-				status = json["status"];
+				status = json[_statusValueName];
 
 				if (status == 0)
 				{
@@ -90,11 +133,15 @@ namespace UnityFx.Purchasing.Validation
 			return result;
 		}
 
+		#endregion
+
+		#region implementation
+
 		private static void ParseValidationResponse(JsonValue json, AppStoreValidationResult result)
 		{
-			var receiptData = json["receipt"];
+			var receiptData = json[_receiptValueName];
 
-			result.Environment = json["environment"];
+			result.Environment = json[_environmentValueName];
 			result.Receipt = new AppStoreReceipt();
 
 			ParseAppReceipt(receiptData, result.Receipt);
@@ -102,9 +149,48 @@ namespace UnityFx.Purchasing.Validation
 
 		private static void ParseAppReceipt(JsonValue json, AppStoreReceipt receipt)
 		{
-			receipt.BundleId = json["bundle_id"];
-			receipt.ApplicationVersion = json["application_version"];
-			receipt.OriginalApplicationVersion = json["original_application_version"];
+			// required fields
+			receipt.BundleId = json[_bundleIdValueName]; 
+			receipt.AppVersion = json[_appVersionValueName];
+			receipt.OriginalAppVersion = json[_originalAppVersionValueName];
+			receipt.CreationDate = ParseDateTimeRfc3339(json[_receiptCreationDateValueName]);
+			receipt.InApp = ParseInApp(json[_inAppValueName] as JsonArray);
+
+			// optional fields
+			if (json.ContainsKey(_expirationDateValueName))
+			{
+				receipt.ExpirationDate = ParseDateTimeRfc3339(json[_expirationDateValueName]);
+			}
+		}
+
+		private static AppStoreInAppReceipt[] ParseInApp(JsonArray json)
+		{
+			if (json != null && json.Count > 0)
+			{
+				var result = new List<AppStoreInAppReceipt>(json.Count);
+
+				foreach (var receiptNode in json)
+				{
+					var receipt = new AppStoreInAppReceipt();
+
+					// required fields
+					receipt.Quantity = receiptNode[_quantityValueName];
+					receipt.ProductId = receiptNode[_productIdValueName];
+					receipt.TransactionId = receiptNode[_transactionIdValueName];
+					receipt.OriginalTransactionId = receiptNode[_originalTransactionIdValueName];
+					receipt.PurchaseDate = ParseDateTimeRfc3339(receiptNode[_purchaseDateValueName]);
+					receipt.OriginalPurchaseDate = ParseDateTimeRfc3339(receiptNode[_originalPurchaseDateValueName]);
+
+					// optional fields
+					
+
+					result.Add(receipt);
+				}
+
+				return result.ToArray();
+			}
+
+			return new AppStoreInAppReceipt[0];
 		}
 
 		private static string GetStatusText(int status)
@@ -149,5 +235,17 @@ namespace UnityFx.Purchasing.Validation
 
 			return "Unknown";
 		}
+
+		private static DateTime ParseDateTimeRfc3339(string s)
+		{
+			if (!string.IsNullOrEmpty(s) && DateTime.TryParseExact(s, _rfc3339DateTimePatterns, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AdjustToUniversal, out var result))
+			{
+				return result;
+			}
+
+			return DateTime.MinValue;
+		}
+
+		#endregion
 	}
 }
