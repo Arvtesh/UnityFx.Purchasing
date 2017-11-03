@@ -19,14 +19,15 @@ namespace UnityFx.Purchasing.Validation
 		/// <summary>
 		/// The Amazon Store receipt (id any). Read only.
 		/// </summary>
-		public AmazonStoreReceipt Receipt { get; internal set; }
+		public AmazonStoreReceipt Receipt { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AmazonStoreValidationResult"/> class.
 		/// </summary>
-		internal AmazonStoreValidationResult(string rawResponse)
+		internal AmazonStoreValidationResult(string rawResponse, AmazonStoreReceipt receipt)
 		{
 			RawResult = rawResponse;
+			Receipt = receipt;
 		}
 	}
 }

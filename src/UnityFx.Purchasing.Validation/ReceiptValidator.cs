@@ -19,7 +19,7 @@ namespace UnityFx.Purchasing.Validation
 		/// <summary>
 		/// Returns test Amazon Store receipt. Read only.
 		/// </summary>
-		public static string TestAmazonStoreReceipt => AppStoreValidator.TestReceipt2;
+		public static string TestAmazonStoreReceipt => AmazonStoreValidator.TestReceipt;
 
 		/// <summary>
 		/// Validates purchase receipt with AppStore and returns the store.

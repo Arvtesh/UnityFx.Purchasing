@@ -35,6 +35,7 @@
 			this.TextResult = new System.Windows.Forms.TextBox();
 			this.ButtonValidate = new System.Windows.Forms.Button();
 			this.ButtonTestReceipt = new System.Windows.Forms.Button();
+			this.RadioPlatformAmazon = new System.Windows.Forms.RadioButton();
 			this.PlatformGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -74,6 +75,7 @@
 			// 
 			// PlatformGroupBox
 			// 
+			this.PlatformGroupBox.Controls.Add(this.RadioPlatformAmazon);
 			this.PlatformGroupBox.Controls.Add(this.RadioPlatformAppStore);
 			this.PlatformGroupBox.Controls.Add(this.RadioPlatformGooglePlay);
 			this.PlatformGroupBox.Location = new System.Drawing.Point(12, 12);
@@ -116,6 +118,16 @@
 			this.ButtonTestReceipt.UseVisualStyleBackColor = true;
 			this.ButtonTestReceipt.Click += new System.EventHandler(this.ButtonTestReceipt_Click);
 			// 
+			// RadioAmazon
+			// 
+			this.RadioPlatformAmazon.AutoSize = true;
+			this.RadioPlatformAmazon.Location = new System.Drawing.Point(6, 65);
+			this.RadioPlatformAmazon.Name = "RadioAmazon";
+			this.RadioPlatformAmazon.Size = new System.Drawing.Size(88, 17);
+			this.RadioPlatformAmazon.TabIndex = 3;
+			this.RadioPlatformAmazon.Text = "AmazonStore";
+			this.RadioPlatformAmazon.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -144,6 +156,7 @@
 		private System.Windows.Forms.TextBox TextResult;
 		private System.Windows.Forms.Button ButtonValidate;
 		private System.Windows.Forms.Button ButtonTestReceipt;
+		private System.Windows.Forms.RadioButton RadioPlatformAmazon;
 	}
 }
 

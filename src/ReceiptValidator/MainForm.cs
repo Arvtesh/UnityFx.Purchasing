@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using UnityFx.Purchasing.Validation;
 
 namespace ReceiptValidator
 {
@@ -22,7 +23,7 @@ namespace ReceiptValidator
 				}
 				else if (RadioPlatformAppStore.Checked)
 				{
-					var result = await UnityFx.Purchasing.Validation.PurhaseValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
+					var result = await PurhaseValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
 					var s = result.StatusText + Environment.NewLine + Environment.NewLine + result.RawResult;
 
 					TextResult.Text = s;
@@ -30,6 +31,13 @@ namespace ReceiptValidator
 				else if (RadioPlatformGooglePlay.Checked)
 				{
 					// TODO
+				}
+				else if (RadioPlatformAmazon.Checked)
+				{
+					var result = await PurhaseValidator.ValidateAmazonReceiptAsync(TextReceipt.Text, string.Empty);
+					var s = result.RawResult;
+
+					TextResult.Text = s;
 				}
 			}
 			catch (Exception ex)
@@ -40,7 +48,7 @@ namespace ReceiptValidator
 
 		private void ButtonTestReceipt_Click(object sender, EventArgs e)
 		{
-			TextReceipt.Text = UnityFx.Purchasing.Validation.PurhaseValidator.TestAppStoreReceipt;
+			TextReceipt.Text = PurhaseValidator.TestAppStoreReceipt;
 		}
 	}
 }
