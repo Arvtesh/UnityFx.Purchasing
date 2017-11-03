@@ -134,8 +134,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime OriginalPurchaseDate { get; internal set; }
 
 		/// <summary>
-		/// The expiration date for the subscription, expressed as the number of milliseconds since January 1, 1970, 00:00:00 GMT.
-		/// Json field name is <c>expires_date</c>.
+		/// The expiration date for the subscription. Json field name is <c>expires_date</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for auto-renewable subscription receipts. Use this value to identify the date
@@ -213,7 +212,7 @@ namespace UnityFx.Purchasing.Validation
 		/// <remarks>
 		/// This key is not present for receipts created in the test environment. Use this value to identify the version of the app that the customer bought.
 		/// </remarks>
-		public string ExternalVersionIdentifier { get; internal set; }
+		public string ExternalVersionId { get; internal set; }
 
 		/// <summary>
 		/// The primary key for identifying subscription purchases. Json field name is <c>web_order_line_item_id</c>.

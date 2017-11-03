@@ -29,12 +29,12 @@
 		private void InitializeComponent()
 		{
 			this.TextReceipt = new System.Windows.Forms.TextBox();
-			this.RadioPlatformAndroid = new System.Windows.Forms.RadioButton();
-			this.RadioPlatformIos = new System.Windows.Forms.RadioButton();
+			this.RadioPlatformGooglePlay = new System.Windows.Forms.RadioButton();
+			this.RadioPlatformAppStore = new System.Windows.Forms.RadioButton();
 			this.PlatformGroupBox = new System.Windows.Forms.GroupBox();
 			this.TextResult = new System.Windows.Forms.TextBox();
 			this.ButtonValidate = new System.Windows.Forms.Button();
-			this.RadioPlatformIosSandbox = new System.Windows.Forms.RadioButton();
+			this.ButtonTestReceipt = new System.Windows.Forms.Button();
 			this.PlatformGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -48,35 +48,34 @@
 			this.TextReceipt.Size = new System.Drawing.Size(622, 104);
 			this.TextReceipt.TabIndex = 0;
 			// 
-			// RadioPlatformAndroid
+			// RadioPlatformGooglePlay
 			// 
-			this.RadioPlatformAndroid.AutoSize = true;
-			this.RadioPlatformAndroid.Location = new System.Drawing.Point(6, 19);
-			this.RadioPlatformAndroid.Name = "RadioPlatformAndroid";
-			this.RadioPlatformAndroid.Size = new System.Drawing.Size(61, 17);
-			this.RadioPlatformAndroid.TabIndex = 1;
-			this.RadioPlatformAndroid.Text = "Android";
-			this.RadioPlatformAndroid.UseVisualStyleBackColor = true;
+			this.RadioPlatformGooglePlay.AutoSize = true;
+			this.RadioPlatformGooglePlay.Location = new System.Drawing.Point(6, 19);
+			this.RadioPlatformGooglePlay.Name = "RadioPlatformGooglePlay";
+			this.RadioPlatformGooglePlay.Size = new System.Drawing.Size(79, 17);
+			this.RadioPlatformGooglePlay.TabIndex = 1;
+			this.RadioPlatformGooglePlay.Text = "GooglePlay";
+			this.RadioPlatformGooglePlay.UseVisualStyleBackColor = true;
 			// 
-			// RadioPlatformIos
+			// RadioPlatformAppStore
 			// 
-			this.RadioPlatformIos.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.RadioPlatformAppStore.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.RadioPlatformIos.AutoSize = true;
-			this.RadioPlatformIos.Checked = true;
-			this.RadioPlatformIos.Location = new System.Drawing.Point(6, 42);
-			this.RadioPlatformIos.Name = "RadioPlatformIos";
-			this.RadioPlatformIos.Size = new System.Drawing.Size(42, 17);
-			this.RadioPlatformIos.TabIndex = 2;
-			this.RadioPlatformIos.TabStop = true;
-			this.RadioPlatformIos.Text = "iOS";
-			this.RadioPlatformIos.UseVisualStyleBackColor = true;
+			this.RadioPlatformAppStore.AutoSize = true;
+			this.RadioPlatformAppStore.Checked = true;
+			this.RadioPlatformAppStore.Location = new System.Drawing.Point(6, 42);
+			this.RadioPlatformAppStore.Name = "RadioPlatformAppStore";
+			this.RadioPlatformAppStore.Size = new System.Drawing.Size(69, 17);
+			this.RadioPlatformAppStore.TabIndex = 2;
+			this.RadioPlatformAppStore.TabStop = true;
+			this.RadioPlatformAppStore.Text = "AppStore";
+			this.RadioPlatformAppStore.UseVisualStyleBackColor = true;
 			// 
 			// PlatformGroupBox
 			// 
-			this.PlatformGroupBox.Controls.Add(this.RadioPlatformIosSandbox);
-			this.PlatformGroupBox.Controls.Add(this.RadioPlatformIos);
-			this.PlatformGroupBox.Controls.Add(this.RadioPlatformAndroid);
+			this.PlatformGroupBox.Controls.Add(this.RadioPlatformAppStore);
+			this.PlatformGroupBox.Controls.Add(this.RadioPlatformGooglePlay);
 			this.PlatformGroupBox.Location = new System.Drawing.Point(12, 12);
 			this.PlatformGroupBox.Name = "PlatformGroupBox";
 			this.PlatformGroupBox.Size = new System.Drawing.Size(119, 104);
@@ -106,21 +105,23 @@
 			this.ButtonValidate.UseVisualStyleBackColor = true;
 			this.ButtonValidate.Click += new System.EventHandler(this.ButtonValidate_Click);
 			// 
-			// RadioPlatformIosSandbox
+			// ButtonTestReceipt
 			// 
-			this.RadioPlatformIosSandbox.AutoSize = true;
-			this.RadioPlatformIosSandbox.Location = new System.Drawing.Point(6, 65);
-			this.RadioPlatformIosSandbox.Name = "RadioPlatformIosSandbox";
-			this.RadioPlatformIosSandbox.Size = new System.Drawing.Size(87, 17);
-			this.RadioPlatformIosSandbox.TabIndex = 3;
-			this.RadioPlatformIosSandbox.Text = "iOS Sandbox";
-			this.RadioPlatformIosSandbox.UseVisualStyleBackColor = true;
+			this.ButtonTestReceipt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.ButtonTestReceipt.Location = new System.Drawing.Point(12, 534);
+			this.ButtonTestReceipt.Name = "ButtonTestReceipt";
+			this.ButtonTestReceipt.Size = new System.Drawing.Size(145, 23);
+			this.ButtonTestReceipt.TabIndex = 8;
+			this.ButtonTestReceipt.Text = "Test AppStore Receipt";
+			this.ButtonTestReceipt.UseVisualStyleBackColor = true;
+			this.ButtonTestReceipt.Click += new System.EventHandler(this.ButtonTestReceipt_Click);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(771, 569);
+			this.Controls.Add(this.ButtonTestReceipt);
 			this.Controls.Add(this.ButtonValidate);
 			this.Controls.Add(this.TextResult);
 			this.Controls.Add(this.PlatformGroupBox);
@@ -137,12 +138,12 @@
 		#endregion
 
 		private System.Windows.Forms.TextBox TextReceipt;
-		private System.Windows.Forms.RadioButton RadioPlatformAndroid;
-		private System.Windows.Forms.RadioButton RadioPlatformIos;
+		private System.Windows.Forms.RadioButton RadioPlatformGooglePlay;
+		private System.Windows.Forms.RadioButton RadioPlatformAppStore;
 		private System.Windows.Forms.GroupBox PlatformGroupBox;
 		private System.Windows.Forms.TextBox TextResult;
 		private System.Windows.Forms.Button ButtonValidate;
-		private System.Windows.Forms.RadioButton RadioPlatformIosSandbox;
+		private System.Windows.Forms.Button ButtonTestReceipt;
 	}
 }
 

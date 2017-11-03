@@ -20,12 +20,14 @@ namespace ReceiptValidator
 				{
 					TextResult.Text = "*** Receipt text is empty";
 				}
-				else if (RadioPlatformIos.Checked)
+				else if (RadioPlatformAppStore.Checked)
 				{
 					var result = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
-					TextResult.Text = result.RawResult;
+					var s = result.StatusText + Environment.NewLine + Environment.NewLine + result.RawResult;
+
+					TextResult.Text = s;
 				}
-				else if (RadioPlatformAndroid.Checked)
+				else if (RadioPlatformGooglePlay.Checked)
 				{
 					// TODO
 				}
@@ -34,6 +36,11 @@ namespace ReceiptValidator
 			{
 				TextResult.Text = "*** Exception: " + ex.ToString();
 			}
+		}
+
+		private void ButtonTestReceipt_Click(object sender, EventArgs e)
+		{
+			TextReceipt.Text = UnityFx.Purchasing.Validation.ReceiptValidator.TestAppStoreReceipt;
 		}
 	}
 }

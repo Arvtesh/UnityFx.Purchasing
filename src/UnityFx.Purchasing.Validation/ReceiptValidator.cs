@@ -12,6 +12,11 @@ namespace UnityFx.Purchasing.Validation
 	public static class ReceiptValidator
 	{
 		/// <summary>
+		/// Returns test AppStore receipt. Read only.
+		/// </summary>
+		public static string TestAppStoreReceipt => AppStoreValidator.TestReceipt2;
+
+		/// <summary>
 		/// Validates purchase receipt with AppStore and returns the store.
 		/// </summary>
 		/// <param name="receipt">Native iOS store receipt returned by the purchase operation.</param>
