@@ -22,7 +22,7 @@ namespace ReceiptValidator
 				}
 				else if (RadioPlatformAppStore.Checked)
 				{
-					var result = await UnityFx.Purchasing.Validation.ReceiptValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
+					var result = await UnityFx.Purchasing.Validation.PurhaseValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
 					var s = result.StatusText + Environment.NewLine + Environment.NewLine + result.RawResult;
 
 					TextResult.Text = s;
@@ -40,7 +40,7 @@ namespace ReceiptValidator
 
 		private void ButtonTestReceipt_Click(object sender, EventArgs e)
 		{
-			TextReceipt.Text = UnityFx.Purchasing.Validation.ReceiptValidator.TestAppStoreReceipt;
+			TextReceipt.Text = UnityFx.Purchasing.Validation.PurhaseValidator.TestAppStoreReceipt;
 		}
 	}
 }

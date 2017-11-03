@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// Apple App Store validation helpers. 
 	/// </summary>
 	internal static class AppStoreValidator
 	{

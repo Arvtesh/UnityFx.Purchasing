@@ -9,12 +9,17 @@ namespace UnityFx.Purchasing.Validation
 	/// <summary>
 	/// 
 	/// </summary>
-	public static class ReceiptValidator
+	public static class PurhaseValidator
 	{
 		/// <summary>
 		/// Returns test AppStore receipt. Read only.
 		/// </summary>
 		public static string TestAppStoreReceipt => AppStoreValidator.TestReceipt2;
+
+		/// <summary>
+		/// Returns test Amazon Store receipt. Read only.
+		/// </summary>
+		public static string TestAmazonStoreReceipt => AppStoreValidator.TestReceipt2;
 
 		/// <summary>
 		/// Validates purchase receipt with AppStore and returns the store.
@@ -40,10 +45,10 @@ namespace UnityFx.Purchasing.Validation
 		/// <summary>
 		/// Validates purchase receipt with Amazon store and returns the store response string.
 		/// </summary>
-		/// <param name="receipt">Native Amazon store receipt returned by the purchase operation.</param>
-		public static Task<string> ValidateAmazonReceiptAsync(string receipt)
+		public static Task<AmazonStoreValidationResult> ValidateAmazonReceiptAsync(string receipt, string sharedSecret)
 		{
-			throw new NotImplementedException();
+			ThrowIfInvalidReceipt(receipt);
+			return AmazonStoreValidator.ValidatePurchaseAsync(receipt, sharedSecret ?? string.Empty);
 		}
 
 		private static void ThrowIfInvalidReceipt(string receipt)
