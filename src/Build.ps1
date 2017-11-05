@@ -3,6 +3,7 @@ $solutionPath = Join-Path $scriptPath "UnityFx.sln"
 $configuration = $args[0]
 $packagesPath = Join-Path $scriptPath "..\temp\BuildTools"
 $binPath = Join-Path $scriptPath "..\bin"
+$binPath46 = Join-Path $binPath "net46"
 $msbuildPath = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MsBuild.exe"
 $nugetPath = Join-Path $packagesPath "nuget.exe"
 $gitversionPath = Join-Path $packagesPath "gitversion.commandline\tools\gitversion.exe"
@@ -16,8 +17,8 @@ if (!(Test-Path $packagesPath)) {
 	New-Item $packagesPath -ItemType Directory
 }
 
-if (!(Test-Path $binPath)) {
-	New-Item $binPath -ItemType Directory
+if (!(Test-Path $binPath46)) {
+	New-Item $binPath46 -ItemType Directory
 }
 
 # download nuget.exe if not present
@@ -49,6 +50,8 @@ if ($LastExitCode -ne 0) {
 # publish build results to .\Build\Bin
 $filesToPublish =
 	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.dll"))),
-	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.xml")))
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.xml"))),
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing.Validation\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.Validation.dll"))),
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing.Validation\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.Validation.xml")))
 
-Copy-Item -Path $filesToPublish -Destination $binPath -Force
+Copy-Item -Path $filesToPublish -Destination $binPath46 -Force
