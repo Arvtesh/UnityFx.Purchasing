@@ -32,8 +32,10 @@ namespace UnityFx.Purchasing.Validation
 	/// </summary>
 	/// <seealso href="https://developer.amazon.com/docs/in-app-purchasing/iap-rvs-for-android-apps.html"/>
 	/// <seealso cref="AmazonStoreValidationResult"/>
-	public class AmazonStoreReceipt
+	public class AmazonStoreReceipt : IPurchaseReceipt
 	{
+		#region interface
+
 		/// <summary>
 		/// The SKU that you defined for this item in your app. Json field name is <c>productId</c>.
 		/// </summary>
@@ -98,5 +100,20 @@ namespace UnityFx.Purchasing.Validation
 		/// Json field name is <c>betaProduct</c>.
 		/// </summary>
 		public bool IsBetaProduct { get; internal set; }
+
+		#endregion
+
+		#region IPurchaseReceipt
+
+		/// <inheritdoc/>
+		public string TransactionId => ReceiptId;
+
+		/// <inheritdoc/>
+		public DateTime Timestamp => RenewalDate ?? PurchaseDate;
+
+		/// <inheritdoc/>
+		public DateTime Timestamp0 => PurchaseDate;
+
+		#endregion
 	}
 }

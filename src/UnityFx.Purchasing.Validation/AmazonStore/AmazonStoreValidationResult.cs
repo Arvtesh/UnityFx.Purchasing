@@ -2,6 +2,8 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace UnityFx.Purchasing.Validation
 {
@@ -9,12 +11,14 @@ namespace UnityFx.Purchasing.Validation
 	/// Amazon Store validation result.
 	/// </summary>
 	/// <seealso cref="AmazonStoreReceipt"/>
-	public class AmazonStoreValidationResult
+	public class AmazonStoreValidationResult : IPurchaseValidationResult
 	{
+		#region interface
+
 		/// <summary>
-		/// Returns raw Amazon Store response. Read only.
+		/// Returns the status code. Read only.
 		/// </summary>
-		public string RawResult { get; }
+		public int StatusCode { get; }
 
 		/// <summary>
 		/// The Amazon Store receipt (id any). Read only.
@@ -24,10 +28,57 @@ namespace UnityFx.Purchasing.Validation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AmazonStoreValidationResult"/> class.
 		/// </summary>
-		internal AmazonStoreValidationResult(string rawResponse, AmazonStoreReceipt receipt)
+		internal AmazonStoreValidationResult(int status, string rawResponse, AmazonStoreReceipt receipt)
 		{
+			StatusCode = status;
 			RawResult = rawResponse;
 			Receipt = receipt;
 		}
+
+		#endregion
+
+		#region IPurchaseValidationResult
+
+		/// <inheritdoc/>
+		public string RawResult { get; }
+
+		/// <inheritdoc/>
+		public string Status { get; internal set; }
+
+		/// <inheritdoc/>
+		public bool IsOK => StatusCode == 0;
+
+		/// <inheritdoc/>
+		public bool IsFailed => StatusCode != 0;
+
+		#endregion
+
+		#region IEnumerable
+
+		/// <inheritdoc/>
+		public IEnumerator<IPurchaseReceipt> GetEnumerator()
+		{
+			return GetEnumeratorInternal();
+		}
+
+		/// <inheritdoc/>
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumeratorInternal();
+		}
+
+		#endregion
+
+		#region implementation
+
+		private IEnumerator<IPurchaseReceipt> GetEnumeratorInternal()
+		{
+			if (Receipt != null)
+			{
+				yield return Receipt;
+			}
+		}
+
+		#endregion
 	}
 }

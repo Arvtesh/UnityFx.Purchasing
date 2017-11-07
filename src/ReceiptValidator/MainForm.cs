@@ -24,7 +24,7 @@ namespace ReceiptValidator
 				else if (RadioPlatformAppStore.Checked)
 				{
 					var result = await PurhaseValidator.ValidateAppStoreReceiptAsync(TextReceipt.Text);
-					var s = result.StatusText + Environment.NewLine + Environment.NewLine + result.RawResult;
+					var s = result.Status + Environment.NewLine + Environment.NewLine + result.RawResult;
 
 					TextResult.Text = s;
 				}

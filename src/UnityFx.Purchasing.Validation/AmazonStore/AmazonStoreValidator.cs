@@ -104,7 +104,7 @@ namespace UnityFx.Purchasing.Validation
 				receipt.IsTestTransaction = json[_testTransactionValueName];
 			}
 
-			return new AmazonStoreValidationResult(responseString, receipt);
+			return new AmazonStoreValidationResult(0, responseString, receipt);
 		}
 
 		internal async static Task<AmazonStoreValidationResult> ValidatePurchaseAsync(string receipt, string sharedSecret)

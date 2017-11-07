@@ -63,8 +63,10 @@ namespace UnityFx.Purchasing.Validation
 	/// </summary>
 	/// <seealso href="https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html"/>
 	/// <seealso cref="AppStoreReceipt"/>
-	public class AppStoreInAppReceipt
+	public class AppStoreInAppReceipt : IPurchaseReceipt
 	{
+		#region interface
+
 		/// <summary>
 		/// The number of items purchased. Json field name is <c>quantity</c>.
 		/// </summary>
@@ -252,5 +254,17 @@ namespace UnityFx.Purchasing.Validation
 		/// the existing price for active subscribers. You can use this value to track customer adoption of the new price and take appropriate action.
 		/// </remarks>
 		public bool? SubscriptionPriceConsentStatus { get; internal set; }
+
+		#endregion
+
+		#region IPurchaseReceipt
+
+		/// <inheritdoc/>
+		public DateTime Timestamp => PurchaseDate;
+
+		/// <inheritdoc/>
+		public DateTime Timestamp0 => OriginalPurchaseDate;
+
+		#endregion
 	}
 }

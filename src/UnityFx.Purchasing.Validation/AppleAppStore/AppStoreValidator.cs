@@ -140,8 +140,8 @@ namespace UnityFx.Purchasing.Validation
 				}
 			}
 
-			result.Status = status;
-			result.StatusText = GetStatusText(status);
+			result.StatusCode = status;
+			result.Status = GetStatusText(status);
 
 			return result;
 		}
@@ -184,15 +184,16 @@ namespace UnityFx.Purchasing.Validation
 
 				foreach (var receiptNode in json)
 				{
-					var receipt = new AppStoreInAppReceipt();
-
 					// required fields
-					receipt.Quantity = receiptNode[_quantityValueName];
-					receipt.ProductId = receiptNode[_productIdValueName];
-					receipt.TransactionId = receiptNode[_transactionIdValueName];
-					receipt.OriginalTransactionId = receiptNode[_originalTransactionIdValueName];
-					receipt.PurchaseDate = ParseDateTimeRfc3339(receiptNode[_purchaseDateValueName]);
-					receipt.OriginalPurchaseDate = ParseDateTimeRfc3339(receiptNode[_originalPurchaseDateValueName]);
+					var receipt = new AppStoreInAppReceipt
+					{
+						Quantity = receiptNode[_quantityValueName],
+						ProductId = receiptNode[_productIdValueName],
+						TransactionId = receiptNode[_transactionIdValueName],
+						OriginalTransactionId = receiptNode[_originalTransactionIdValueName],
+						PurchaseDate = ParseDateTimeRfc3339(receiptNode[_purchaseDateValueName]),
+						OriginalPurchaseDate = ParseDateTimeRfc3339(receiptNode[_originalPurchaseDateValueName])
+					};
 
 					// optional fields
 					if (receiptNode.ContainsKey(_subscriptionExpirationDateValueName))

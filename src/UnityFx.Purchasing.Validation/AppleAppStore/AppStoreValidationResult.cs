@@ -2,28 +2,22 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public class AppStoreValidationResult
+	public class AppStoreValidationResult : IPurchaseValidationResult
 	{
-		/// <summary>
-		/// Returns raw App Store response. Read only.
-		/// </summary>
-		public string RawResult { get; }
+		#region interface
 
 		/// <summary>
 		/// Returns App Store response status code. <c>0</c> means OK. Read only.
 		/// </summary>
-		public int Status { get; internal set; }
-
-		/// <summary>
-		/// Returns App Store response status description. Read only.
-		/// </summary>
-		public string StatusText { get; internal set; }
+		public int StatusCode { get; internal set; }
 
 		/// <summary>
 		/// Returns the store environment identifier. Read only.
@@ -36,16 +30,60 @@ namespace UnityFx.Purchasing.Validation
 		public AppStoreReceipt Receipt { get; internal set; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the validation succeeded; <c>false</c> otherwise. Read only.
-		/// </summary>
-		public bool IsOK => Status == 0;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="AppStoreValidationResult"/> class.
 		/// </summary>
 		internal AppStoreValidationResult(string rawResponse)
 		{
 			RawResult = rawResponse;
 		}
+
+		#endregion
+
+		#region IPurchaseValidationResult
+
+		/// <inheritdoc/>
+		public string RawResult { get; }
+
+		/// <inheritdoc/>
+		public string Status { get; internal set; }
+
+		/// <inheritdoc/>
+		public bool IsOK => StatusCode == 0;
+
+		/// <inheritdoc/>
+		public bool IsFailed => StatusCode != 0;
+
+		#endregion
+
+		#region IEnumerable
+
+		/// <inheritdoc/>
+		public IEnumerator<IPurchaseReceipt> GetEnumerator()
+		{
+			return GetEnumeratorInternal();
+		}
+
+		/// <inheritdoc/>
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumeratorInternal();
+		}
+
+		#endregion
+
+		#region implementation
+
+		private IEnumerator<IPurchaseReceipt> GetEnumeratorInternal()
+		{
+			if (Receipt != null && Receipt.InApp != null)
+			{
+				foreach (var receipt in Receipt.InApp)
+				{
+					yield return receipt;
+				}
+			}
+		}
+
+		#endregion
 	}
 }

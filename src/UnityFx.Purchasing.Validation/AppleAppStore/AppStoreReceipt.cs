@@ -6,7 +6,7 @@ using System;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// App Store receipt.
 	/// </summary>
 	/// <seealso href="https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html"/>
 	public class AppStoreReceipt
