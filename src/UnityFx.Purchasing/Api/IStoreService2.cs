@@ -9,106 +9,9 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Enumerates possible initialization errors.
-	/// </summary>
-	public enum StoreInitializeError
-	{
-		/// <summary>
-		/// A catch-all for unrecognized initialize problems.
-		/// </summary>
-		Unknown,
-
-		/// <summary>
-		/// The manager was disposed while an initialize operation was pending.
-		/// </summary>
-		StoreDisposed,
-
-		/// <summary>
-		/// In-App Purchases disabled in device settings (<see cref="InitializationFailureReason.PurchasingUnavailable"/>).
-		/// </summary>
-		PurchasingUnavailable,
-
-		/// <summary>
-		/// No products available for purchase (<see cref="InitializationFailureReason.NoProductsAvailable"/>).
-		/// </summary>
-		NoProductsAvailable,
-
-		/// <summary>
-		/// The store reported the app as unknown (<see cref="InitializationFailureReason.AppNotKnown"/>).
-		/// </summary>
-		AppNotKnown
-	}
-
-	/// <summary>
-	/// Enumerates possible purchase errors.
-	/// </summary>
-	public enum StorePurchaseError
-	{
-		/// <summary>
-		/// A catch-all for unrecognized purchase problems (<see cref="PurchaseFailureReason.Unknown"/>).
-		/// </summary>
-		Unknown,
-
-		/// <summary>
-		/// The manager was disposed while a purchase operation was pending.
-		/// </summary>
-		StoreDisposed,
-
-		/// <summary>
-		/// The system purchasing feature is unavailable (<see cref="PurchaseFailureReason.PurchasingUnavailable"/>).
-		/// </summary>
-		PurchasingUnavailable,
-
-		/// <summary>
-		/// A purchase was already in progress when a new purchase was requested (<see cref="PurchaseFailureReason.ExistingPurchasePending"/>).
-		/// </summary>
-		ExistingPurchasePending,
-
-		/// <summary>
-		/// The product is not available to purchase on the store (<see cref="PurchaseFailureReason.ProductUnavailable"/>).
-		/// </summary>
-		ProductUnavailable,
-
-		/// <summary>
-		/// Signature validation of the purchase's receipt failed (<see cref="PurchaseFailureReason.SignatureInvalid"/>).
-		/// </summary>
-		SignatureInvalid,
-
-		/// <summary>
-		/// The user opted to cancel rather than proceed with the purchase (<see cref="PurchaseFailureReason.UserCancelled"/>).
-		/// </summary>
-		UserCanceled,
-
-		/// <summary>
-		/// There was a problem with the payment (<see cref="PurchaseFailureReason.PaymentDeclined"/>).
-		/// </summary>
-		PaymentDeclined,
-
-		/// <summary>
-		/// A duplicate transaction error when the transaction has already been completed successfully (<see cref="PurchaseFailureReason.DuplicateTransaction"/>).
-		/// </summary>
-		DuplicateTransaction,
-
-		/// <summary>
-		/// Purchase receipt is null or an empty string.
-		/// </summary>
-		ReceiptNullOrEmpty,
-
-		/// <summary>
-		/// Store validation of purchase receipt failed.
-		/// </summary>
-		ReceiptValidationFailed,
-
-		/// <summary>
-		/// Store validation of purchase receipt not available.
-		/// </summary>
-		ReceiptValidationNotAvailable
-	}
-
-	/// <summary>
 	/// A generic platform store.
 	/// </summary>
-	public interface IStoreService : IDisposable
+	public interface IStoreService2 : IDisposable
 	{
 		/// <summary>
 		/// Triggered when the store has been initialized.
@@ -153,7 +56,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns a collection of store items. Read only.
 		/// </summary>
-		IStoreProductCollection Products { get; }
+		IStoreProductCollection2 Products { get; }
 
 		/// <summary>
 		/// Returns Unity3d store controller. Read only.

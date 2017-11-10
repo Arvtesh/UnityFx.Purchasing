@@ -12,11 +12,11 @@ namespace UnityFx.Purchasing
 	public static class Store
 	{
 		/// <summary>
-		/// Creates a new <see cref="IStoreService"/> instance.
+		/// Creates a new <see cref="IStoreService2"/> instance.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="purchasingModule"/> or <paramref name="storeDelegate"/> is <c>null</c>.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if an instance of <see cref="IStoreService"/> already exists.</exception>
-		public static IStoreService CreateStore(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
+		/// <exception cref="InvalidOperationException">Thrown if an instance of <see cref="IStoreService2"/> already exists.</exception>
+		public static IStoreService2 CreateStore(IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
 		{
 			if (purchasingModule == null)
 			{
@@ -28,7 +28,7 @@ namespace UnityFx.Purchasing
 				throw new ArgumentNullException(nameof(storeDelegate));
 			}
 
-			return new StoreService(string.Empty, purchasingModule, storeDelegate);
+			return new StoreService2(string.Empty, purchasingModule, storeDelegate);
 		}
 	}
 }

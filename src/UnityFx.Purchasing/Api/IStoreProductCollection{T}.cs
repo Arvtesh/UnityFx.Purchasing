@@ -3,20 +3,24 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A read-only collection of <see cref="IStoreService"/> products.
+	/// A read-only collection of <see cref="IStoreService{TProduct}"/> products.
 	/// </summary>
-	public interface IStoreProductCollection : IReadOnlyCollection<IStoreProduct>
+	public interface IStoreProductCollection<TProduct> : IReadOnlyCollection<TProduct> where TProduct : IStoreProduct
 	{
 		/// <summary>
 		/// Returns product for the specified identifier. Read only.
 		/// </summary>
 		/// <param name="productId">The store product identifier.</param>
-		IStoreProduct this[string productId] { get; }
+		TProduct this[string productId] { get; set; }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		bool TryGetValue(string productId, out TProduct product);
 
 		/// <summary>
 		/// 

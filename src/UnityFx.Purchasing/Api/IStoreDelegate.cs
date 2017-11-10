@@ -8,9 +8,9 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A delegate object for <see cref="IStoreService"/>.
+	/// A delegate object for <see cref="IStoreService2"/>.
 	/// </summary>
-	/// <seealso cref="IStoreService"/>
+	/// <seealso cref="IStoreService2"/>
 	public interface IStoreDelegate
 	{
 		/// <summary>
