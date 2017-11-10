@@ -7,7 +7,7 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event argument for <see cref="IStoreService2.StoreInitializationFailed"/>.
+	/// Event argument for <see cref="IStoreService{TProduct}.StoreInitializationFailed"/>.
 	/// </summary>
 	public class PurchaseInitializationFailed : EventArgs
 	{

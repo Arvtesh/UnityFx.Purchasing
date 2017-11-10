@@ -29,7 +29,6 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase validation result.
 	/// </summary>
-	/// <seealso cref="IStoreDelegate"/>
 	public class PurchaseValidationResult
 	{
 		/// <summary>

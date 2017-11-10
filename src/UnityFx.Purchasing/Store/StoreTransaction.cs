@@ -9,7 +9,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A store transaction information.
 	/// </summary>
-	/// <seealso cref="IStoreService2"/>
+	/// <seealso cref="IStoreService{TProduct}"/>
 	public class StoreTransaction
 	{
 		/// <summary>
