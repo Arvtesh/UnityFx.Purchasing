@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 		/// Returns product for the specified identifier. Read only.
 		/// </summary>
 		/// <param name="productId">The store product identifier.</param>
-		TProduct this[string productId] { get; set; }
+		TProduct this[string productId] { get; }
 
 		/// <summary>
 		/// 
