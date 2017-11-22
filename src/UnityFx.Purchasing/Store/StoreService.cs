@@ -38,9 +38,25 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal const int TraceEventInitialize = 1;
-		internal const int TraceEventFetch = 2;
-		internal const int TraceEventPurchase = 3;
+		/// <summary>
+		/// Identifier for initialize-related trace events.
+		/// </summary>
+		protected const int TraceEventInitialize = 1;
+
+		/// <summary>
+		/// Identifier for fetch-related trace events.
+		/// </summary>
+		protected const int TraceEventFetch = 2;
+
+		/// <summary>
+		/// Identifier for purchase-related trace events.
+		/// </summary>
+		protected const int TraceEventPurchase = 3;
+
+		/// <summary>
+		/// Identifier for user trace events.
+		/// </summary>
+		protected const int TraceEventMax = 4;
 
 		/// <summary>
 		/// Returns the <see cref="System.Diagnostics.TraceSource"/> instance used by the service. Read only.
@@ -58,7 +74,7 @@ namespace UnityFx.Purchasing
 		protected StoreService(string name, IPurchasingModule purchasingModule)
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
-			_console = new TraceSource(_serviceName, SourceLevels.All);
+			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
 			_storeListener = new StoreListener(this);
 			_products = new StoreProductCollection();
@@ -250,7 +266,6 @@ namespace UnityFx.Purchasing
 						await _initializeOpCs.Task;
 
 						// 4) Trigger user-defined events.
-						OnInitialized();
 						InvokeInitializeCompleted(TraceEventInitialize);
 					}
 					catch (StoreInitializeException e)
