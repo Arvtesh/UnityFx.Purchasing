@@ -80,6 +80,46 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
+		/// Called when the store initialization has succeeded.
+		/// </summary>
+		protected virtual void OnInitialized()
+		{
+			StoreInitialized?.Invoke(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Called when the store initialization has failed.
+		/// </summary>
+		protected virtual void OnInitializeFailed(StoreInitializeError reason, Exception e)
+		{
+			StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason, e));
+		}
+
+		/// <summary>
+		/// Called when the store initialization has failed.
+		/// </summary>
+		protected virtual void OnPurchaseInitiated(string productId, bool isRestored)
+		{
+			PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId, isRestored));
+		}
+
+		/// <summary>
+		/// Called when the store purchase operation succeded.
+		/// </summary>
+		protected virtual void OnPurchaseCompleted(string productId, PurchaseResult purchaseResult)
+		{
+			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult));
+		}
+
+		/// <summary>
+		/// Called when the store purchase operation has failed.
+		/// </summary>
+		protected virtual void OnPurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception e)
+		{
+			PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(productId, purchaseResult, reason, e));
+		}
+
+		/// <summary>
 		/// Releases unmanaged resources used by the service.
 		/// </summary>
 		/// <param name="disposing">Should be <c>true</c> if the method is called from <see cref="Dispose()"/>; <c>false</c> otherwise.</param>
@@ -210,6 +250,7 @@ namespace UnityFx.Purchasing
 						await _initializeOpCs.Task;
 
 						// 4) Trigger user-defined events.
+						OnInitialized();
 						InvokeInitializeCompleted(TraceEventInitialize);
 					}
 					catch (StoreInitializeException e)
@@ -913,7 +954,7 @@ namespace UnityFx.Purchasing
 		{
 			try
 			{
-				StoreInitialized?.Invoke(this, EventArgs.Empty);
+				OnInitialized();
 			}
 			catch (Exception e)
 			{
@@ -931,7 +972,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason, ex));
+				OnInitializeFailed(reason, ex);
 			}
 			catch (Exception e)
 			{
@@ -949,7 +990,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId, restored));
+				OnPurchaseInitiated(productId, restored);
 			}
 			catch (Exception e)
 			{
@@ -975,7 +1016,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult));
+				OnPurchaseCompleted(productId, purchaseResult);
 			}
 			catch (Exception e)
 			{
@@ -983,15 +1024,15 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private void InvokePurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError failReason, Exception ex)
+		private void InvokePurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {failReason}");
+			_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {reason}");
 
 			if (_observer != null)
 			{
 				try
 				{
-					_observer.OnNext(new PurchaseInfo(productId, purchaseResult, failReason, ex));
+					_observer.OnNext(new PurchaseInfo(productId, purchaseResult, reason, ex));
 				}
 				catch (Exception e)
 				{
@@ -1001,7 +1042,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(productId, purchaseResult, failReason, ex));
+				OnPurchaseFailed(productId, purchaseResult, reason, ex);
 			}
 			catch (Exception e)
 			{
