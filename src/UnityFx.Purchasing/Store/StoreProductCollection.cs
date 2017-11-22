@@ -8,19 +8,19 @@ using System.Collections.Generic;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Implementation of <see cref="IStoreProductCollection{TProduct}"/>.
+	/// Implementation of <see cref="IStoreProductCollection"/>.
 	/// </summary>
-	internal class StoreProductCollection<TProduct> : IStoreProductCollection<TProduct> where TProduct : class, IStoreProduct
+	internal class StoreProductCollection : IStoreProductCollection
 	{
 		#region data
 
-		private Dictionary<string, TProduct> _products = new Dictionary<string, TProduct>();
+		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
 
 		#endregion
 
 		#region interface
 
-		public void Add(string productId, TProduct product) => _products.Add(productId, product);
+		public void Add(string productId, IStoreProduct product) => _products.Add(productId, product);
 
 		public bool Remove(string productId) => _products.Remove(productId);
 
@@ -30,9 +30,9 @@ namespace UnityFx.Purchasing
 
 		#region IStoreProductCollection
 
-		public TProduct this[string productId] { get => _products[productId]; set => _products[productId] = value; }
+		public IStoreProduct this[string productId] { get => _products[productId]; set => _products[productId] = value; }
 
-		public bool TryGetValue(string productId, out TProduct product) => _products.TryGetValue(productId, out product);
+		public bool TryGetValue(string productId, out IStoreProduct product) => _products.TryGetValue(productId, out product);
 
 		public bool ContainsKey(string productId) => _products.ContainsKey(productId);
 
@@ -46,7 +46,7 @@ namespace UnityFx.Purchasing
 
 		#region IEnumerable
 
-		public IEnumerator<TProduct> GetEnumerator() => _products.Values.GetEnumerator();
+		public IEnumerator<IStoreProduct> GetEnumerator() => _products.Values.GetEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => _products.Values.GetEnumerator();
 

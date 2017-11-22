@@ -108,7 +108,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A generic platform store.
 	/// </summary>
-	public interface IStoreService<TProduct> : IDisposable where TProduct : IStoreProduct
+	public interface IStoreService : IDisposable
 	{
 		/// <summary>
 		/// Triggered when the store has been initialized.
@@ -141,9 +141,14 @@ namespace UnityFx.Purchasing
 		IObservable<PurchaseInfo> Purchases { get; }
 
 		/// <summary>
-		/// Returns a collection of store items. Read only.
+		/// Returns store products list. Read only.
 		/// </summary>
-		IStoreProductCollection<TProduct> Products { get; }
+		IStoreProductCollection Products { get; }
+
+		/// <summary>
+		/// Returns the service settings. Read only.
+		/// </summary>
+		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
 		/// Returns Unity3d store controller. Read only.

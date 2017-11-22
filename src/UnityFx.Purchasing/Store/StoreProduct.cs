@@ -10,11 +10,14 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Default implementation of <see cref="IStoreProduct"/>.
 	/// </summary>
-	internal class DefaultProduct : IStoreProduct
+	public class StoreProduct : IStoreProduct
 	{
 		#region interface
 
-		public DefaultProduct(ProductDefinition productDefinition)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreProduct"/> class.
+		/// </summary>
+		public StoreProduct(ProductDefinition productDefinition)
 		{
 			Definition = productDefinition;
 		}
@@ -23,8 +26,13 @@ namespace UnityFx.Purchasing
 
 		#region IStoreProduct
 
+		/// <inheritdoc/>
 		public string Id => Definition.id;
+
+		/// <inheritdoc/>
 		public ProductDefinition Definition { get; }
+
+		/// <inheritdoc/>
 		public ProductMetadata Metadata { get; set; }
 
 		#endregion

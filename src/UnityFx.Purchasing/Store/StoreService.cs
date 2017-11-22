@@ -15,21 +15,17 @@ namespace UnityFx.Purchasing
 	using Debug = System.Diagnostics.Debug;
 
 	/// <summary>
-	/// Implementation of <see cref="IStoreService{TProduct}"/>.
+	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	public abstract class StoreService<TProduct> : IStoreService<TProduct> where TProduct : class, IStoreProduct
+	public abstract class StoreService : IStoreService, IStoreServiceSettings
 	{
 		#region data
-
-		private const int _traceEventInitialize = 1;
-		private const int _traceEventFetch = 2;
-		private const int _traceEventPurchase = 3;
 
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
 		private readonly IPurchasingModule _purchasingModule;
 
-		private StoreProductCollection<TProduct> _products;
+		private StoreProductCollection _products;
 		private StoreListener _storeListener;
 		private StoreObservable _observer;
 		private StoreTransactionProcessor _transaction;
@@ -42,10 +38,14 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
+		internal const int TraceEventInitialize = 1;
+		internal const int TraceEventFetch = 2;
+		internal const int TraceEventPurchase = 3;
+
 		/// <summary>
-		/// Returns the <see cref="TraceSource"/> instance used by the service. Read only.
+		/// Returns the <see cref="System.Diagnostics.TraceSource"/> instance used by the service. Read only.
 		/// </summary>
-		protected TraceSource Console => _console;
+		protected TraceSource TraceSource => _console;
 
 		/// <summary>
 		/// Returns <c>true</c> if the service is disposed; <c>false</c> otherwise. Read only.
@@ -53,7 +53,7 @@ namespace UnityFx.Purchasing
 		protected bool IsDisposed => _storeListener != null;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreService{TProduct}"/> class.
+		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		protected StoreService(string name, IPurchasingModule purchasingModule)
 		{
@@ -61,20 +61,20 @@ namespace UnityFx.Purchasing
 			_console = new TraceSource(_serviceName, SourceLevels.All);
 			_purchasingModule = purchasingModule;
 			_storeListener = new StoreListener(this);
-			_products = new StoreProductCollection<TProduct>();
+			_products = new StoreProductCollection();
 		}
 
 		/// <summary>
 		/// Requests the store configuration.
 		/// </summary>
-		protected abstract Task<StoreConfig<TProduct>> GetStoreConfigAsync();
+		protected abstract Task<StoreConfig> GetStoreConfigAsync();
 
 		/// <summary>
 		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed (default behaviour).
 		/// </summary>
 		/// <param name="product">Reference to a product being purchased.</param>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
-		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(TProduct product, StoreTransaction transactionInfo)
+		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(IStoreProduct product, StoreTransaction transactionInfo)
 		{
 			return Task.FromResult<PurchaseValidationResult>(null);
 		}
@@ -91,13 +91,13 @@ namespace UnityFx.Purchasing
 
 				if (_initializeOpCs != null)
 				{
-					InvokeInitializeFailed(_traceEventInitialize, StoreInitializeError.StoreDisposed, null);
+					InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.StoreDisposed, null);
 					_initializeOpCs = null;
 				}
 
 				if (_fetchOpCs != null)
 				{
-					InvokeInitializeFailed(_traceEventFetch, StoreInitializeError.StoreDisposed, null);
+					InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.StoreDisposed, null);
 					_fetchOpCs = null;
 				}
 
@@ -159,7 +159,10 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreProductCollection<TProduct> Products => _products;
+		public IStoreServiceSettings Settings => this;
+
+		/// <inheritdoc/>
+		public IStoreProductCollection Products => _products;
 
 		/// <inheritdoc/>
 		public IStoreController Controller => _storeController;
@@ -184,7 +187,7 @@ namespace UnityFx.Purchasing
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
-					_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
+					_console.TraceEvent(TraceEventType.Start, TraceEventInitialize, "Initialize");
 
 					try
 					{
@@ -207,17 +210,17 @@ namespace UnityFx.Purchasing
 						await _initializeOpCs.Task;
 
 						// 4) Trigger user-defined events.
-						InvokeInitializeCompleted(_traceEventInitialize);
+						InvokeInitializeCompleted(TraceEventInitialize);
 					}
 					catch (StoreInitializeException e)
 					{
-						InvokeInitializeFailed(_traceEventInitialize, GetInitializeError(e.Reason), e);
+						InvokeInitializeFailed(TraceEventInitialize, GetInitializeError(e.Reason), e);
 						throw;
 					}
 					catch (Exception e)
 					{
-						_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
-						InvokeInitializeFailed(_traceEventInitialize, StoreInitializeError.Unknown, e);
+						_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
+						InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.Unknown, e);
 						throw;
 					}
 					finally
@@ -243,7 +246,7 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventFetch, "Fetch");
+				_console.TraceEvent(TraceEventType.Start, TraceEventFetch, "Fetch");
 
 				try
 				{
@@ -275,17 +278,17 @@ namespace UnityFx.Purchasing
 					await _fetchOpCs.Task;
 
 					// 4) Trigger user-defined events.
-					InvokeInitializeCompleted(_traceEventFetch);
+					InvokeInitializeCompleted(TraceEventFetch);
 				}
 				catch (StoreInitializeException e)
 				{
-					InvokeInitializeFailed(_traceEventFetch, GetInitializeError(e.Reason), e);
+					InvokeInitializeFailed(TraceEventFetch, GetInitializeError(e.Reason), e);
 					throw;
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, _traceEventFetch, e);
-					InvokeInitializeFailed(_traceEventFetch, StoreInitializeError.Unknown, e);
+					_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+					InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.Unknown, e);
 					throw;
 				}
 				finally
@@ -342,12 +345,12 @@ namespace UnityFx.Purchasing
 				}
 				catch (StoreInitializeException e)
 				{
-					_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {e.Message}");
+					_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {e.Message}");
 					throw;
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
 					InvokePurchaseFailed(productId, new PurchaseResult(transaction.Product), StorePurchaseError.Unknown, e);
 					throw;
 				}
@@ -357,6 +360,16 @@ namespace UnityFx.Purchasing
 				}
 			}
 		}
+
+		#endregion
+
+		#region IStoreServiceSettings
+
+		/// <inheritdoc/>
+		public SourceSwitch TraceSwitch { get => _console.Switch; set => _console.Switch = value; }
+
+		/// <inheritdoc/>
+		public TraceListenerCollection TraceListeners => _console.Listeners;
 
 		#endregion
 
@@ -370,9 +383,9 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		private sealed class StoreListener : IStoreListener
 		{
-			private StoreService<TProduct> _parentStore;
+			private StoreService _parentStore;
 
-			public StoreListener(StoreService<TProduct> service)
+			public StoreListener(StoreService service)
 			{
 				_parentStore = service;
 			}
@@ -420,7 +433,7 @@ namespace UnityFx.Purchasing
 
 		private void OnInitialized(IStoreController controller, IExtensionProvider extensions)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitialized");
+			_console.TraceEvent(TraceEventType.Verbose, TraceEventInitialize, "OnInitialized");
 
 			try
 			{
@@ -440,14 +453,14 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
 				_initializeOpCs.SetException(e);
 			}
 		}
 
 		private void OnInitializeFailed(InitializationFailureReason error)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventInitialize, "OnInitializeFailed: " + error);
+			_console.TraceEvent(TraceEventType.Verbose, TraceEventInitialize, "OnInitializeFailed: " + error);
 
 			try
 			{
@@ -455,7 +468,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
+				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
 			}
 		}
 
@@ -495,7 +508,7 @@ namespace UnityFx.Purchasing
 				return;
 			}
 
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventFetch, "OnFetch");
+			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetch");
 
 			try
 			{
@@ -511,7 +524,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventFetch, e);
+				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
 				_fetchOpCs.SetException(e);
 			}
 		}
@@ -524,7 +537,7 @@ namespace UnityFx.Purchasing
 				return;
 			}
 
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventFetch, "OnFetchFailed: " + error);
+			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetchFailed: " + error);
 
 			try
 			{
@@ -532,7 +545,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventFetch, e);
+				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
 			}
 		}
 
@@ -562,12 +575,12 @@ namespace UnityFx.Purchasing
 		{
 			#region data
 
-			private readonly StoreService<TProduct> _storeService;
+			private readonly StoreService _storeService;
 			private readonly TraceSource _console;
 			private readonly string _productId;
 			private readonly bool _restored;
 
-			private TProduct _product;
+			private IStoreProduct _product;
 			private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
 			private bool _disposed;
 			private bool _success;
@@ -578,25 +591,25 @@ namespace UnityFx.Purchasing
 
 			public string ProductId => _productId;
 
-			public TProduct Product => _product;
+			public IStoreProduct Product => _product;
 
-			public StoreTransactionProcessor(StoreService<TProduct> storeService, string productId, bool restored)
+			public StoreTransactionProcessor(StoreService storeService, string productId, bool restored)
 			{
 				Debug.Assert(storeService != null);
 				Debug.Assert(productId != null);
 
 				_storeService = storeService;
-				_console = storeService.Console;
+				_console = storeService.TraceSource;
 				_productId = productId;
 				_restored = restored;
 
 				if (restored)
 				{
-					_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, GetEventName(_traceEventPurchase) + " (auto-restored): " + productId);
+					_console.TraceEvent(TraceEventType.Start, TraceEventPurchase, GetEventName(TraceEventPurchase) + " (auto-restored): " + productId);
 				}
 				else
 				{
-					_console.TraceEvent(TraceEventType.Start, _traceEventPurchase, GetEventName(_traceEventPurchase) + ": " + productId);
+					_console.TraceEvent(TraceEventType.Start, TraceEventPurchase, GetEventName(TraceEventPurchase) + ": " + productId);
 				}
 
 				storeService.InvokePurchaseInitiated(productId, restored);
@@ -614,7 +627,7 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-					_console.TraceEvent(TraceEventType.Warning, _traceEventPurchase, "No product found for id: " + _productId);
+					_console.TraceEvent(TraceEventType.Warning, TraceEventPurchase, "No product found for id: " + _productId);
 				}
 
 				return null;
@@ -628,7 +641,7 @@ namespace UnityFx.Purchasing
 				Debug.Assert(_purchaseOpCs == null);
 				Debug.Assert(_storeService.Controller != null);
 
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+				_console.TraceEvent(TraceEventType.Verbose, TraceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 				_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
 				_storeService.Controller.InitiatePurchase(product);
 
@@ -646,8 +659,8 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, "ProcessPurchase: " + productId);
-					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
+					_console.TraceEvent(TraceEventType.Verbose, TraceEventPurchase, "ProcessPurchase: " + productId);
+					_console.TraceEvent(TraceEventType.Verbose, TraceEventPurchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
 					// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
 					// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
@@ -678,7 +691,7 @@ namespace UnityFx.Purchasing
 			{
 				Debug.Assert(!_disposed);
 
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"OnPurchaseFailed: {_productId}, reason={failReason}");
+				_console.TraceEvent(TraceEventType.Verbose, TraceEventPurchase, $"OnPurchaseFailed: {_productId}, reason={failReason}");
 				SetPurchaseFailed(new StoreTransaction(product, _restored), null, GetPurchaseError(failReason), null);
 			}
 
@@ -696,11 +709,11 @@ namespace UnityFx.Purchasing
 
 					if (_success)
 					{
-						_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, GetEventName(_traceEventPurchase) + " completed: " + _productId);
+						_console.TraceEvent(TraceEventType.Stop, TraceEventPurchase, GetEventName(TraceEventPurchase) + " completed: " + _productId);
 					}
 					else
 					{
-						_console.TraceEvent(TraceEventType.Stop, _traceEventPurchase, GetEventName(_traceEventPurchase) + " failed: " + _productId);
+						_console.TraceEvent(TraceEventType.Stop, TraceEventPurchase, GetEventName(TraceEventPurchase) + " failed: " + _productId);
 					}
 				}
 			}
@@ -716,7 +729,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
+					_console.TraceEvent(TraceEventType.Verbose, TraceEventPurchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
 
 					var validationResult = await _storeService.ValidatePurchaseAsync(_product, transactionInfo);
 
@@ -766,7 +779,7 @@ namespace UnityFx.Purchasing
 
 			private void ConfirmPendingPurchase(Product product)
 			{
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
+				_console.TraceEvent(TraceEventType.Verbose, TraceEventPurchase, "ConfirmPendingPurchase: " + product.definition.id);
 				_storeService.Controller.ConfirmPendingPurchase(product);
 			}
 
@@ -883,13 +896,13 @@ namespace UnityFx.Purchasing
 		{
 			switch (eventId)
 			{
-				case _traceEventInitialize:
+				case TraceEventInitialize:
 					return "Initialize";
 
-				case _traceEventFetch:
+				case TraceEventFetch:
 					return "Fetch";
 
-				case _traceEventPurchase:
+				case TraceEventPurchase:
 					return "Purchase";
 			}
 
@@ -940,7 +953,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
 			}
 		}
 
@@ -956,7 +969,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
 				}
 			}
 
@@ -966,13 +979,13 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
 			}
 		}
 
 		private void InvokePurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError failReason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {failReason}");
+			_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {failReason}");
 
 			if (_observer != null)
 			{
@@ -982,7 +995,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
 				}
 			}
 
@@ -992,7 +1005,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
 			}
 		}
 
