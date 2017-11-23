@@ -48,22 +48,6 @@ namespace UnityFx.Purchasing
 				}
 			}
 
-			public void OnFetch()
-			{
-				if (!_parentStore.IsDisposed)
-				{
-					_parentStore.OnFetch();
-				}
-			}
-
-			public void OnFetchFailed(InitializationFailureReason error)
-			{
-				if (!_parentStore.IsDisposed)
-				{
-					_parentStore.OnInitializeFailed(error);
-				}
-			}
-
 			public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
 			{
 				if (!_parentStore.IsDisposed)
@@ -122,37 +106,6 @@ namespace UnityFx.Purchasing
 			}
 
 			transaction.PurchaseFailed(product, failReason);
-		}
-
-		private void OnFetch()
-		{
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetch");
-
-			try
-			{
-				_fetchOpCs.SetResult(null);
-
-				InvokeInitializeCompleted(_storeController.products, TraceEventFetch);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
-				_fetchOpCs.SetException(e);
-			}
-		}
-
-		private void OnFetchFailed(InitializationFailureReason error)
-		{
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetchFailed: " + error);
-
-			try
-			{
-				_fetchOpCs.SetException(new StoreInitializeException(error));
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
-			}
 		}
 
 		#endregion

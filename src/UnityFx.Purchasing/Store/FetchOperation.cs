@@ -17,16 +17,15 @@ namespace UnityFx.Purchasing
 	/// The class stored all transaction-related data. The transaction begins when the class instance is created
 	/// and ends on <see cref="Dispose"/> call.
 	/// </remarks>
-	internal class InitializeOperation : IDisposable
+	internal class FetchOperation : IDisposable
 	{
 		#region data
 
-		private const int _traceEventId = (int)StoreService.TraceEventId.Initialize;
+		private const int _traceEventId = (int)StoreService.TraceEventId.Fetch;
 
 		private readonly StoreService _storeService;
 		private readonly TraceSource _console;
-		private readonly IPurchasingModule _purchasingModule;
-		private readonly IStoreListener _storeListener;
+		private readonly IStoreController _storeController;
 
 		private TaskCompletionSource<object> _fetchOpCs;
 		private bool _disposed;
@@ -38,65 +37,26 @@ namespace UnityFx.Purchasing
 
 		public Task Task => _fetchOpCs.Task;
 
-		public InitializeOperation(StoreService storeService, TraceSource console, IPurchasingModule purchasingModule, IStoreListener storeListener)
+		public FetchOperation(StoreService storeService, TraceSource console, IStoreController storeController)
 		{
 			Debug.Assert(storeService != null);
 
 			_storeService = storeService;
 			_console = console;
-			_purchasingModule = purchasingModule;
-			_storeListener = storeListener;
+			_storeController = storeController;
 			_fetchOpCs = new TaskCompletionSource<object>();
 
 			_console.TraceEvent(TraceEventType.Start, _traceEventId, StoreService.GetEventName(_traceEventId));
 		}
 
-		public Task Initialize(StoreConfig config)
+		public Task Fetch(StoreConfig config)
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(config != null);
 
-			var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-			configurationBuilder.AddProducts(config.Products);
-
-			UnityPurchasing.Initialize(_storeListener, configurationBuilder);
+			var products = new HashSet<ProductDefinition>(config.Products);
+			_storeController.FetchAdditionalProducts(products, OnFetch, OnFetchFailed);
 			return _fetchOpCs.Task;
-		}
-
-		public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(controller != null);
-
-			_success = true;
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventId, "OnInitialized");
-
-			try
-			{
-				_fetchOpCs.SetResult(null);
-				_storeService.InvokeInitializeCompleted(controller.products, _traceEventId);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventId, e);
-				_fetchOpCs.SetException(e);
-			}
-		}
-
-		public void OnInitializeFailed(InitializationFailureReason error)
-		{
-			Debug.Assert(!_disposed);
-
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventId, "OnInitializeFailed: " + error);
-
-			try
-			{
-				_fetchOpCs.SetException(new StoreInitializeException(error));
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventId, e);
-			}
 		}
 
 		#endregion
@@ -124,6 +84,44 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
+
+		private void OnFetch()
+		{
+			if (!_storeService.IsDisposed)
+			{
+				_success = true;
+				_console.TraceEvent(TraceEventType.Verbose, _traceEventId, "OnFetch");
+
+				try
+				{
+					_fetchOpCs.SetResult(null);
+					_storeService. InvokeInitializeCompleted(_storeController.products, _traceEventId);
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, _traceEventId, e);
+					_fetchOpCs.SetException(e);
+				}
+			}
+		}
+
+		private void OnFetchFailed(InitializationFailureReason error)
+		{
+			if (!_storeService.IsDisposed)
+			{
+				_console.TraceEvent(TraceEventType.Verbose, _traceEventId, "OnFetchFailed: " + error);
+
+				try
+				{
+					_fetchOpCs.SetException(new StoreInitializeException(error));
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, _traceEventId, e);
+				}
+			}
+		}
+
 		#endregion
 	}
 }

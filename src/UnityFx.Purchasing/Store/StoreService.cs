@@ -26,9 +26,9 @@ namespace UnityFx.Purchasing
 		private readonly StoreObservable _observer;
 
 		private InitializeOperation _initializeOp;
+		private FetchOperation _fetchOp;
 		private PurchaseOperation _purchaseOp;
 
-		private TaskCompletionSource<object> _fetchOpCs;
 		private IStoreController _storeController;
 		private bool _disposed;
 
@@ -64,7 +64,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <c>true</c> if the service is disposed; <c>false</c> otherwise. Read only.
 		/// </summary>
-		protected bool IsDisposed => _disposed;
+		public bool IsDisposed => _disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
@@ -149,10 +149,10 @@ namespace UnityFx.Purchasing
 					_initializeOp = null;
 				}
 
-				if (_fetchOpCs != null)
+				if (_fetchOp != null)
 				{
 					InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.StoreDisposed, null);
-					_fetchOpCs = null;
+					_fetchOp = null;
 				}
 
 				if (_purchaseOp != null)
@@ -265,46 +265,36 @@ namespace UnityFx.Purchasing
 			{
 				await InitializeAsync();
 			}
-			else if (_fetchOpCs != null)
+			else if (_fetchOp != null)
 			{
-				await _fetchOpCs.Task;
+				await _fetchOp.Task;
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				_console.TraceEvent(TraceEventType.Start, TraceEventFetch, "Fetch");
-
-				try
+				using (var op = new FetchOperation(this, _console, _storeController))
 				{
-					_fetchOpCs = new TaskCompletionSource<object>();
+					_fetchOp = op;
 
-					// 1) Get store configuration. Should be provided by the service user.
-					var storeConfig = await GetStoreConfigAsync();
-					var productsToFetch = new HashSet<ProductDefinition>();
-
-					// 2) Initialize the store content.
-					foreach (var product in storeConfig.Products)
+					try
 					{
-						productsToFetch.Add(product);
+						var storeConfig = await GetStoreConfigAsync();
+						await op.Fetch(storeConfig);
 					}
-
-					// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
-					_storeController.FetchAdditionalProducts(productsToFetch, _storeListener.OnFetch, _storeListener.OnFetchFailed);
-					await _fetchOpCs.Task;
-				}
-				catch (StoreInitializeException e)
-				{
-					InvokeInitializeFailed(TraceEventFetch, GetInitializeError(e.Reason), e);
-					throw;
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
-					InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.Unknown, e);
-					throw;
-				}
-				finally
-				{
-					_fetchOpCs = null;
+					catch (StoreInitializeException e)
+					{
+						InvokeInitializeFailed(TraceEventFetch, GetInitializeError(e.Reason), e);
+						throw;
+					}
+					catch (Exception e)
+					{
+						_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+						InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.Unknown, e);
+						throw;
+					}
+					finally
+					{
+						_fetchOp = null;
+					}
 				}
 			}
 		}
@@ -328,9 +318,9 @@ namespace UnityFx.Purchasing
 					await InitializeAsync();
 
 					// 3) Wait for the fetch operation to complete (if any).
-					if (_fetchOpCs != null)
+					if (_fetchOp != null)
 					{
-						await _fetchOpCs.Task;
+						await _fetchOp.Task;
 					}
 
 					// 4) Look up the Product reference with the product identifier and the Purchasing system's products collection.
