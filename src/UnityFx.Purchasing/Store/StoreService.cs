@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -12,28 +11,26 @@ using UnityEngine.Purchasing.Extension;
 
 namespace UnityFx.Purchasing
 {
-	using Debug = System.Diagnostics.Debug;
-
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	public abstract class StoreService : IStoreService, IStoreServiceSettings
+	public abstract partial class StoreService : IStoreService, IStoreServiceSettings
 	{
 		#region data
 
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
 		private readonly IPurchasingModule _purchasingModule;
-
-		private StoreProductCollection _products;
-		private StoreListener _storeListener;
-		private StoreObservable _observer;
+		private readonly StoreProductCollection _products;
+		private readonly StoreListener _storeListener;
+		private readonly StoreObservable _observer;
 
 		private PurchaseOperation _purchaseOperation;
 
 		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<object> _fetchOpCs;
 		private IStoreController _storeController;
+		private bool _disposed;
 
 		#endregion
 
@@ -67,7 +64,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <c>true</c> if the service is disposed; <c>false</c> otherwise. Read only.
 		/// </summary>
-		protected bool IsDisposed => _storeListener != null;
+		protected bool IsDisposed => _disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
@@ -77,8 +74,9 @@ namespace UnityFx.Purchasing
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
 			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
-			_storeListener = new StoreListener(this);
 			_products = new StoreProductCollection();
+			_storeListener = new StoreListener(this);
+			_observer = new StoreObservable();
 		}
 
 		/// <summary>
@@ -99,7 +97,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store initialization has succeeded.
 		/// </summary>
-		protected virtual void OnInitialized()
+		protected virtual void OnInitializeCompleted()
 		{
 			StoreInitialized?.Invoke(this, EventArgs.Empty);
 		}
@@ -142,9 +140,9 @@ namespace UnityFx.Purchasing
 		/// <param name="disposing">Should be <c>true</c> if the method is called from <see cref="Dispose()"/>; <c>false</c> otherwise.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing && _storeListener != null)
+			if (disposing && !_disposed)
 			{
-				_storeListener = null;
+				_disposed = true;
 
 				if (_initializeOpCs != null)
 				{
@@ -167,8 +165,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_observer?.OnCompleted();
-					_observer = null;
+					_observer.OnCompleted();
 				}
 				catch (Exception e)
 				{
@@ -180,188 +177,6 @@ namespace UnityFx.Purchasing
 				_products.Clear();
 				_storeController = null;
 			}
-		}
-
-		#endregion
-
-		#region internal interface
-
-		internal enum TraceEventId
-		{
-			Default,
-			Initialize,
-			Fetch,
-			Purchase
-		}
-
-		internal Task<PurchaseValidationResult> ValidatePurchase(IStoreProduct product, StoreTransaction transactionInfo)
-		{
-			return ValidatePurchaseAsync(product, transactionInfo);
-		}
-
-		internal void InvokeInitializeCompleted(int opId)
-		{
-			try
-			{
-				OnInitialized();
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, opId, e);
-			}
-			finally
-			{
-				_console.TraceEvent(TraceEventType.Stop, opId, GetEventName(opId) + " complete");
-			}
-		}
-
-		internal void InvokeInitializeFailed(int opId, StoreInitializeError reason, Exception ex)
-		{
-			_console.TraceEvent(TraceEventType.Error, opId, GetEventName(opId) + " error: " + reason);
-
-			try
-			{
-				OnInitializeFailed(reason, ex);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, opId, e);
-			}
-			finally
-			{
-				_console.TraceEvent(TraceEventType.Stop, opId, GetEventName(opId) + " failed");
-			}
-		}
-
-		internal void InvokePurchaseInitiated(string productId, bool restored)
-		{
-			Debug.Assert(!string.IsNullOrEmpty(productId));
-
-			try
-			{
-				OnPurchaseInitiated(productId, restored);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
-			}
-		}
-
-		internal void InvokePurchaseCompleted(string productId, PurchaseResult purchaseResult)
-		{
-			Debug.Assert(purchaseResult != null);
-
-			if (_observer != null)
-			{
-				try
-				{
-					_observer.OnNext(new PurchaseInfo(productId, purchaseResult, null, null));
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
-				}
-			}
-
-			try
-			{
-				OnPurchaseCompleted(productId, purchaseResult);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
-			}
-		}
-
-		internal void InvokePurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception ex)
-		{
-			_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {reason}");
-
-			if (_observer != null)
-			{
-				try
-				{
-					_observer.OnNext(new PurchaseInfo(productId, purchaseResult, reason, ex));
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
-				}
-			}
-
-			try
-			{
-				OnPurchaseFailed(productId, purchaseResult, reason, ex);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
-			}
-		}
-
-		internal static StoreInitializeError GetInitializeError(InitializationFailureReason error)
-		{
-			switch (error)
-			{
-				case InitializationFailureReason.AppNotKnown:
-					return StoreInitializeError.AppNotKnown;
-
-				case InitializationFailureReason.NoProductsAvailable:
-					return StoreInitializeError.NoProductsAvailable;
-
-				case InitializationFailureReason.PurchasingUnavailable:
-					return StoreInitializeError.PurchasingUnavailable;
-
-				default:
-					return StoreInitializeError.Unknown;
-			}
-		}
-
-		internal static StorePurchaseError GetPurchaseError(PurchaseFailureReason error)
-		{
-			switch (error)
-			{
-				case PurchaseFailureReason.PurchasingUnavailable:
-					return StorePurchaseError.PurchasingUnavailable;
-
-				case PurchaseFailureReason.ExistingPurchasePending:
-					return StorePurchaseError.ExistingPurchasePending;
-
-				case PurchaseFailureReason.ProductUnavailable:
-					return StorePurchaseError.ProductUnavailable;
-
-				case PurchaseFailureReason.SignatureInvalid:
-					return StorePurchaseError.SignatureInvalid;
-
-				case PurchaseFailureReason.UserCancelled:
-					return StorePurchaseError.UserCanceled;
-
-				case PurchaseFailureReason.PaymentDeclined:
-					return StorePurchaseError.PaymentDeclined;
-
-				case PurchaseFailureReason.DuplicateTransaction:
-					return StorePurchaseError.DuplicateTransaction;
-
-				default:
-					return StorePurchaseError.Unknown;
-			}
-		}
-
-		internal static string GetEventName(int eventId)
-		{
-			switch (eventId)
-			{
-				case TraceEventInitialize:
-					return "Initialize";
-
-				case TraceEventFetch:
-					return "Fetch";
-
-				case TraceEventPurchase:
-					return "Purchase";
-			}
-
-			return "<Unknown>";
 		}
 
 		#endregion
@@ -384,18 +199,7 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 		/// <inheritdoc/>
-		public IObservable<PurchaseInfo> Purchases
-		{
-			get
-			{
-				if (_observer == null)
-				{
-					_observer = new StoreObservable();
-				}
-
-				return _observer;
-			}
-		}
+		public IObservable<PurchaseInfo> Purchases => _observer;
 
 		/// <inheritdoc/>
 		public IStoreServiceSettings Settings => this;
@@ -447,9 +251,6 @@ namespace UnityFx.Purchasing
 						// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
 						UnityPurchasing.Initialize(_storeListener, configurationBuilder);
 						await _initializeOpCs.Task;
-
-						// 4) Trigger user-defined events.
-						InvokeInitializeCompleted(TraceEventInitialize);
 					}
 					catch (StoreInitializeException e)
 					{
@@ -515,9 +316,6 @@ namespace UnityFx.Purchasing
 					// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
 					_storeController.FetchAdditionalProducts(productsToFetch, OnFetch, OnFetchFailed);
 					await _fetchOpCs.Task;
-
-					// 4) Trigger user-defined events.
-					InvokeInitializeCompleted(TraceEventFetch);
 				}
 				catch (StoreInitializeException e)
 				{
@@ -612,184 +410,6 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
-		#region IStoreListener
-
-		/// <summary>
-		/// Implementation of <see cref="IStoreListener"/>.
-		/// </summary>
-		/// <remarks>
-		/// Just forwards calls to private methods of the parent class.
-		/// </remarks>
-		private sealed class StoreListener : IStoreListener
-		{
-			private StoreService _parentStore;
-
-			public StoreListener(StoreService service)
-			{
-				_parentStore = service;
-			}
-
-			public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
-			{
-				Debug.Assert(controller != null);
-				Debug.Assert(extensions != null);
-
-				if (!_parentStore.IsDisposed)
-				{
-					_parentStore.OnInitialized(controller, extensions);
-				}
-			}
-
-			public void OnInitializeFailed(InitializationFailureReason error)
-			{
-				if (!_parentStore.IsDisposed)
-				{
-					_parentStore.OnInitializeFailed(error);
-				}
-			}
-
-			public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
-			{
-				if (!_parentStore.IsDisposed)
-				{
-					_parentStore.OnPurchaseFailed(product, reason);
-				}
-			}
-
-			public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
-			{
-				Debug.Assert(args != null);
-				Debug.Assert(args.purchasedProduct != null);
-
-				if (!_parentStore.IsDisposed)
-				{
-					return _parentStore.ProcessPurchase(args);
-				}
-
-				return PurchaseProcessingResult.Pending;
-			}
-		}
-
-		private void OnInitialized(IStoreController controller, IExtensionProvider extensions)
-		{
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventInitialize, "OnInitialized");
-
-			try
-			{
-				// Have to initialize the _products collection here rather than in InitializeAsync() call
-				// because when restoring purchases ProcessPurchase() (needs _products initialized)
-				// might be called before InitializeAsync() resumes execution.
-				foreach (var product in controller.products.all)
-				{
-					if (_products.TryGetValue(product.definition.id, out var userProduct))
-					{
-						userProduct.Metadata = product.metadata;
-					}
-				}
-
-				_storeController = controller;
-				_initializeOpCs.SetResult(null);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
-				_initializeOpCs.SetException(e);
-			}
-		}
-
-		private void OnInitializeFailed(InitializationFailureReason error)
-		{
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventInitialize, "OnInitializeFailed: " + error);
-
-			try
-			{
-				_initializeOpCs.SetException(new StoreInitializeException(error));
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
-			}
-		}
-
-		private PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
-		{
-			var transaction = _purchaseOperation;
-
-			if (transaction == null)
-			{
-				var productId = args.purchasedProduct.definition.id;
-				transaction = new PurchaseOperation(this, _console, productId, true);
-				transaction.Initialize();
-			}
-
-			return transaction.ProcessPurchase(args);
-		}
-
-		private void OnPurchaseFailed(Product product, PurchaseFailureReason failReason)
-		{
-			var transaction = _purchaseOperation;
-
-			if (transaction == null)
-			{
-				var productId = product?.definition.id ?? "null";
-				transaction = new PurchaseOperation(this, _console, productId, true);
-				transaction.Initialize();
-			}
-
-			transaction.PurchaseFailed(product, failReason);
-		}
-
-		private void OnFetch()
-		{
-			// Quick return if the store has been disposed.
-			if (IsDisposed)
-			{
-				return;
-			}
-
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetch");
-
-			try
-			{
-				foreach (var product in _storeController.products.all)
-				{
-					if (_products.TryGetValue(product.definition.id, out var userProduct))
-					{
-						userProduct.Metadata = product.metadata;
-					}
-				}
-
-				_fetchOpCs.SetResult(null);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
-				_fetchOpCs.SetException(e);
-			}
-		}
-
-		private void OnFetchFailed(InitializationFailureReason error)
-		{
-			// Quick return if the store has been disposed.
-			if (IsDisposed)
-			{
-				return;
-			}
-
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetchFailed: " + error);
-
-			try
-			{
-				_fetchOpCs.SetException(new StoreInitializeException(error));
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
-			}
-		}
-
-		#endregion
-
 		#region IDisposable
 
 		/// <inheritdoc/>
@@ -805,7 +425,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfDisposed()
 		{
-			if (_storeListener == null)
+			if (_disposed)
 			{
 				throw new ObjectDisposedException(_serviceName);
 			}
