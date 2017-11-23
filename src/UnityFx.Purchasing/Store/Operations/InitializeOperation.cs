@@ -51,7 +51,7 @@ namespace UnityFx.Purchasing
 			_console.TraceEvent(TraceEventType.Start, _traceEventId, StoreService.GetEventName(_traceEventId));
 		}
 
-		public Task Initialize(StoreConfig config)
+		public Task Execute(StoreConfig config)
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(config != null);
@@ -74,7 +74,7 @@ namespace UnityFx.Purchasing
 			try
 			{
 				_fetchOpCs.SetResult(null);
-				_storeService.InvokeInitializeCompleted(controller.products, _traceEventId);
+				_storeService.InvokeInitializeCompleted(controller.products);
 			}
 			catch (Exception e)
 			{
@@ -91,7 +91,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_fetchOpCs.SetException(new StoreInitializeException(error));
+				_fetchOpCs.SetException(new StoreFetchException(error));
 			}
 			catch (Exception e)
 			{

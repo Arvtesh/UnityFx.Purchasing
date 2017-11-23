@@ -110,6 +110,27 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
+		/// Called when the store fetch has succeeded.
+		/// </summary>
+		protected virtual void OnFetchInitiated()
+		{
+		}
+
+		/// <summary>
+		/// Called when the store fetch has succeeded.
+		/// </summary>
+		protected virtual void OnFetchCompleted(ProductCollection products)
+		{
+		}
+
+		/// <summary>
+		/// Called when the store fetch has failed.
+		/// </summary>
+		protected virtual void OnFetchFailed(StoreInitializeError reason, Exception e)
+		{
+		}
+
+		/// <summary>
 		/// Called when the store initialization has failed.
 		/// </summary>
 		protected virtual void OnPurchaseInitiated(string productId, bool isRestored)
@@ -145,13 +166,13 @@ namespace UnityFx.Purchasing
 
 				if (_initializeOp != null)
 				{
-					InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.StoreDisposed, null);
+					InvokeInitializeFailed(StoreInitializeError.StoreDisposed, null);
 					_initializeOp = null;
 				}
 
 				if (_fetchOp != null)
 				{
-					InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.StoreDisposed, null);
+					InvokeFetchFailed(StoreInitializeError.StoreDisposed, null);
 					_fetchOp = null;
 				}
 
@@ -234,17 +255,17 @@ namespace UnityFx.Purchasing
 						try
 						{
 							var storeConfig = await GetStoreConfigAsync();
-							await _initializeOp.Initialize(storeConfig);
+							await _initializeOp.Execute(storeConfig);
 						}
-						catch (StoreInitializeException e)
+						catch (StoreFetchException e)
 						{
-							InvokeInitializeFailed(TraceEventInitialize, GetInitializeError(e.Reason), e);
+							InvokeInitializeFailed(GetInitializeError(e.Reason), e);
 							throw;
 						}
 						catch (Exception e)
 						{
 							_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
-							InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.Unknown, e);
+							InvokeInitializeFailed(StoreInitializeError.Unknown, e);
 							throw;
 						}
 						finally
@@ -278,17 +299,17 @@ namespace UnityFx.Purchasing
 					try
 					{
 						var storeConfig = await GetStoreConfigAsync();
-						await op.Fetch(storeConfig);
+						await op.Execute(storeConfig);
 					}
-					catch (StoreInitializeException e)
+					catch (StoreFetchException e)
 					{
-						InvokeInitializeFailed(TraceEventFetch, GetInitializeError(e.Reason), e);
+						InvokeFetchFailed(GetInitializeError(e.Reason), e);
 						throw;
 					}
 					catch (Exception e)
 					{
 						_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
-						InvokeInitializeFailed(TraceEventFetch, StoreInitializeError.Unknown, e);
+						InvokeFetchFailed(StoreInitializeError.Unknown, e);
 						throw;
 					}
 					finally
@@ -344,7 +365,7 @@ namespace UnityFx.Purchasing
 					InvokePurchaseFailed(productId, e.Result, e.Reason, e);
 					throw;
 				}
-				catch (StoreInitializeException e)
+				catch (StoreFetchException e)
 				{
 					_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {e.Message}");
 					throw;

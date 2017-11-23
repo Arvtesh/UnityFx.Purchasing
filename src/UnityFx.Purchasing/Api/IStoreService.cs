@@ -168,14 +168,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store (if not initialized already).
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
+		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task InitializeAsync();
 
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if operation fails.</exception>
+		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task FetchAsync();
 

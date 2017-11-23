@@ -28,7 +28,7 @@ namespace UnityFx.Purchasing
 			return ValidatePurchaseAsync(transactionInfo);
 		}
 
-		internal void InvokeInitializeCompleted(ProductCollection products, int opId)
+		internal void InvokeInitializeCompleted(ProductCollection products)
 		{
 			try
 			{
@@ -36,17 +36,13 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, opId, e);
-			}
-			finally
-			{
-				_console.TraceEvent(TraceEventType.Stop, opId, GetEventName(opId) + " complete");
+				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
 			}
 		}
 
-		internal void InvokeInitializeFailed(int opId, StoreInitializeError reason, Exception ex)
+		internal void InvokeInitializeFailed(StoreInitializeError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, opId, GetEventName(opId) + " error: " + reason);
+			_console.TraceEvent(TraceEventType.Error, TraceEventInitialize, GetEventName(TraceEventInitialize) + " error: " + reason);
 
 			try
 			{
@@ -54,11 +50,45 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, opId, e);
+				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
 			}
-			finally
+		}
+
+		internal void InvokeFetchInitiated()
+		{
+			try
 			{
-				_console.TraceEvent(TraceEventType.Stop, opId, GetEventName(opId) + " failed");
+				OnFetchInitiated();
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+			}
+		}
+
+		internal void InvokeFetchCompleted(ProductCollection products)
+		{
+			try
+			{
+				OnInitializeCompleted(products);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+			}
+		}
+
+		internal void InvokeFetchFailed(StoreInitializeError reason, Exception ex)
+		{
+			_console.TraceEvent(TraceEventType.Error, TraceEventFetch, GetEventName(TraceEventFetch) + " error: " + reason);
+
+			try
+			{
+				OnInitializeFailed(reason, ex);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
 			}
 		}
 

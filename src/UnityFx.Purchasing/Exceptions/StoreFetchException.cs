@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public sealed class StoreInitializeException : StoreException
+	public sealed class StoreFetchException : StoreException
 	{
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
@@ -19,41 +19,41 @@ namespace UnityFx.Purchasing
 		public InitializationFailureReason Reason { get; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreInitializeException()
+		public StoreFetchException()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreInitializeException(string message)
+		public StoreFetchException(string message)
 			: base(message)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreInitializeException(InitializationFailureReason reason)
+		public StoreFetchException(InitializationFailureReason reason)
 			: base(reason.ToString())
 		{
 			Reason = reason;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreInitializeException(string message, Exception innerException)
+		public StoreFetchException(string message, Exception innerException)
 			: base(message, innerException)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		private StoreInitializeException(SerializationInfo info, StreamingContext context)
+		private StoreFetchException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}
