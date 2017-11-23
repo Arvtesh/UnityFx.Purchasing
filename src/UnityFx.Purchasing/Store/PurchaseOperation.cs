@@ -27,7 +27,6 @@ namespace UnityFx.Purchasing
 		private readonly string _productId;
 		private readonly bool _restored;
 
-		private IStoreProduct _product;
 		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
 		private bool _disposed;
 		private bool _success;
@@ -37,8 +36,6 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		public string ProductId => _productId;
-
-		public IStoreProduct Product => _product;
 
 		public PurchaseOperation(StoreService storeService, TraceSource console, string productId, bool restored)
 		{
@@ -60,24 +57,6 @@ namespace UnityFx.Purchasing
 			}
 
 			storeService.InvokePurchaseInitiated(productId, restored);
-		}
-
-		public Product Initialize()
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(_storeService.Controller != null);
-			Debug.Assert(_storeService.Products != null);
-
-			if (_storeService.Products.TryGetValue(_productId, out _product))
-			{
-				return _storeService.Controller.products.WithID(_productId);
-			}
-			else
-			{
-				_console.TraceEvent(TraceEventType.Warning, _traceEventId, "No product found for id: " + _productId);
-			}
-
-			return null;
 		}
 
 		public Task<PurchaseResult> Purchase(Product product)
@@ -152,7 +131,6 @@ namespace UnityFx.Purchasing
 			{
 				_disposed = true;
 				_purchaseOpCs = null;
-				_product = null;
 
 				if (_success)
 				{
@@ -178,7 +156,7 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Verbose, _traceEventId, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
 
-				var validationResult = await _storeService.ValidatePurchase(_product, transactionInfo);
+				var validationResult = await _storeService.ValidatePurchase(transactionInfo);
 
 				// Do nothing if the store has been disposed while we were waiting for validation.
 				if (!_disposed)
@@ -232,7 +210,7 @@ namespace UnityFx.Purchasing
 
 		private void SetPurchaseCompleted(StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
 		{
-			var result = new PurchaseResult(_product, transactionInfo, validationResult);
+			var result = new PurchaseResult(transactionInfo, validationResult);
 
 			_success = true;
 
@@ -256,7 +234,7 @@ namespace UnityFx.Purchasing
 
 		private void SetPurchaseFailed(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e = null)
 		{
-			var result = new PurchaseResult(_product, transactionInfo, validationResult);
+			var result = new PurchaseResult(transactionInfo, validationResult);
 
 			if (_purchaseOpCs != null)
 			{

@@ -48,6 +48,22 @@ namespace UnityFx.Purchasing
 				}
 			}
 
+			public void OnFetch()
+			{
+				if (!_parentStore.IsDisposed)
+				{
+					_parentStore.OnFetch();
+				}
+			}
+
+			public void OnFetchFailed(InitializationFailureReason error)
+			{
+				if (!_parentStore.IsDisposed)
+				{
+					_parentStore.OnInitializeFailed(error);
+				}
+			}
+
 			public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
 			{
 				if (!_parentStore.IsDisposed)
@@ -76,21 +92,11 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				// Have to initialize the _products collection here rather than in InitializeAsync() call
-				// because when restoring purchases ProcessPurchase() (needs _products initialized)
-				// might be called before InitializeAsync() resumes execution.
-				foreach (var product in controller.products.all)
-				{
-					if (_products.TryGetValue(product.definition.id, out var userProduct))
-					{
-						userProduct.Metadata = product.metadata;
-					}
-				}
-
 				_storeController = controller;
+				_products.Initialize(controller);
 				_initializeOpCs.SetResult(null);
 
-				InvokeInitializeCompleted(TraceEventInitialize);
+				InvokeInitializeCompleted(controller.products, TraceEventInitialize);
 			}
 			catch (Exception e)
 			{
@@ -121,7 +127,6 @@ namespace UnityFx.Purchasing
 			{
 				var productId = args.purchasedProduct.definition.id;
 				transaction = new PurchaseOperation(this, _console, productId, true);
-				transaction.Initialize();
 			}
 
 			return transaction.ProcessPurchase(args);
@@ -135,7 +140,6 @@ namespace UnityFx.Purchasing
 			{
 				var productId = product?.definition.id ?? "null";
 				transaction = new PurchaseOperation(this, _console, productId, true);
-				transaction.Initialize();
 			}
 
 			transaction.PurchaseFailed(product, failReason);
@@ -143,27 +147,13 @@ namespace UnityFx.Purchasing
 
 		private void OnFetch()
 		{
-			// Quick return if the store has been disposed.
-			if (IsDisposed)
-			{
-				return;
-			}
-
 			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetch");
 
 			try
 			{
-				foreach (var product in _storeController.products.all)
-				{
-					if (_products.TryGetValue(product.definition.id, out var userProduct))
-					{
-						userProduct.Metadata = product.metadata;
-					}
-				}
-
 				_fetchOpCs.SetResult(null);
 
-				InvokeInitializeCompleted(TraceEventFetch);
+				InvokeInitializeCompleted(_storeController.products, TraceEventFetch);
 			}
 			catch (Exception e)
 			{
@@ -174,12 +164,6 @@ namespace UnityFx.Purchasing
 
 		private void OnFetchFailed(InitializationFailureReason error)
 		{
-			// Quick return if the store has been disposed.
-			if (IsDisposed)
-			{
-				return;
-			}
-
 			_console.TraceEvent(TraceEventType.Verbose, TraceEventFetch, "OnFetchFailed: " + error);
 
 			try

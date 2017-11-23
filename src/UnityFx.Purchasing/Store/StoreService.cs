@@ -87,9 +87,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed (default behaviour).
 		/// </summary>
-		/// <param name="product">Reference to a product being purchased.</param>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
-		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(IStoreProduct product, StoreTransaction transactionInfo)
+		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo)
 		{
 			return Task.FromResult<PurchaseValidationResult>(null);
 		}
@@ -97,7 +96,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store initialization has succeeded.
 		/// </summary>
-		protected virtual void OnInitializeCompleted()
+		protected virtual void OnInitializeCompleted(ProductCollection products)
 		{
 			StoreInitialized?.Invoke(this, EventArgs.Empty);
 		}
@@ -158,7 +157,7 @@ namespace UnityFx.Purchasing
 
 				if (_purchaseOperation != null)
 				{
-					InvokePurchaseFailed(_purchaseOperation.ProductId, new PurchaseResult(_purchaseOperation.Product), StorePurchaseError.StoreDisposed, null);
+					InvokePurchaseFailed(_purchaseOperation.ProductId, new PurchaseResult(null), StorePurchaseError.StoreDisposed, null);
 					_purchaseOperation.Dispose();
 					_purchaseOperation = null;
 				}
@@ -174,7 +173,6 @@ namespace UnityFx.Purchasing
 
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
 				_console.Close();
-				_products.Clear();
 				_storeController = null;
 			}
 		}
@@ -243,9 +241,7 @@ namespace UnityFx.Purchasing
 						// 2) Initialize the store content.
 						foreach (var product in storeConfig.Products)
 						{
-							var productDefinition = product.Definition;
-							configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
-							_products.Add(productDefinition.id, product);
+							configurationBuilder.AddProduct(product.id, product.type);
 						}
 
 						// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
@@ -299,22 +295,11 @@ namespace UnityFx.Purchasing
 					// 2) Initialize the store content.
 					foreach (var product in storeConfig.Products)
 					{
-						var productDefinition = product.Definition;
-
-						if (_products.ContainsKey(productDefinition.id))
-						{
-							_products[productDefinition.id] = product;
-						}
-						else
-						{
-							_products.Add(productDefinition.id, product);
-						}
-
-						productsToFetch.Add(productDefinition);
+						productsToFetch.Add(product);
 					}
 
 					// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
-					_storeController.FetchAdditionalProducts(productsToFetch, OnFetch, OnFetchFailed);
+					_storeController.FetchAdditionalProducts(productsToFetch, _storeListener.OnFetch, _storeListener.OnFetchFailed);
 					await _fetchOpCs.Task;
 				}
 				catch (StoreInitializeException e)
@@ -360,7 +345,7 @@ namespace UnityFx.Purchasing
 					}
 
 					// 4) Look up the Product reference with the product identifier and the Purchasing system's products collection.
-					var product = transaction.Initialize();
+					var product = _storeController.products.WithID(productId);
 
 					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
 					if (product != null && product.availableToPurchase)
@@ -372,7 +357,7 @@ namespace UnityFx.Purchasing
 					}
 					else
 					{
-						throw new StorePurchaseException(new PurchaseResult(transaction.Product), StorePurchaseError.ProductUnavailable);
+						throw new StorePurchaseException(new PurchaseResult(product), StorePurchaseError.ProductUnavailable);
 					}
 				}
 				catch (StorePurchaseException e)
@@ -388,7 +373,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
-					InvokePurchaseFailed(productId, new PurchaseResult(transaction.Product), StorePurchaseError.Unknown, e);
+					InvokePurchaseFailed(productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
 					throw;
 				}
 				finally

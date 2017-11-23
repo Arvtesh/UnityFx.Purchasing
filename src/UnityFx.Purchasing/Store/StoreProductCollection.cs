@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -14,41 +15,52 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
+		private IStoreController _storeController;
 
 		#endregion
 
 		#region interface
 
-		public void Add(string productId, IStoreProduct product) => _products.Add(productId, product);
-
-		public bool Remove(string productId) => _products.Remove(productId);
-
-		public void Clear() => _products.Clear();
+		public void Initialize(IStoreController storeController) => _storeController = storeController;
 
 		#endregion
 
 		#region IStoreProductCollection
 
-		public IStoreProduct this[string productId] { get => _products[productId]; set => _products[productId] = value; }
+		public Product this[string productId] => _storeController?.products.WithID(productId);
 
-		public bool TryGetValue(string productId, out IStoreProduct product) => _products.TryGetValue(productId, out product);
+		public bool TryGetValue(string productId, out Product product)
+		{
+			if (_storeController != null)
+			{
+				product = _storeController.products.WithID(productId);
+			}
+			else
+			{
+				product = null;
+			}
 
-		public bool ContainsKey(string productId) => _products.ContainsKey(productId);
+			return product != null;
+		}
+
+		public bool ContainsKey(string productId)
+		{
+			return _storeController != null && _storeController.products.WithID(productId) != null;
+		}
 
 		#endregion
 
 		#region IReadOnlyCollection
 
-		public int Count => _products.Count;
+		public int Count => _storeController.products.set.Count;
 
 		#endregion
 
 		#region IEnumerable
 
-		public IEnumerator<IStoreProduct> GetEnumerator() => _products.Values.GetEnumerator();
+		public IEnumerator<Product> GetEnumerator() => _storeController.products.set.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator() => _products.Values.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => _storeController.products.set.GetEnumerator();
 
 		#endregion
 	}

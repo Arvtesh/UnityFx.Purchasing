@@ -23,16 +23,16 @@ namespace UnityFx.Purchasing
 			Purchase
 		}
 
-		internal Task<PurchaseValidationResult> ValidatePurchase(IStoreProduct product, StoreTransaction transactionInfo)
+		internal Task<PurchaseValidationResult> ValidatePurchase(StoreTransaction transactionInfo)
 		{
-			return ValidatePurchaseAsync(product, transactionInfo);
+			return ValidatePurchaseAsync(transactionInfo);
 		}
 
-		internal void InvokeInitializeCompleted(int opId)
+		internal void InvokeInitializeCompleted(ProductCollection products, int opId)
 		{
 			try
 			{
-				OnInitializeCompleted();
+				OnInitializeCompleted(products);
 			}
 			catch (Exception e)
 			{
