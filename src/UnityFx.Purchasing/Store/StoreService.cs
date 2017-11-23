@@ -25,9 +25,9 @@ namespace UnityFx.Purchasing
 		private readonly StoreListener _storeListener;
 		private readonly StoreObservable _observer;
 
-		private PurchaseOperation _purchaseOperation;
+		private InitializeOperation _initializeOp;
+		private PurchaseOperation _purchaseOp;
 
-		private TaskCompletionSource<object> _initializeOpCs;
 		private TaskCompletionSource<object> _fetchOpCs;
 		private IStoreController _storeController;
 		private bool _disposed;
@@ -143,10 +143,10 @@ namespace UnityFx.Purchasing
 			{
 				_disposed = true;
 
-				if (_initializeOpCs != null)
+				if (_initializeOp != null)
 				{
 					InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.StoreDisposed, null);
-					_initializeOpCs = null;
+					_initializeOp = null;
 				}
 
 				if (_fetchOpCs != null)
@@ -155,11 +155,11 @@ namespace UnityFx.Purchasing
 					_fetchOpCs = null;
 				}
 
-				if (_purchaseOperation != null)
+				if (_purchaseOp != null)
 				{
-					InvokePurchaseFailed(_purchaseOperation.ProductId, new PurchaseResult(null), StorePurchaseError.StoreDisposed, null);
-					_purchaseOperation.Dispose();
-					_purchaseOperation = null;
+					InvokePurchaseFailed(_purchaseOp.ProductId, new PurchaseResult(null), StorePurchaseError.StoreDisposed, null);
+					_purchaseOp.Dispose();
+					_purchaseOp = null;
 				}
 
 				try
@@ -212,7 +212,7 @@ namespace UnityFx.Purchasing
 		public bool IsInitialized => _storeController != null;
 
 		/// <inheritdoc/>
-		public bool IsBusy => _purchaseOperation != null;
+		public bool IsBusy => _purchaseOp != null;
 
 		/// <inheritdoc/>
 		public async Task InitializeAsync()
@@ -221,47 +221,36 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				if (_initializeOpCs != null)
+				if (_initializeOp != null)
 				{
-					// Initialization is pending.
-					await _initializeOpCs.Task;
+					await _initializeOp.Task;
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
-					_console.TraceEvent(TraceEventType.Start, TraceEventInitialize, "Initialize");
-
-					try
+					using (var op = new InitializeOperation(this, _console, _purchasingModule, _storeListener))
 					{
-						_initializeOpCs = new TaskCompletionSource<object>();
+						_initializeOp = op;
 
-						// 1) Get store configuration. Should be provided by the service user.
-						var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-						var storeConfig = await GetStoreConfigAsync();
-
-						// 2) Initialize the store content.
-						foreach (var product in storeConfig.Products)
+						try
 						{
-							configurationBuilder.AddProduct(product.id, product.type);
+							var storeConfig = await GetStoreConfigAsync();
+							await _initializeOp.Initialize(storeConfig);
 						}
-
-						// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
-						UnityPurchasing.Initialize(_storeListener, configurationBuilder);
-						await _initializeOpCs.Task;
-					}
-					catch (StoreInitializeException e)
-					{
-						InvokeInitializeFailed(TraceEventInitialize, GetInitializeError(e.Reason), e);
-						throw;
-					}
-					catch (Exception e)
-					{
-						_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
-						InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.Unknown, e);
-						throw;
-					}
-					finally
-					{
-						_initializeOpCs = null;
+						catch (StoreInitializeException e)
+						{
+							InvokeInitializeFailed(TraceEventInitialize, GetInitializeError(e.Reason), e);
+							throw;
+						}
+						catch (Exception e)
+						{
+							_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
+							InvokeInitializeFailed(TraceEventInitialize, StoreInitializeError.Unknown, e);
+							throw;
+						}
+						finally
+						{
+							_initializeOp = null;
+						}
 					}
 				}
 			}
@@ -330,7 +319,7 @@ namespace UnityFx.Purchasing
 			// 1) Initialize store transaction.
 			using (var transaction = new PurchaseOperation(this, _console, productId, false))
 			{
-				_purchaseOperation = transaction;
+				_purchaseOp = transaction;
 
 				try
 				{
@@ -378,7 +367,7 @@ namespace UnityFx.Purchasing
 				}
 				finally
 				{
-					_purchaseOperation = null;
+					_purchaseOp = null;
 				}
 			}
 		}
@@ -434,7 +423,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfBusy()
 		{
-			if (_purchaseOperation != null)
+			if (_purchaseOp != null)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy");
 			}

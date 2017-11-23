@@ -88,40 +88,19 @@ namespace UnityFx.Purchasing
 
 		private void OnInitialized(IStoreController controller, IExtensionProvider extensions)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventInitialize, "OnInitialized");
-
-			try
-			{
-				_storeController = controller;
-				_products.Initialize(controller);
-				_initializeOpCs.SetResult(null);
-
-				InvokeInitializeCompleted(controller.products, TraceEventInitialize);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
-				_initializeOpCs.SetException(e);
-			}
+			_storeController = controller;
+			_products.Initialize(controller);
+			_initializeOp?.OnInitialized(controller, extensions);
 		}
 
 		private void OnInitializeFailed(InitializationFailureReason error)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, TraceEventInitialize, "OnInitializeFailed: " + error);
-
-			try
-			{
-				_initializeOpCs.SetException(new StoreInitializeException(error));
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
-			}
+			_initializeOp?.OnInitializeFailed(error);
 		}
 
 		private PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 		{
-			var transaction = _purchaseOperation;
+			var transaction = _purchaseOp;
 
 			if (transaction == null)
 			{
@@ -134,7 +113,7 @@ namespace UnityFx.Purchasing
 
 		private void OnPurchaseFailed(Product product, PurchaseFailureReason failReason)
 		{
-			var transaction = _purchaseOperation;
+			var transaction = _purchaseOp;
 
 			if (transaction == null)
 			{
