@@ -23,6 +23,12 @@ namespace UnityFx.Purchasing
 			Purchase
 		}
 
+		internal void SetStoreController(IStoreController controller)
+		{
+			_storeController = controller;
+			_products.Initialize(controller);
+		}
+
 		internal Task<PurchaseValidationResult> ValidatePurchase(StoreTransaction transactionInfo)
 		{
 			return ValidatePurchaseAsync(transactionInfo);
@@ -36,13 +42,13 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 			}
 		}
 
 		internal void InvokeInitializeFailed(StoreInitializeError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, TraceEventInitialize, GetEventName(TraceEventInitialize) + " error: " + reason);
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Initialize, TraceEventId.Initialize.ToString() + " error: " + reason);
 
 			try
 			{
@@ -50,7 +56,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 			}
 		}
 
@@ -62,7 +68,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 			}
 		}
 
@@ -74,13 +80,13 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 			}
 		}
 
 		internal void InvokeFetchFailed(StoreInitializeError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, TraceEventFetch, GetEventName(TraceEventFetch) + " error: " + reason);
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Fetch, TraceEventId.Fetch.ToString() + " error: " + reason);
 
 			try
 			{
@@ -88,7 +94,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 			}
 		}
 
@@ -102,7 +108,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 		}
 
@@ -116,7 +122,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 
 			try
@@ -125,13 +131,13 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 		}
 
 		internal void InvokePurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {reason}");
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {productId}, reason = {reason}");
 
 			try
 			{
@@ -139,7 +145,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 
 			try
@@ -148,7 +154,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 		}
 
@@ -198,23 +204,6 @@ namespace UnityFx.Purchasing
 				default:
 					return StorePurchaseError.Unknown;
 			}
-		}
-
-		internal static string GetEventName(int eventId)
-		{
-			switch (eventId)
-			{
-				case TraceEventInitialize:
-					return "Initialize";
-
-				case TraceEventFetch:
-					return "Fetch";
-
-				case TraceEventPurchase:
-					return "Purchase";
-			}
-
-			return "<Unknown>";
 		}
 
 		#endregion

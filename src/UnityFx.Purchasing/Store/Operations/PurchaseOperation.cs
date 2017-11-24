@@ -2,9 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -12,24 +10,14 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Represents a purchase operation.
 	/// </summary>
-	/// <remarks>
-	/// The class stored all transaction-related data. The transaction begins when the class instance is created
-	/// and ends on <see cref="Dispose"/> call.
-	/// </remarks>
-	internal class PurchaseOperation : IDisposable
+	internal class PurchaseOperation : StoreOperation<PurchaseResult>
 	{
 		#region data
-
-		private const int _traceEventId = (int)StoreService.TraceEventId.Purchase;
 
 		private readonly StoreService _storeService;
 		private readonly TraceSource _console;
 		private readonly string _productId;
 		private readonly bool _restored;
-
-		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
-		private bool _disposed;
-		private bool _success;
 
 		#endregion
 
@@ -38,6 +26,7 @@ namespace UnityFx.Purchasing
 		public string ProductId => _productId;
 
 		public PurchaseOperation(StoreService storeService, TraceSource console, string productId, bool restored)
+			: base(console, StoreService.TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId)
 		{
 			Debug.Assert(storeService != null);
 			Debug.Assert(productId != null);
@@ -47,36 +36,11 @@ namespace UnityFx.Purchasing
 			_productId = productId;
 			_restored = restored;
 
-			if (restored)
-			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventId, StoreService.GetEventName(_traceEventId) + " (auto-restored): " + productId);
-			}
-			else
-			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventId, StoreService.GetEventName(_traceEventId) + ": " + productId);
-			}
-
-			storeService.InvokePurchaseInitiated(productId, restored);
-		}
-
-		public Task<PurchaseResult> Purchase(Product product)
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(product != null);
-			Debug.Assert(product.definition.id == _productId);
-			Debug.Assert(_purchaseOpCs == null);
-			Debug.Assert(_storeService.Controller != null);
-
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventId, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-			_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
-			_storeService.Controller.InitiatePurchase(product);
-
-			return _purchaseOpCs.Task;
+			_storeService.InvokePurchaseInitiated(productId, restored);
 		}
 
 		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 		{
-			Debug.Assert(!_disposed);
 			Debug.Assert(args != null);
 			Debug.Assert(args.purchasedProduct != null);
 
@@ -85,9 +49,6 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventId, "ProcessPurchase: " + productId);
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventId, $"Receipt ({productId}): {product.receipt ?? "null"}");
-
 				// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
 				// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
 				if (_restored || _productId == productId)
@@ -113,32 +74,60 @@ namespace UnityFx.Purchasing
 			return PurchaseProcessingResult.Complete;
 		}
 
-		public void PurchaseFailed(Product product, PurchaseFailureReason failReason)
+		public void SetPurchaseCompleted(StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
 		{
-			Debug.Assert(!_disposed);
+			var result = new PurchaseResult(transactionInfo, validationResult);
 
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventId, $"OnPurchaseFailed: {_productId}, reason={failReason}");
-			SetPurchaseFailed(new StoreTransaction(product, _restored), null, StoreService.GetPurchaseError(failReason), null);
+			if (_restored)
+			{
+				try
+				{
+					_storeService.InvokePurchaseCompleted(_productId, result);
+				}
+				finally
+				{
+					Dispose();
+				}
+			}
+			else
+			{
+				SetResult(result);
+			}
 		}
 
-		#endregion
-
-		#region IDisposable
-
-		public void Dispose()
+		public void SetPurchaseFailed(Product product, StorePurchaseError failReason, Exception e = null)
 		{
-			if (!_disposed)
-			{
-				_disposed = true;
-				_purchaseOpCs = null;
+			SetPurchaseFailed(new StoreTransaction(product, _restored), null, failReason, e);
+		}
 
-				if (_success)
+		public void SetPurchaseFailed(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e = null)
+		{
+			var result = new PurchaseResult(transactionInfo, validationResult);
+
+			if (_restored)
+			{
+				try
 				{
-					_console.TraceEvent(TraceEventType.Stop, _traceEventId, StoreService.GetEventName(_traceEventId) + " completed: " + _productId);
+					_storeService.InvokePurchaseFailed(_productId, result, failReason, e);
+				}
+				finally
+				{
+					Dispose();
+				}
+			}
+			else
+			{
+				if (failReason == StorePurchaseError.UserCanceled)
+				{
+					SetCanceled();
+				}
+				else if (e != null)
+				{
+					SetException(new StorePurchaseException(result, failReason, e));
 				}
 				else
 				{
-					_console.TraceEvent(TraceEventType.Stop, _traceEventId, StoreService.GetEventName(_traceEventId) + " failed: " + _productId);
+					SetException(new StorePurchaseException(result, failReason));
 				}
 			}
 		}
@@ -154,12 +143,12 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_console.TraceEvent(TraceEventType.Verbose, _traceEventId, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
+				_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
 
 				var validationResult = await _storeService.ValidatePurchase(transactionInfo);
 
 				// Do nothing if the store has been disposed while we were waiting for validation.
-				if (!_disposed)
+				if (!IsDisposed)
 				{
 					if (validationResult == null)
 					{
@@ -194,7 +183,7 @@ namespace UnityFx.Purchasing
 			catch (Exception e)
 			{
 				// NOTE: Should not really get here (do we need to confirm it in this case?).
-				if (!_disposed)
+				if (!IsDisposed)
 				{
 					ConfirmPendingPurchase(product);
 					SetPurchaseFailed(transactionInfo, null, StorePurchaseError.ReceiptValidationFailed, e);
@@ -204,66 +193,8 @@ namespace UnityFx.Purchasing
 
 		private void ConfirmPendingPurchase(Product product)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, _traceEventId, "ConfirmPendingPurchase: " + product.definition.id);
+			_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
 			_storeService.Controller.ConfirmPendingPurchase(product);
-		}
-
-		private void SetPurchaseCompleted(StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
-		{
-			var result = new PurchaseResult(transactionInfo, validationResult);
-
-			_success = true;
-
-			if (_purchaseOpCs != null)
-			{
-				_purchaseOpCs.SetResult(result);
-				_purchaseOpCs = null;
-			}
-			else
-			{
-				try
-				{
-					_storeService.InvokePurchaseCompleted(_productId, result);
-				}
-				finally
-				{
-					Dispose();
-				}
-			}
-		}
-
-		private void SetPurchaseFailed(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e = null)
-		{
-			var result = new PurchaseResult(transactionInfo, validationResult);
-
-			if (_purchaseOpCs != null)
-			{
-				if (failReason == StorePurchaseError.UserCanceled)
-				{
-					_purchaseOpCs.SetCanceled();
-				}
-				else if (e != null)
-				{
-					_purchaseOpCs.SetException(new StorePurchaseException(result, failReason, e));
-				}
-				else
-				{
-					_purchaseOpCs.SetException(new StorePurchaseException(result, failReason));
-				}
-
-				_purchaseOpCs = null;
-			}
-			else
-			{
-				try
-				{
-					_storeService.InvokePurchaseFailed(_productId, result, failReason, e);
-				}
-				finally
-				{
-					Dispose();
-				}
-			}
 		}
 
 		#endregion

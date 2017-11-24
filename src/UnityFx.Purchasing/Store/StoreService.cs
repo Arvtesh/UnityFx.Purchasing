@@ -75,7 +75,7 @@ namespace UnityFx.Purchasing
 			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
 			_products = new StoreProductCollection();
-			_storeListener = new StoreListener(this);
+			_storeListener = new StoreListener(this, _console);
 			_observer = new StoreObservable();
 		}
 
@@ -167,12 +167,14 @@ namespace UnityFx.Purchasing
 				if (_initializeOp != null)
 				{
 					InvokeInitializeFailed(StoreInitializeError.StoreDisposed, null);
+					_initializeOp.Dispose();
 					_initializeOp = null;
 				}
 
 				if (_fetchOp != null)
 				{
 					InvokeFetchFailed(StoreInitializeError.StoreDisposed, null);
+					_fetchOp.Dispose();
 					_fetchOp = null;
 				}
 
@@ -248,14 +250,26 @@ namespace UnityFx.Purchasing
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
-					using (var op = new InitializeOperation(this, _console, _purchasingModule, _storeListener))
+					using (var op = new InitializeOperation(_console))
 					{
 						_initializeOp = op;
+						_storeListener.SetInitializeOp(op);
 
 						try
 						{
+							// Get user-defined store config.
 							var storeConfig = await GetStoreConfigAsync();
-							await _initializeOp.Execute(storeConfig);
+
+							// Configure Unity store.
+							var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
+							configurationBuilder.AddProducts(storeConfig.Products);
+
+							// Initialize Unity store.
+							UnityPurchasing.Initialize(_storeListener, configurationBuilder);
+							await op.Task;
+
+							// Notify subscribers of the operation success.
+							InvokeInitializeCompleted(_storeController.products);
 						}
 						catch (StoreFetchException e)
 						{
@@ -264,12 +278,13 @@ namespace UnityFx.Purchasing
 						}
 						catch (Exception e)
 						{
-							_console.TraceData(TraceEventType.Error, TraceEventInitialize, e);
+							_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 							InvokeInitializeFailed(StoreInitializeError.Unknown, e);
 							throw;
 						}
 						finally
 						{
+							_storeListener.SetInitializeOp(null);
 							_initializeOp = null;
 						}
 					}
@@ -292,14 +307,23 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				using (var op = new FetchOperation(this, _console, _storeController))
+				using (var op = new FetchOperation(_console))
 				{
 					_fetchOp = op;
+					_storeListener.SetFetchOp(op);
 
 					try
 					{
+						// Get user-defined store config.
 						var storeConfig = await GetStoreConfigAsync();
-						await op.Execute(storeConfig);
+
+						// Fetch Unity store.
+						var products = new HashSet<ProductDefinition>(storeConfig.Products);
+						_storeController.FetchAdditionalProducts(products, _storeListener.OnFetch, _storeListener.OnFetchFailed);
+						await op.Task;
+
+						// Notify subscribers of the operation success.
+						InvokeFetchCompleted(_storeController.products);
 					}
 					catch (StoreFetchException e)
 					{
@@ -308,12 +332,13 @@ namespace UnityFx.Purchasing
 					}
 					catch (Exception e)
 					{
-						_console.TraceData(TraceEventType.Error, TraceEventFetch, e);
+						_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 						InvokeFetchFailed(StoreInitializeError.Unknown, e);
 						throw;
 					}
 					finally
 					{
+						_storeListener.SetFetchOp(null);
 						_fetchOp = null;
 					}
 				}
@@ -328,9 +353,10 @@ namespace UnityFx.Purchasing
 			ThrowIfBusy();
 
 			// 1) Initialize store transaction.
-			using (var transaction = new PurchaseOperation(this, _console, productId, false))
+			using (var op = new PurchaseOperation(this, _console, productId, false))
 			{
-				_purchaseOp = transaction;
+				_purchaseOp = op;
+				_storeListener.SetPurchaseOp(op);
 
 				try
 				{
@@ -350,8 +376,11 @@ namespace UnityFx.Purchasing
 					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
 					if (product != null && product.availableToPurchase)
 					{
+						_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+						_storeController.InitiatePurchase(product);
+
 						// 6) Wait for the purchase and validation process to complete, notify users and return.
-						var purchaseResult = await transaction.Purchase(product);
+						var purchaseResult = await op.Task;
 						InvokePurchaseCompleted(productId, purchaseResult);
 						return purchaseResult;
 					}
@@ -367,17 +396,18 @@ namespace UnityFx.Purchasing
 				}
 				catch (StoreFetchException e)
 				{
-					_console.TraceEvent(TraceEventType.Error, TraceEventPurchase, $"{GetEventName(TraceEventPurchase)} error: {productId}, reason = {e.Message}");
+					_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {productId}, reason = {e.Message}");
 					throw;
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, TraceEventPurchase, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 					InvokePurchaseFailed(productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
 					throw;
 				}
 				finally
 				{
+					_storeListener.SetPurchaseOp(null);
 					_purchaseOp = null;
 				}
 			}
