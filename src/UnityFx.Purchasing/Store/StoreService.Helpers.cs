@@ -26,12 +26,24 @@ namespace UnityFx.Purchasing
 		internal void SetStoreController(IStoreController controller)
 		{
 			_storeController = controller;
-			_products.Initialize(controller);
+			_products.SetController(controller);
 		}
 
 		internal Task<PurchaseValidationResult> ValidatePurchase(StoreTransaction transactionInfo)
 		{
 			return ValidatePurchaseAsync(transactionInfo);
+		}
+
+		internal void InvokeInitializeInitiated()
+		{
+			try
+			{
+				OnInitializeInitiated();
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+			}
 		}
 
 		internal void InvokeInitializeCompleted(ProductCollection products)

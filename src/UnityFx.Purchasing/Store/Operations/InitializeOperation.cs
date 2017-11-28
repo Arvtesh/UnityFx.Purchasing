@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Represents an initialize operation.
+	/// An initialize operation.
 	/// </summary>
 	internal class InitializeOperation : StoreOperation<object>
 	{

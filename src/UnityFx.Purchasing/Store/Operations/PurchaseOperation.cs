@@ -8,7 +8,7 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Represents a purchase operation.
+	/// A purchase operation.
 	/// </summary>
 	internal class PurchaseOperation : StoreOperation<PurchaseResult>
 	{

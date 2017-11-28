@@ -25,31 +25,12 @@ namespace UnityFx.Purchasing
 		private readonly StoreListener _storeListener;
 		private readonly StoreObservable _observer;
 
-		private InitializeOperation _initializeOp;
-		private FetchOperation _fetchOp;
-		private PurchaseOperation _purchaseOp;
-
 		private IStoreController _storeController;
 		private bool _disposed;
 
 		#endregion
 
 		#region interface
-
-		/// <summary>
-		/// Identifier for initialize-related trace events.
-		/// </summary>
-		protected const int TraceEventInitialize = (int)TraceEventId.Initialize;
-
-		/// <summary>
-		/// Identifier for fetch-related trace events.
-		/// </summary>
-		protected const int TraceEventFetch = (int)TraceEventId.Fetch;
-
-		/// <summary>
-		/// Identifier for purchase-related trace events.
-		/// </summary>
-		protected const int TraceEventPurchase = (int)TraceEventId.Purchase;
 
 		/// <summary>
 		/// Identifier for user trace events.
@@ -64,7 +45,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <c>true</c> if the service is disposed; <c>false</c> otherwise. Read only.
 		/// </summary>
-		public bool IsDisposed => _disposed;
+		protected bool IsDisposed => _disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
@@ -94,6 +75,13 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
+		/// Called when the store initialize operation has been initiated.
+		/// </summary>
+		protected virtual void OnInitializeInitiated()
+		{
+		}
+
+		/// <summary>
 		/// Called when the store initialization has succeeded.
 		/// </summary>
 		protected virtual void OnInitializeCompleted(ProductCollection products)
@@ -110,7 +98,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store fetch has succeeded.
+		/// Called when the store fetch operation has been initiated.
 		/// </summary>
 		protected virtual void OnFetchInitiated()
 		{
@@ -131,7 +119,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store initialization has failed.
+		/// Called when the store purchase operation has been initiated.
 		/// </summary>
 		protected virtual void OnPurchaseInitiated(string productId, bool isRestored)
 		{
@@ -163,27 +151,7 @@ namespace UnityFx.Purchasing
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-
-				if (_initializeOp != null)
-				{
-					InvokeInitializeFailed(StoreInitializeError.StoreDisposed, null);
-					_initializeOp.Dispose();
-					_initializeOp = null;
-				}
-
-				if (_fetchOp != null)
-				{
-					InvokeFetchFailed(StoreInitializeError.StoreDisposed, null);
-					_fetchOp.Dispose();
-					_fetchOp = null;
-				}
-
-				if (_purchaseOp != null)
-				{
-					InvokePurchaseFailed(_purchaseOp.ProductId, new PurchaseResult(null), StorePurchaseError.StoreDisposed, null);
-					_purchaseOp.Dispose();
-					_purchaseOp = null;
-				}
+				_storeListener.Dispose();
 
 				try
 				{
@@ -235,7 +203,7 @@ namespace UnityFx.Purchasing
 		public bool IsInitialized => _storeController != null;
 
 		/// <inheritdoc/>
-		public bool IsBusy => _purchaseOp != null;
+		public bool IsBusy => _storeListener.IsPurchasePending;
 
 		/// <inheritdoc/>
 		public async Task InitializeAsync()
@@ -244,17 +212,14 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				if (_initializeOp != null)
+				if (_storeListener.IsInitializePending)
 				{
-					await _initializeOp.Task;
+					await _storeListener.InitializeTask;
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
-					using (var op = new InitializeOperation(_console))
+					using (var op = _storeListener.BeginInitialize())
 					{
-						_initializeOp = op;
-						_storeListener.SetInitializeOp(op);
-
 						try
 						{
 							// Get user-defined store config.
@@ -284,8 +249,7 @@ namespace UnityFx.Purchasing
 						}
 						finally
 						{
-							_storeListener.SetInitializeOp(null);
-							_initializeOp = null;
+							_storeListener.EndInitialize();
 						}
 					}
 				}
@@ -301,17 +265,14 @@ namespace UnityFx.Purchasing
 			{
 				await InitializeAsync();
 			}
-			else if (_fetchOp != null)
+			else if (_storeListener.IsFetchPending)
 			{
-				await _fetchOp.Task;
+				await _storeListener.FetchTask;
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				using (var op = new FetchOperation(_console))
+				using (var op = _storeListener.BeginFetch())
 				{
-					_fetchOp = op;
-					_storeListener.SetFetchOp(op);
-
 					try
 					{
 						// Get user-defined store config.
@@ -338,8 +299,7 @@ namespace UnityFx.Purchasing
 					}
 					finally
 					{
-						_storeListener.SetFetchOp(null);
-						_fetchOp = null;
+						_storeListener.EndFetch();
 					}
 				}
 			}
@@ -353,11 +313,8 @@ namespace UnityFx.Purchasing
 			ThrowIfBusy();
 
 			// 1) Initialize store transaction.
-			using (var op = new PurchaseOperation(this, _console, productId, false))
+			using (var op = _storeListener.BeginPurchase(productId, false))
 			{
-				_purchaseOp = op;
-				_storeListener.SetPurchaseOp(op);
-
 				try
 				{
 					// 2) Wait untill the store initialization is finished. If the initialization fails for any reason
@@ -365,9 +322,9 @@ namespace UnityFx.Purchasing
 					await InitializeAsync();
 
 					// 3) Wait for the fetch operation to complete (if any).
-					if (_fetchOp != null)
+					if (_storeListener.IsFetchPending)
 					{
-						await _fetchOp.Task;
+						await _storeListener.FetchTask;
 					}
 
 					// 4) Look up the Product reference with the product identifier and the Purchasing system's products collection.
@@ -407,8 +364,7 @@ namespace UnityFx.Purchasing
 				}
 				finally
 				{
-					_storeListener.SetPurchaseOp(null);
-					_purchaseOp = null;
+					_storeListener.EndPurchase();
 				}
 			}
 		}
@@ -464,7 +420,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfBusy()
 		{
-			if (_purchaseOp != null)
+			if (_storeListener.IsPurchasePending)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy");
 			}

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Represents a store operation.
+	/// A generic disposable store operation that logs start/end events.
 	/// </summary>
 	internal abstract class StoreOperation<T> : TaskCompletionSource<T>, IDisposable
 	{

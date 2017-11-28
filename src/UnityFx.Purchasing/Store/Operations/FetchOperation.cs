@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Represents a fetch operation.
+	/// A fetch operation.
 	/// </summary>
 	internal class FetchOperation : StoreOperation<object>
 	{

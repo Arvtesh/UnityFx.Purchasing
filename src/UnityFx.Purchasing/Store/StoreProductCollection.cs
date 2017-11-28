@@ -21,7 +21,7 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public void Initialize(IStoreController storeController) => _storeController = storeController;
+		public void SetController(IStoreController storeController) => _storeController = storeController;
 
 		#endregion
 

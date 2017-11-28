@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -10,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreListener"/>.
 	/// </summary>
-	internal sealed class StoreListener : IStoreListener
+	internal sealed class StoreListener : IStoreListener, IDisposable
 	{
 		#region data
 
@@ -20,10 +21,21 @@ namespace UnityFx.Purchasing
 		private InitializeOperation _initializeOp;
 		private FetchOperation _fetchOp;
 		private PurchaseOperation _purchaseOp;
+		private bool _disposed;
 
 		#endregion
 
 		#region interface
+
+		public bool IsInitializePending => _initializeOp != null;
+
+		public Task InitializeTask => _initializeOp?.Task;
+
+		public bool IsFetchPending => _fetchOp != null;
+
+		public Task FetchTask => _fetchOp?.Task;
+
+		public bool IsPurchasePending => _purchaseOp != null;
 		
 		public StoreListener(StoreService storeService, TraceSource console)
 		{
@@ -31,19 +43,54 @@ namespace UnityFx.Purchasing
 			_console = console;
 		}
 
-		public void SetInitializeOp(InitializeOperation op)
+		public InitializeOperation BeginInitialize()
 		{
-			_initializeOp = op;
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_fetchOp == null);
+
+			_initializeOp = new InitializeOperation(_console);
+			_storeService.InvokeInitializeInitiated();
+
+			return _initializeOp;
 		}
 
-		public void SetFetchOp(FetchOperation op)
+		public void EndInitialize()
 		{
-			_fetchOp = op;
+			_initializeOp = null;
 		}
 
-		public void SetPurchaseOp(PurchaseOperation op)
+		public FetchOperation BeginFetch()
 		{
-			_purchaseOp = op;
+			Debug.Assert(_fetchOp == null);
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_purchaseOp == null);
+
+			_fetchOp = new FetchOperation(_console);
+			_storeService.InvokeFetchInitiated();
+
+			return _fetchOp;
+		}
+
+		public void EndFetch()
+		{
+			_fetchOp = null;
+		}
+
+		public PurchaseOperation BeginPurchase(string productId, bool isRestored)
+		{
+			Debug.Assert(_purchaseOp == null);
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_fetchOp == null);
+
+			_purchaseOp = new PurchaseOperation(_storeService, _console, productId, isRestored);
+			_storeService.InvokePurchaseInitiated(productId, isRestored);
+
+			return _purchaseOp;
+		}
+
+		public void EndPurchase()
+		{
+			_purchaseOp = null;
 		}
 
 		#endregion
@@ -56,7 +103,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(extensions != null);
 			Debug.Assert(_initializeOp != null);
 
-			if (!_storeService.IsDisposed)
+			if (!_disposed)
 			{
 				try
 				{
@@ -80,7 +127,7 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(_initializeOp != null);
 
-			if (!_storeService.IsDisposed)
+			if (!_disposed)
 			{
 				try
 				{
@@ -101,7 +148,7 @@ namespace UnityFx.Purchasing
 
 		public void OnFetch()
 		{
-			if (!_storeService.IsDisposed)
+			if (!_disposed)
 			{
 				try
 				{
@@ -122,7 +169,7 @@ namespace UnityFx.Purchasing
 
 		public void OnFetchFailed(InitializationFailureReason error)
 		{
-			if (!_storeService.IsDisposed)
+			if (!_disposed)
 			{
 				_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Fetch, "OnFetchFailed: " + error);
 
@@ -147,7 +194,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(args != null);
 			Debug.Assert(args.purchasedProduct != null);
 
-			if (!_storeService.IsDisposed)
+			if (!_disposed)
 			{
 				try
 				{
@@ -181,7 +228,7 @@ namespace UnityFx.Purchasing
 
 		public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
 		{
-			if (!_storeService.IsDisposed)
+			if (!_disposed)
 			{
 				try
 				{
@@ -208,6 +255,42 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		#endregion
+
+		#region IDisposable
+
+		public void Dispose()
+		{
+			if (!_disposed)
+			{
+				_disposed = true;
+
+				if (_purchaseOp != null)
+				{
+					_storeService.InvokePurchaseFailed(_purchaseOp.ProductId, new PurchaseResult(null), StorePurchaseError.StoreDisposed, null);
+					_purchaseOp.Dispose();
+					_purchaseOp = null;
+				}
+
+				if (_fetchOp != null)
+				{
+					_storeService.InvokeFetchFailed(StoreInitializeError.StoreDisposed, null);
+					_fetchOp.Dispose();
+					_fetchOp = null;
+				}
+
+				if (_initializeOp != null)
+				{
+					_storeService.InvokeInitializeFailed(StoreInitializeError.StoreDisposed, null);
+					_initializeOp.Dispose();
+					_initializeOp = null;
+				}
+			}
+		}
+
+		#endregion
+
+		#region implementation
 		#endregion
 	}
 }
