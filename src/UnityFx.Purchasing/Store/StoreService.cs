@@ -63,11 +63,17 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Requests the store configuration.
 		/// </summary>
+		/// <remarks>
+		/// Typlical implementation would connect app server for information on products available.
+		/// </remarks>
 		protected abstract Task<StoreConfig> GetStoreConfigAsync();
 
 		/// <summary>
 		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed (default behaviour).
 		/// </summary>
+		/// <remarks>
+		/// Typical implementation would first do client validation of the purchase and (if that passes) then initiate server-side validation. 
+		/// </remarks>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
 		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo)
 		{
