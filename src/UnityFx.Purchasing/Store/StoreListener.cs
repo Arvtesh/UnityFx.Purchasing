@@ -207,7 +207,7 @@ namespace UnityFx.Purchasing
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
 					{
-						_purchaseOp = new PurchaseOperation(_storeService, _console, productId, true);
+						_purchaseOp = BeginPurchase(productId, true);
 					}
 
 					return _purchaseOp.ProcessPurchase(args);
@@ -238,7 +238,7 @@ namespace UnityFx.Purchasing
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
 					{
-						_purchaseOp = new PurchaseOperation(_storeService, _console, productId, true);
+						_purchaseOp = BeginPurchase(productId, true);
 					}
 
 					_purchaseOp.SetPurchaseFailed(product, StoreService.GetPurchaseError(reason), null);

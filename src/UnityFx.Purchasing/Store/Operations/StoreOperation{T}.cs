@@ -23,7 +23,7 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public bool IsDisposed => _disposed;
+		protected bool IsDisposed => _disposed;
 
 		public StoreOperation(TraceSource console, StoreService.TraceEventId eventId, string comment, string args)
 		{

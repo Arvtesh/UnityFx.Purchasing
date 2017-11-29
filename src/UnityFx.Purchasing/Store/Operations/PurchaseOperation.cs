@@ -35,8 +35,6 @@ namespace UnityFx.Purchasing
 			_console = console;
 			_productId = productId;
 			_restored = restored;
-
-			_storeService.InvokePurchaseInitiated(productId, restored);
 		}
 
 		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
