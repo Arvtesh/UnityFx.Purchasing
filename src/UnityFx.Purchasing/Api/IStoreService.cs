@@ -111,14 +111,34 @@ namespace UnityFx.Purchasing
 	public interface IStoreService : IDisposable
 	{
 		/// <summary>
-		/// Triggered when the store has been initialized.
+		/// Triggered when the store initialization has been initiated.
 		/// </summary>
-		event EventHandler StoreInitialized;
+		event EventHandler StoreInitializeInitiated;
 
 		/// <summary>
-		/// Triggered when the store initializzation has failed.
+		/// Triggered when the store has been initialized.
 		/// </summary>
-		event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;
+		event EventHandler StoreInitializeCompleted;
+
+		/// <summary>
+		/// Triggered when the store initialization has failed.
+		/// </summary>
+		event EventHandler<StoreInitializeFailedEventArgs> StoreInitializeFailed;
+
+		/// <summary>
+		/// Triggered when the store fetch has been initiated.
+		/// </summary>
+		event EventHandler StoreFetchInitiated;
+
+		/// <summary>
+		/// Triggered when the store fetch has been completed.
+		/// </summary>
+		event EventHandler StoreFetchCompleted;
+
+		/// <summary>
+		/// Triggered when the store fetch has failed.
+		/// </summary>
+		event EventHandler<StoreInitializeFailedEventArgs> StoreFetchFailed;
 
 		/// <summary>
 		/// Triggered when a new purchase is initiated.
@@ -168,14 +188,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store (if not initialized already).
 		/// </summary>
-		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
+		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task InitializeAsync();
 
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
-		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
+		/// <exception cref="StoreInitializeException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task FetchAsync();
 

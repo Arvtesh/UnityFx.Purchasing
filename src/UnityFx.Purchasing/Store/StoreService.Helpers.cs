@@ -130,7 +130,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_observer.OnNext(new PurchaseInfo(productId, purchaseResult, null, null));
+				_observable.OnNext(new PurchaseInfo(productId, purchaseResult, null, null));
 			}
 			catch (Exception e)
 			{
@@ -153,7 +153,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_observer.OnNext(new PurchaseInfo(productId, purchaseResult, reason, ex));
+				_observable.OnNext(new PurchaseInfo(productId, purchaseResult, reason, ex));
 			}
 			catch (Exception e)
 			{

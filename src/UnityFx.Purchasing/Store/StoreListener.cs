@@ -132,7 +132,7 @@ namespace UnityFx.Purchasing
 				try
 				{
 					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Initialize, "OnInitializeFailed: " + error);
-					_initializeOp.SetException(new StoreFetchException(error));
+					_initializeOp.SetException(new StoreInitializeException(error));
 				}
 				catch (Exception e)
 				{
@@ -175,7 +175,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_fetchOp.SetException(new StoreFetchException(error));
+					_fetchOp.SetException(new StoreInitializeException(error));
 				}
 				catch (Exception e)
 				{

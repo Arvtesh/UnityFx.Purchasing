@@ -7,9 +7,9 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event argument for <see cref="IStoreService.StoreInitializationFailed"/>.
+	/// Event argument for <see cref="IStoreService.StoreInitializeFailed"/>.
 	/// </summary>
-	public class PurchaseInitializationFailed : EventArgs
+	public class StoreInitializeFailedEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
@@ -22,9 +22,9 @@ namespace UnityFx.Purchasing
 		public Exception Exception { get; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseInitializationFailed"/> class.
+		/// Initializes a new instance of the <see cref="StoreInitializeFailedEventArgs"/> class.
 		/// </summary>
-		public PurchaseInitializationFailed(StoreInitializeError reason, Exception e)
+		public StoreInitializeFailedEventArgs(StoreInitializeError reason, Exception e)
 		{
 			Reason = reason;
 			Exception = e;

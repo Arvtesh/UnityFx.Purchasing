@@ -23,7 +23,7 @@ namespace UnityFx.Purchasing
 		private readonly IPurchasingModule _purchasingModule;
 		private readonly StoreProductCollection _products;
 		private readonly StoreListener _storeListener;
-		private readonly StoreObservable _observer;
+		private readonly StoreObservable _observable;
 
 		private IStoreController _storeController;
 		private bool _disposed;
@@ -57,7 +57,7 @@ namespace UnityFx.Purchasing
 			_purchasingModule = purchasingModule;
 			_products = new StoreProductCollection();
 			_storeListener = new StoreListener(this, _console);
-			_observer = new StoreObservable();
+			_observable = new StoreObservable();
 		}
 
 		/// <summary>
@@ -79,6 +79,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnInitializeInitiated()
 		{
+			StoreInitializeInitiated?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -86,7 +87,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnInitializeCompleted(ProductCollection products)
 		{
-			StoreInitialized?.Invoke(this, EventArgs.Empty);
+			StoreInitializeCompleted?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -94,7 +95,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnInitializeFailed(StoreInitializeError reason, Exception e)
 		{
-			StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason, e));
+			StoreInitializeFailed?.Invoke(this, new StoreInitializeFailedEventArgs(reason, e));
 		}
 
 		/// <summary>
@@ -102,6 +103,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchInitiated()
 		{
+			StoreFetchInitiated?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -109,6 +111,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchCompleted(ProductCollection products)
 		{
+			StoreFetchCompleted?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -116,6 +119,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchFailed(StoreInitializeError reason, Exception e)
 		{
+			StoreFetchFailed?.Invoke(this, new StoreInitializeFailedEventArgs(reason, e));
 		}
 
 		/// <summary>
@@ -155,7 +159,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_observer.OnCompleted();
+					_observable.OnCompleted();
 				}
 				catch (Exception e)
 				{
@@ -173,10 +177,22 @@ namespace UnityFx.Purchasing
 		#region IStoreService
 
 		/// <inheritdoc/>
-		public event EventHandler StoreInitialized;
+		public event EventHandler StoreInitializeInitiated;
 
 		/// <inheritdoc/>
-		public event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;
+		public event EventHandler StoreInitializeCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<StoreInitializeFailedEventArgs> StoreInitializeFailed;
+
+		/// <inheritdoc/>
+		public event EventHandler StoreFetchInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler StoreFetchCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<StoreInitializeFailedEventArgs> StoreFetchFailed;
 
 		/// <inheritdoc/>
 		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
@@ -188,7 +204,7 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 		/// <inheritdoc/>
-		public IObservable<PurchaseInfo> Purchases => _observer;
+		public IObservable<PurchaseInfo> Purchases => _observable;
 
 		/// <inheritdoc/>
 		public IStoreServiceSettings Settings => this;
@@ -236,7 +252,7 @@ namespace UnityFx.Purchasing
 							// Notify subscribers of the operation success.
 							InvokeInitializeCompleted(_storeController.products);
 						}
-						catch (StoreFetchException e)
+						catch (StoreInitializeException e)
 						{
 							InvokeInitializeFailed(GetInitializeError(e.Reason), e);
 							throw;
@@ -286,7 +302,7 @@ namespace UnityFx.Purchasing
 						// Notify subscribers of the operation success.
 						InvokeFetchCompleted(_storeController.products);
 					}
-					catch (StoreFetchException e)
+					catch (StoreInitializeException e)
 					{
 						InvokeFetchFailed(GetInitializeError(e.Reason), e);
 						throw;
@@ -351,7 +367,7 @@ namespace UnityFx.Purchasing
 					InvokePurchaseFailed(productId, e.Result, e.Reason, e);
 					throw;
 				}
-				catch (StoreFetchException e)
+				catch (StoreInitializeException e)
 				{
 					_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {productId}, reason = {e.Message}");
 					throw;
