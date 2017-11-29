@@ -10,35 +10,19 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A store configuration.
 	/// </summary>
-	/// <seealso cref="IStoreDelegate"/>
 	public class StoreConfig
 	{
 		/// <summary>
 		/// Returns the validation status. Read only.
 		/// </summary>
-		public IEnumerable<IStoreProduct> Products { get; }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreConfig"/> class.
-		/// </summary>
-		public StoreConfig(IEnumerable<IStoreProduct> products)
-		{
-			Products = products;
-		}
+		public IEnumerable<ProductDefinition> Products { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreConfig"/> class.
 		/// </summary>
 		public StoreConfig(IEnumerable<ProductDefinition> products)
 		{
-			var items = new List<IStoreProduct>();
-
-			foreach (var productDefinitions in products)
-			{
-				items.Add(new DefaultProduct(productDefinitions));
-			}
-
-			Products = items;
+			Products = products;
 		}
 	}
 }

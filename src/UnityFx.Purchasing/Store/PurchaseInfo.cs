@@ -44,7 +44,7 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="PurchaseInfo"/> class.
 		/// </summary>
 		public PurchaseInfo(string productId, PurchaseResult purchaseResult, StorePurchaseError? error, Exception e)
-			: base(purchaseResult.Product, purchaseResult.TransactionInfo, purchaseResult.ValidationResult)
+			: base(purchaseResult.TransactionInfo, purchaseResult.ValidationResult)
 		{
 			ProductId = productId;
 			Error = error;

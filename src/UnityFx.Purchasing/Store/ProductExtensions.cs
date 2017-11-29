@@ -43,15 +43,15 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		public static string GetNativeReceipt(this Product product, out string storeId)
 		{
-			if (string.IsNullOrEmpty(product.receipt))
+			if (product.hasReceipt && !string.IsNullOrEmpty(product.receipt))
 			{
-				storeId = null;
-				return product.receipt;
+				var receiptData = JsonUtility.FromJson<UnityReceiptData>(product.receipt);
+				storeId = receiptData.Store;
+				return receiptData.Payload;
 			}
 
-			var receiptData = JsonUtility.FromJson<UnityReceiptData>(product.receipt);
-			storeId = receiptData.Store;
-			return receiptData.Payload;
+			storeId = null;
+			return product.receipt;
 		}
 	}
 }

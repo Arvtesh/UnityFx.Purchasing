@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -15,26 +14,17 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	internal sealed partial class StoreService : IStoreService, IStoreProductCollection, IObservable<PurchaseInfo>
+	public abstract partial class StoreService : IStoreService, IStoreServiceSettings
 	{
 		#region data
 
-		private const int _traceEventInitialize = 1;
-		private const int _traceEventFetch = 2;
-		private const int _traceEventPurchase = 3;
-
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
-		private readonly IStoreDelegate _delegate;
 		private readonly IPurchasingModule _purchasingModule;
+		private readonly StoreProductCollection _products;
+		private readonly StoreListener _storeListener;
+		private readonly StoreObservable _observer;
 
-		private Dictionary<string, IStoreProduct> _products = new Dictionary<string, IStoreProduct>();
-		private List<IObserver<PurchaseInfo>> _observers;
-		private TaskCompletionSource<object> _initializeOpCs;
-		private TaskCompletionSource<object> _fetchOpCs;
-		private TaskCompletionSource<PurchaseResult> _purchaseOpCs;
-		private string _purchaseProductId;
-		private IStoreProduct _purchaseProduct;
 		private IStoreController _storeController;
 		private bool _disposed;
 
@@ -42,353 +32,130 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal StoreService(string name, IPurchasingModule purchasingModule, IStoreDelegate storeDelegate)
+		/// <summary>
+		/// Identifier for user trace events.
+		/// </summary>
+		protected const int TraceEventMax = 4;
+
+		/// <summary>
+		/// Returns the <see cref="System.Diagnostics.TraceSource"/> instance used by the service. Read only.
+		/// </summary>
+		protected TraceSource TraceSource => _console;
+
+		/// <summary>
+		/// Returns <c>true</c> if the service is disposed; <c>false</c> otherwise. Read only.
+		/// </summary>
+		protected bool IsDisposed => _disposed;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreService"/> class.
+		/// </summary>
+		protected StoreService(string name, IPurchasingModule purchasingModule)
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
-			_console = new TraceSource(_serviceName, SourceLevels.All);
-			_delegate = storeDelegate;
+			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
+			_products = new StoreProductCollection();
+			_storeListener = new StoreListener(this, _console);
+			_observer = new StoreObservable();
 		}
 
-		#endregion
+		/// <summary>
+		/// Requests the store configuration.
+		/// </summary>
+		protected abstract Task<StoreConfig> GetStoreConfigAsync();
 
-		#region IStoreService
-
-		public event EventHandler StoreInitialized;
-		public event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;
-		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
-		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
-		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
-
-		public IObservable<PurchaseInfo> Purchases => this;
-
-		public SourceSwitch TraceSwitch => _console.Switch;
-
-		public TraceListenerCollection TraceListeners => _console.Listeners;
-
-		public IStoreProductCollection Products => this;
-
-		public IStoreController Controller => _storeController;
-
-		public bool IsInitialized => _storeController != null;
-
-		public bool IsBusy => _purchaseOpCs != null;
-
-		public async Task InitializeAsync()
+		/// <summary>
+		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed (default behaviour).
+		/// </summary>
+		/// <param name="transactionInfo">The transaction data to validate.</param>
+		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo)
 		{
-			ThrowIfDisposed();
-
-			if (_storeController == null)
-			{
-				if (_initializeOpCs != null)
-				{
-					// Initialization is pending.
-					await _initializeOpCs.Task;
-				}
-				else if (Application.isMobilePlatform || Application.isEditor)
-				{
-					_console.TraceEvent(TraceEventType.Start, _traceEventInitialize, "Initialize");
-
-					try
-					{
-						_initializeOpCs = new TaskCompletionSource<object>();
-
-						// 1) Get store configuration. Should be provided by the service user.
-						var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-						var storeConfig = await _delegate.GetStoreConfigAsync();
-
-						// 2) Initialize the store content.
-						foreach (var product in storeConfig.Products)
-						{
-							var productDefinition = product.Definition;
-							configurationBuilder.AddProduct(productDefinition.id, productDefinition.type);
-							_products.Add(productDefinition.id, product);
-						}
-
-						// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
-						UnityPurchasing.Initialize(this, configurationBuilder);
-						await _initializeOpCs.Task;
-
-						// 4) Trigger user-defined events.
-						InvokeInitializeCompleted(_traceEventInitialize);
-					}
-					catch (StoreInitializeException e)
-					{
-						InvokeInitializeFailed(_traceEventInitialize, GetInitializeError(e.Reason), e);
-						throw;
-					}
-					catch (Exception e)
-					{
-						_console.TraceData(TraceEventType.Error, _traceEventInitialize, e);
-						InvokeInitializeFailed(_traceEventInitialize, StoreInitializeError.Unknown, e);
-						throw;
-					}
-					finally
-					{
-						_initializeOpCs = null;
-					}
-				}
-			}
+			return Task.FromResult<PurchaseValidationResult>(null);
 		}
 
-		public async Task FetchAsync()
+		/// <summary>
+		/// Called when the store initialize operation has been initiated.
+		/// </summary>
+		protected virtual void OnInitializeInitiated()
 		{
-			ThrowIfDisposed();
+		}
 
-			if (_storeController == null)
+		/// <summary>
+		/// Called when the store initialization has succeeded.
+		/// </summary>
+		protected virtual void OnInitializeCompleted(ProductCollection products)
+		{
+			StoreInitialized?.Invoke(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Called when the store initialization has failed.
+		/// </summary>
+		protected virtual void OnInitializeFailed(StoreInitializeError reason, Exception e)
+		{
+			StoreInitializationFailed?.Invoke(this, new PurchaseInitializationFailed(reason, e));
+		}
+
+		/// <summary>
+		/// Called when the store fetch operation has been initiated.
+		/// </summary>
+		protected virtual void OnFetchInitiated()
+		{
+		}
+
+		/// <summary>
+		/// Called when the store fetch has succeeded.
+		/// </summary>
+		protected virtual void OnFetchCompleted(ProductCollection products)
+		{
+		}
+
+		/// <summary>
+		/// Called when the store fetch has failed.
+		/// </summary>
+		protected virtual void OnFetchFailed(StoreInitializeError reason, Exception e)
+		{
+		}
+
+		/// <summary>
+		/// Called when the store purchase operation has been initiated.
+		/// </summary>
+		protected virtual void OnPurchaseInitiated(string productId, bool isRestored)
+		{
+			PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId, isRestored));
+		}
+
+		/// <summary>
+		/// Called when the store purchase operation succeded.
+		/// </summary>
+		protected virtual void OnPurchaseCompleted(string productId, PurchaseResult purchaseResult)
+		{
+			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult));
+		}
+
+		/// <summary>
+		/// Called when the store purchase operation has failed.
+		/// </summary>
+		protected virtual void OnPurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception e)
+		{
+			PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(productId, purchaseResult, reason, e));
+		}
+
+		/// <summary>
+		/// Releases unmanaged resources used by the service.
+		/// </summary>
+		/// <param name="disposing">Should be <c>true</c> if the method is called from <see cref="Dispose()"/>; <c>false</c> otherwise.</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
 			{
-				await InitializeAsync();
-			}
-			else if (_fetchOpCs != null)
-			{
-				await _fetchOpCs.Task;
-			}
-			else if (Application.isMobilePlatform || Application.isEditor)
-			{
-				_console.TraceEvent(TraceEventType.Start, _traceEventFetch, "Fetch");
+				_disposed = true;
+				_storeListener.Dispose();
 
 				try
 				{
-					_fetchOpCs = new TaskCompletionSource<object>();
-
-					// 1) Get store configuration. Should be provided by the service user.
-					var storeConfig = await _delegate.GetStoreConfigAsync();
-					var productsToFetch = new HashSet<ProductDefinition>();
-
-					// 2) Initialize the store content.
-					foreach (var product in storeConfig.Products)
-					{
-						var productDefinition = product.Definition;
-
-						if (_products.ContainsKey(productDefinition.id))
-						{
-							_products[productDefinition.id] = product;
-						}
-						else
-						{
-							_products.Add(productDefinition.id, product);
-						}
-
-						productsToFetch.Add(productDefinition);
-					}
-
-					// 3) Request the store data. This connects to real store and retrieves information on products specified in the previous step.
-					_storeController.FetchAdditionalProducts(productsToFetch, OnFetch, OnFetchFailed);
-					await _fetchOpCs.Task;
-
-					// 4) Trigger user-defined events.
-					InvokeInitializeCompleted(_traceEventFetch);
-				}
-				catch (StoreInitializeException e)
-				{
-					InvokeInitializeFailed(_traceEventFetch, GetInitializeError(e.Reason), e);
-					throw;
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, _traceEventFetch, e);
-					InvokeInitializeFailed(_traceEventFetch, StoreInitializeError.Unknown, e);
-					throw;
-				}
-				finally
-				{
-					_fetchOpCs = null;
-				}
-			}
-		}
-
-		public async Task<PurchaseResult> PurchaseAsync(string productId)
-		{
-			ThrowIfInvalidProductId(productId);
-			ThrowIfDisposed();
-			ThrowIfBusy();
-
-			// 1) Notify user of the purchase.
-			InvokePurchaseInitiated(productId, false);
-
-			try
-			{
-				// 2) Wait untill the store initialization is finished. If the initialization fails for any reason
-				// an exception will be thrown, so no need to null-check _storeController.
-				await InitializeAsync();
-
-				// 3) Wait for the fetch operation to complete (if any).
-				if (_fetchOpCs != null)
-				{
-					await _fetchOpCs.Task;
-				}
-
-				// 4) Look up the Product reference with the general product identifier and the Purchasing system's products collection.
-				var product = InitializeTransaction(productId);
-
-				// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
-				if (product != null && product.availableToPurchase)
-				{
-					_console.TraceEvent(TraceEventType.Verbose, _traceEventPurchase, $"InitiatePurchase: {product.definition.id} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-					_purchaseOpCs = new TaskCompletionSource<PurchaseResult>(product);
-					_storeController.InitiatePurchase(product);
-
-					// 6) Wait for the purchase and validation process to complete, notify users and return.
-					var purchaseResult = await _purchaseOpCs.Task;
-					InvokePurchaseCompleted(purchaseResult);
-					return purchaseResult;
-				}
-				else
-				{
-					throw new StorePurchaseException(new PurchaseResult(_purchaseProduct), StorePurchaseError.ProductUnavailable);
-				}
-			}
-			catch (StorePurchaseException e)
-			{
-				InvokePurchaseFailed(e.Result, e.Reason, e);
-				throw;
-			}
-			catch (StoreInitializeException e)
-			{
-				_console.TraceEvent(TraceEventType.Error, _traceEventPurchase, $"{GetEventName(_traceEventPurchase)} error: {productId}, reason = {e.Message}");
-				throw;
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, _traceEventPurchase, e);
-				InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.Unknown, e);
-				throw;
-			}
-			finally
-			{
-				ReleaseTransaction();
-			}
-		}
-
-		#endregion
-
-		#region IReadOnlyCollection
-
-		public IStoreProduct this[string productId]
-		{
-			get
-			{
-				ThrowIfInvalidProductId(productId);
-				return _products[productId];
-			}
-		}
-
-		public int Count => _products.Count;
-
-		public bool ContainsKey(string productId)
-		{
-			ThrowIfInvalidProductId(productId);
-			return _products.ContainsKey(productId);
-		}
-
-		public bool TryGetValue(string productId, out IStoreProduct product)
-		{
-			ThrowIfInvalidProductId(productId);
-			return _products.TryGetValue(productId, out product);
-		}
-
-		#endregion
-
-		#region IEnumerable
-
-		public IEnumerator<IStoreProduct> GetEnumerator()
-		{
-			return _products.Values.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _products.Values.GetEnumerator();
-		}
-
-		#endregion
-
-		#region IObservable
-
-		private class Subscription : IDisposable
-		{
-			private readonly List<IObserver<PurchaseInfo>> _observers;
-			private readonly IObserver<PurchaseInfo> _observer;
-
-			public Subscription(List<IObserver<PurchaseInfo>> observers, IObserver<PurchaseInfo> observer)
-			{
-				_observers = observers;
-				_observer = observer;
-			}
-
-			public void Dispose()
-			{
-				lock (_observers)
-				{
-					_observers.Remove(_observer);
-				}
-			}
-		}
-
-		public IDisposable Subscribe(IObserver<PurchaseInfo> observer)
-		{
-			if (observer == null)
-			{
-				throw new ArgumentNullException(nameof(observer));
-			}
-
-			ThrowIfDisposed();
-
-			if (_observers == null)
-			{
-				_observers = new List<IObserver<PurchaseInfo>>() { observer };
-			}
-			else
-			{
-				lock (_observers)
-				{
-					_observers.Add(observer);
-				}
-			}
-
-			return new Subscription(_observers, observer);
-		}
-
-		#endregion
-
-		#region IDisposable
-
-		public void Dispose()
-		{
-			if (!_disposed)
-			{
-				if (_initializeOpCs != null)
-				{
-					InvokeInitializeFailed(_traceEventInitialize, StoreInitializeError.StoreDisposed, null);
-					_initializeOpCs = null;
-				}
-
-				if (_fetchOpCs != null)
-				{
-					InvokeInitializeFailed(_traceEventFetch, StoreInitializeError.StoreDisposed, null);
-					_fetchOpCs = null;
-				}
-
-				if (_purchaseOpCs != null)
-				{
-					InvokePurchaseFailed(new PurchaseResult(_purchaseProduct), StorePurchaseError.StoreDisposed, null);
-					ReleaseTransaction();
-				}
-
-				try
-				{
-					if (_observers != null)
-					{
-						lock (_observers)
-						{
-							foreach (var item in _observers)
-							{
-								item.OnCompleted();
-							}
-
-							_observers.Clear();
-						}
-					}
+					_observer.OnCompleted();
 				}
 				catch (Exception e)
 				{
@@ -397,10 +164,230 @@ namespace UnityFx.Purchasing
 
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
 				_console.Close();
-				_products.Clear();
 				_storeController = null;
-				_disposed = true;
 			}
+		}
+
+		#endregion
+
+		#region IStoreService
+
+		/// <inheritdoc/>
+		public event EventHandler StoreInitialized;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseInitializationFailed> StoreInitializationFailed;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
+
+		/// <inheritdoc/>
+		public IObservable<PurchaseInfo> Purchases => _observer;
+
+		/// <inheritdoc/>
+		public IStoreServiceSettings Settings => this;
+
+		/// <inheritdoc/>
+		public IStoreProductCollection Products => _products;
+
+		/// <inheritdoc/>
+		public IStoreController Controller => _storeController;
+
+		/// <inheritdoc/>
+		public bool IsInitialized => _storeController != null;
+
+		/// <inheritdoc/>
+		public bool IsBusy => _storeListener.IsPurchasePending;
+
+		/// <inheritdoc/>
+		public async Task InitializeAsync()
+		{
+			ThrowIfDisposed();
+
+			if (_storeController == null)
+			{
+				if (_storeListener.IsInitializePending)
+				{
+					await _storeListener.InitializeTask;
+				}
+				else if (Application.isMobilePlatform || Application.isEditor)
+				{
+					using (var op = _storeListener.BeginInitialize())
+					{
+						try
+						{
+							// Get user-defined store config.
+							var storeConfig = await GetStoreConfigAsync();
+
+							// Configure Unity store.
+							var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
+							configurationBuilder.AddProducts(storeConfig.Products);
+
+							// Initialize Unity store.
+							UnityPurchasing.Initialize(_storeListener, configurationBuilder);
+							await op.Task;
+
+							// Notify subscribers of the operation success.
+							InvokeInitializeCompleted(_storeController.products);
+						}
+						catch (StoreFetchException e)
+						{
+							InvokeInitializeFailed(GetInitializeError(e.Reason), e);
+							throw;
+						}
+						catch (Exception e)
+						{
+							_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+							InvokeInitializeFailed(StoreInitializeError.Unknown, e);
+							throw;
+						}
+						finally
+						{
+							_storeListener.EndInitialize();
+						}
+					}
+				}
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task FetchAsync()
+		{
+			ThrowIfDisposed();
+
+			if (_storeController == null)
+			{
+				await InitializeAsync();
+			}
+			else if (_storeListener.IsFetchPending)
+			{
+				await _storeListener.FetchTask;
+			}
+			else if (Application.isMobilePlatform || Application.isEditor)
+			{
+				using (var op = _storeListener.BeginFetch())
+				{
+					try
+					{
+						// Get user-defined store config.
+						var storeConfig = await GetStoreConfigAsync();
+
+						// Fetch Unity store.
+						var products = new HashSet<ProductDefinition>(storeConfig.Products);
+						_storeController.FetchAdditionalProducts(products, _storeListener.OnFetch, _storeListener.OnFetchFailed);
+						await op.Task;
+
+						// Notify subscribers of the operation success.
+						InvokeFetchCompleted(_storeController.products);
+					}
+					catch (StoreFetchException e)
+					{
+						InvokeFetchFailed(GetInitializeError(e.Reason), e);
+						throw;
+					}
+					catch (Exception e)
+					{
+						_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+						InvokeFetchFailed(StoreInitializeError.Unknown, e);
+						throw;
+					}
+					finally
+					{
+						_storeListener.EndFetch();
+					}
+				}
+			}
+		}
+
+		/// <inheritdoc/>
+		public async Task<PurchaseResult> PurchaseAsync(string productId)
+		{
+			ThrowIfInvalidProductId(productId);
+			ThrowIfDisposed();
+			ThrowIfBusy();
+
+			// 1) Initialize store transaction.
+			using (var op = _storeListener.BeginPurchase(productId, false))
+			{
+				try
+				{
+					// 2) Wait untill the store initialization is finished. If the initialization fails for any reason
+					// an exception will be thrown, so no need to null-check _storeController.
+					await InitializeAsync();
+
+					// 3) Wait for the fetch operation to complete (if any).
+					if (_storeListener.IsFetchPending)
+					{
+						await _storeListener.FetchTask;
+					}
+
+					// 4) Look up the Product reference with the product identifier and the Purchasing system's products collection.
+					var product = _storeController.products.WithID(productId);
+
+					// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
+					if (product != null && product.availableToPurchase)
+					{
+						_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+						_storeController.InitiatePurchase(product);
+
+						// 6) Wait for the purchase and validation process to complete, notify users and return.
+						var purchaseResult = await op.Task;
+						InvokePurchaseCompleted(productId, purchaseResult);
+						return purchaseResult;
+					}
+					else
+					{
+						throw new StorePurchaseException(new PurchaseResult(product), StorePurchaseError.ProductUnavailable);
+					}
+				}
+				catch (StorePurchaseException e)
+				{
+					InvokePurchaseFailed(productId, e.Result, e.Reason, e);
+					throw;
+				}
+				catch (StoreFetchException e)
+				{
+					_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {productId}, reason = {e.Message}");
+					throw;
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+					InvokePurchaseFailed(productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
+					throw;
+				}
+				finally
+				{
+					_storeListener.EndPurchase();
+				}
+			}
+		}
+
+		#endregion
+
+		#region IStoreServiceSettings
+
+		/// <inheritdoc/>
+		public SourceSwitch TraceSwitch { get => _console.Switch; set => _console.Switch = value; }
+
+		/// <inheritdoc/>
+		public TraceListenerCollection TraceListeners => _console.Listeners;
+
+		#endregion
+
+		#region IDisposable
+
+		/// <inheritdoc/>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		#endregion
@@ -433,7 +420,7 @@ namespace UnityFx.Purchasing
 
 		private void ThrowIfBusy()
 		{
-			if (_purchaseOpCs != null || _purchaseProduct != null)
+			if (_storeListener.IsPurchasePending)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy");
 			}

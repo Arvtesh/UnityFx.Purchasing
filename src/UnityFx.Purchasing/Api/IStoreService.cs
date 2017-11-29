@@ -136,24 +136,19 @@ namespace UnityFx.Purchasing
 		event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 		/// <summary>
-		/// Returns the <see cref="SourceSwitch"/> instance attached to the <see cref="TraceSource"/> used by the store. Read only.
-		/// </summary>
-		SourceSwitch TraceSwitch { get; }
-
-		/// <summary>
-		/// Returns a collection of <see cref="TraceListener"/> instances attached to the <see cref="TraceSource"/> used by the store. Read only.
-		/// </summary>
-		TraceListenerCollection TraceListeners { get; }
-
-		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
 		IObservable<PurchaseInfo> Purchases { get; }
 
 		/// <summary>
-		/// Returns a collection of store items. Read only.
+		/// Returns store products list. Read only.
 		/// </summary>
 		IStoreProductCollection Products { get; }
+
+		/// <summary>
+		/// Returns the service settings. Read only.
+		/// </summary>
+		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
 		/// Returns Unity3d store controller. Read only.
@@ -173,14 +168,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store (if not initialized already).
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
+		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task InitializeAsync();
 
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if operation fails.</exception>
+		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task FetchAsync();
 

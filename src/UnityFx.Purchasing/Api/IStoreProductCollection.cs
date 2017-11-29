@@ -10,18 +10,25 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A read-only collection of <see cref="IStoreService"/> products.
 	/// </summary>
-	public interface IStoreProductCollection : IReadOnlyCollection<IStoreProduct>
+	public interface IStoreProductCollection : IReadOnlyCollection<Product>
 	{
 		/// <summary>
 		/// Returns product for the specified identifier. Read only.
 		/// </summary>
 		/// <param name="productId">The store product identifier.</param>
-		IStoreProduct this[string productId] { get; }
+		Product this[string productId] { get; }
 
 		/// <summary>
-		/// 
+		/// Gets the product that is associated with the specified identifier.
 		/// </summary>
-		/// <param name="productId">The store product identifier.</param>
+		/// <param name="productId">The product identifier.</param>
+		/// <param name="product">The product instance.</param>
+		bool TryGetValue(string productId, out Product product);
+
+		/// <summary>
+		/// Determines whether a product with the specified identifier is present in the collection.
+		/// </summary>
+		/// <param name="productId">The product identifier.</param>
 		bool ContainsKey(string productId);
 	}
 }
