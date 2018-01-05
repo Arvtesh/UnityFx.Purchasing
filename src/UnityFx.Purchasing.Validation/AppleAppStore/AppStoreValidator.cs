@@ -362,7 +362,7 @@ namespace UnityFx.Purchasing.Validation
 					return "This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.";
 
 				case 21008:
-					return "This receipt is from the production environment, but it was sent to the test environment for verification.Send it to the production environment instead.";
+					return "This receipt is from the production environment, but it was sent to the test environment for verification. Send it to the production environment instead.";
 
 				case 21010:
 					return "This receipt could not be authorized. Treat this the same as if a purchase was never made.";

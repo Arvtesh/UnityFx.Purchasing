@@ -22,12 +22,12 @@ namespace UnityFx.Purchasing.Validation
 		string Status { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the validation succeeded; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the validation succeeded; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		bool IsOK { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the validation failed for any reason; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the validation failed for any reason; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		bool IsFailed { get; }
 	}

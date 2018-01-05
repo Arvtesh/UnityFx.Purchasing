@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 		public string ProductId { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		public bool IsRestored { get; }
 

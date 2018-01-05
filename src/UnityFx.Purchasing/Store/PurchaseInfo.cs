@@ -26,17 +26,17 @@ namespace UnityFx.Purchasing
 		public Exception Exception { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the purchase operation has completed successfully; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the purchase operation has completed successfully; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		public bool IsSucceeded => !Error.HasValue;
 
 		/// <summary>
-		/// Returns <c>true</c> if the purchase operation has failed; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the purchase operation has failed; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		public bool IsFailed => Error.HasValue;
 
 		/// <summary>
-		/// Returns <c>true</c> if the purchase operation has failed; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the purchase operation has failed; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		public bool IsCanceled => Error == StorePurchaseError.UserCanceled;
 

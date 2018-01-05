@@ -172,8 +172,8 @@ namespace UnityFx.Purchasing.Validation
 		/// For a subscription, whether or not it is in the Free Trial period. Json field name is <c>is_trial_period</c>.
 		/// </summary>
 		/// <remarks>
-		/// This key is only present for auto-renewable subscription receipts. The value for this key is <c>true</c>
-		/// if the customer’s subscription is currently in the free trial period, or <c>false</c> if not.
+		/// This key is only present for auto-renewable subscription receipts. The value for this key is <see langword="true"/>
+		/// if the customer’s subscription is currently in the free trial period, or <see langword="false"/> if not.
 		/// </remarks>
 		public bool? SubscriptionTrialPeriod { get; internal set; }
 

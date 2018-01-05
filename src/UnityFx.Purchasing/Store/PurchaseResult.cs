@@ -12,7 +12,7 @@ namespace UnityFx.Purchasing
 	public class PurchaseResult
 	{
 		/// <summary>
-		/// Returns the purchased product (or <c>null</c>). Read only.
+		/// Returns the purchased product (or <see langword="null"/>). Read only.
 		/// </summary>
 		public Product Product { get; }
 
@@ -22,7 +22,7 @@ namespace UnityFx.Purchasing
 		public StoreTransaction TransactionInfo { get; }
 
 		/// <summary>
-		/// Returns product validation result (<c>null</c> if not available). Read only.
+		/// Returns product validation result (<see langword="null"/> if not available). Read only.
 		/// </summary>
 		public PurchaseValidationResult ValidationResult { get; }
 

@@ -33,7 +33,7 @@ namespace UnityFx.Purchasing
 		public string Receipt { get; internal set; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the purchase was auto-restored; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		public bool IsRestored { get; internal set; }
 

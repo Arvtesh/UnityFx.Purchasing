@@ -25,7 +25,7 @@ namespace UnityFx.Purchasing.Validation
 		/// Validates purchase receipt with AppStore and returns the store.
 		/// </summary>
 		/// <param name="receipt">Native iOS store receipt returned by the purchase operation.</param>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="receipt"/> value is <c>null</c>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="receipt"/> value is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="receipt"/> value is an empty string.</exception>
 		public static Task<AppStoreValidationResult> ValidateAppStoreReceiptAsync(string receipt)
 		{

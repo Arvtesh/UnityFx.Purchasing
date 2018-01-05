@@ -176,12 +176,12 @@ namespace UnityFx.Purchasing
 		IStoreController Controller { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the store is initialized (the product list is loaded from native store); <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the store is initialized (the product list is loaded from native store); <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		bool IsInitialized { get; }
 
 		/// <summary>
-		/// Returns <c>true</c> if the store has pending purchase operation; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the store has pending purchase operation; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		bool IsBusy { get; }
 

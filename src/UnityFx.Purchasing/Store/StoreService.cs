@@ -43,7 +43,7 @@ namespace UnityFx.Purchasing
 		protected TraceSource TraceSource => _console;
 
 		/// <summary>
-		/// Returns <c>true</c> if the service is disposed; <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the service is disposed; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		protected bool IsDisposed => _disposed;
 
@@ -69,7 +69,7 @@ namespace UnityFx.Purchasing
 		protected abstract Task<StoreConfig> GetStoreConfigAsync();
 
 		/// <summary>
-		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <c>null</c> result value to indicate that no validation is needed (default behaviour).
+		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <see langword="null"/> result value to indicate that no validation is needed (default behaviour).
 		/// </summary>
 		/// <remarks>
 		/// Typical implementation would first do client validation of the purchase and (if that passes) then initiate server-side validation. 
@@ -155,7 +155,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Releases unmanaged resources used by the service.
 		/// </summary>
-		/// <param name="disposing">Should be <c>true</c> if the method is called from <see cref="Dispose()"/>; <c>false</c> otherwise.</param>
+		/// <param name="disposing">Should be <see langword="true"/> if the method is called from <see cref="Dispose()"/>; <see langword="false"/> otherwise.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)

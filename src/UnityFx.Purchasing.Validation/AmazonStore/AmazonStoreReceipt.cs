@@ -63,7 +63,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime PurchaseDate { get; internal set; }
 
 		/// <summary>
-		/// The date the purchase was cancelled, or the subscription expired. The field is <c>null</c>
+		/// The date the purchase was cancelled, or the subscription expired. The field is <see langword="null"/>
 		/// if the purchase was not cancelled. Json field name is <c>cancelDate</c>.
 		/// </summary>
 		public DateTime? CancelDate { get; internal set; }
