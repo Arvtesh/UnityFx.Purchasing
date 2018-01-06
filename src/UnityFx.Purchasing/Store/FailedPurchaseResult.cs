@@ -40,5 +40,28 @@ namespace UnityFx.Purchasing
 			Error = error;
 			Exception = e;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
+		/// </summary>
+		public FailedPurchaseResult(string productId, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError error, Exception e)
+			: base(transactionInfo, validationResult)
+		{
+			ProductId = productId;
+			Error = error;
+			Exception = e;
+		}
+
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
+		/// </summary>
+		public FailedPurchaseResult(string productId, StorePurchaseException e)
+			: base(e.Result.TransactionInfo, e.Result.ValidationResult)
+		{
+			ProductId = productId;
+			Error = e.Reason;
+			Exception = e;
+		}
 	}
 }

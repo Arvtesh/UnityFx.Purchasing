@@ -158,7 +158,12 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
-		IObservable<PurchaseInfo> Purchases { get; }
+		IObservable<PurchaseResult> Purchases { get; }
+
+		/// <summary>
+		/// Returns push notification provider of the store transactions. Read only.
+		/// </summary>
+		IObservable<FailedPurchaseResult> FailedPurchases { get; }
 
 		/// <summary>
 		/// Returns store products list. Read only.

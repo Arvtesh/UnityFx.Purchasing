@@ -130,7 +130,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_observable.OnNext(new PurchaseInfo(productId, purchaseResult, null, null));
+				_purchases?.OnNext(purchaseResult);
 			}
 			catch (Exception e)
 			{
@@ -139,7 +139,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				OnPurchaseCompleted(productId, purchaseResult);
+				OnPurchaseCompleted(purchaseResult);
 			}
 			catch (Exception e)
 			{
@@ -147,13 +147,13 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal void InvokePurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception ex)
+		internal void InvokePurchaseFailed(FailedPurchaseResult purchaseResult)
 		{
-			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {productId}, reason = {reason}");
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {purchaseResult.ProductId}, reason = {purchaseResult.Error}");
 
 			try
 			{
-				_observable.OnNext(new PurchaseInfo(productId, purchaseResult, reason, ex));
+				_failedPurchases?.OnNext(purchaseResult);
 			}
 			catch (Exception e)
 			{
@@ -162,7 +162,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				OnPurchaseFailed(productId, purchaseResult, reason, ex);
+				OnPurchaseFailed(purchaseResult);
 			}
 			catch (Exception e)
 			{

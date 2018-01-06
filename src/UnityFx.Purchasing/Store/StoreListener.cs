@@ -267,7 +267,7 @@ namespace UnityFx.Purchasing
 
 				if (_purchaseOp != null)
 				{
-					_storeService.InvokePurchaseFailed(_purchaseOp.ProductId, new PurchaseResult(null), StorePurchaseError.StoreDisposed, null);
+					_storeService.InvokePurchaseFailed(new FailedPurchaseResult(_purchaseOp.ProductId, null, null, StorePurchaseError.StoreDisposed, null));
 					_purchaseOp.Dispose();
 					_purchaseOp = null;
 				}

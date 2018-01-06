@@ -100,13 +100,13 @@ namespace UnityFx.Purchasing
 
 		public void SetPurchaseFailed(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e = null)
 		{
-			var result = new PurchaseResult(transactionInfo, validationResult);
+			var result = new FailedPurchaseResult(_productId, transactionInfo, validationResult, failReason, e);
 
 			if (_restored)
 			{
 				try
 				{
-					_storeService.InvokePurchaseFailed(_productId, result, failReason, e);
+					_storeService.InvokePurchaseFailed(result);
 				}
 				finally
 				{

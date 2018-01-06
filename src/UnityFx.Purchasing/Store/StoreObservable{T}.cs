@@ -9,17 +9,17 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IObservable{T}"/>.
 	/// </summary>
-	internal class StoreObservable : IObservable<PurchaseInfo>, IObserver<PurchaseInfo>
+	internal class StoreObservable<T> : IObservable<T>, IObserver<T>
 	{
 		#region data
 
-		private List<IObserver<PurchaseInfo>> _observers;
+		private List<IObserver<T>> _observers;
 
 		#endregion
 
 		#region IObservable
 
-		public void OnNext(PurchaseInfo data)
+		public void OnNext(T data)
 		{
 			if (_observers != null)
 			{
@@ -71,10 +71,10 @@ namespace UnityFx.Purchasing
 
 		private class Subscription : IDisposable
 		{
-			private readonly List<IObserver<PurchaseInfo>> _observers;
-			private readonly IObserver<PurchaseInfo> _observer;
+			private readonly List<IObserver<T>> _observers;
+			private readonly IObserver<T> _observer;
 
-			public Subscription(List<IObserver<PurchaseInfo>> observers, IObserver<PurchaseInfo> observer)
+			public Subscription(List<IObserver<T>> observers, IObserver<T> observer)
 			{
 				_observers = observers;
 				_observer = observer;
@@ -89,8 +89,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <inheritdoc/>
-		public IDisposable Subscribe(IObserver<PurchaseInfo> observer)
+		public IDisposable Subscribe(IObserver<T> observer)
 		{
 			if (observer == null)
 			{
@@ -99,7 +98,7 @@ namespace UnityFx.Purchasing
 
 			if (_observers == null)
 			{
-				_observers = new List<IObserver<PurchaseInfo>>() { observer };
+				_observers = new List<IObserver<T>>() { observer };
 			}
 			else
 			{

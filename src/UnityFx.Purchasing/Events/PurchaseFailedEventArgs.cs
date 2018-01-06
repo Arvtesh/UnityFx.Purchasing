@@ -22,13 +22,5 @@ namespace UnityFx.Purchasing
 		{
 			Result = result;
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseFailedEventArgs"/> class.
-		/// </summary>
-		public PurchaseFailedEventArgs(string productId, PurchaseResult result, StorePurchaseError error, Exception e)
-		{
-			Result = new FailedPurchaseResult(productId, result, error, e);
-		}
 	}
 }

@@ -23,7 +23,9 @@ namespace UnityFx.Purchasing
 		private readonly IPurchasingModule _purchasingModule;
 		private readonly StoreProductCollection _products;
 		private readonly StoreListener _storeListener;
-		private readonly StoreObservable _observable;
+
+		private StoreObservable<PurchaseResult> _purchases;
+		private StoreObservable<FailedPurchaseResult> _failedPurchases;
 
 		private IStoreController _storeController;
 		private bool _disposed;
@@ -57,7 +59,6 @@ namespace UnityFx.Purchasing
 			_purchasingModule = purchasingModule;
 			_products = new StoreProductCollection();
 			_storeListener = new StoreListener(this, _console);
-			_observable = new StoreObservable();
 		}
 
 		/// <summary>
@@ -139,7 +140,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store purchase operation succeded.
 		/// </summary>
-		protected virtual void OnPurchaseCompleted(string productId, PurchaseResult purchaseResult)
+		protected virtual void OnPurchaseCompleted(PurchaseResult purchaseResult)
 		{
 			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(purchaseResult));
 		}
@@ -147,9 +148,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store purchase operation has failed.
 		/// </summary>
-		protected virtual void OnPurchaseFailed(string productId, PurchaseResult purchaseResult, StorePurchaseError reason, Exception e)
+		protected virtual void OnPurchaseFailed(FailedPurchaseResult purchaseResult)
 		{
-			PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(productId, purchaseResult, reason, e));
+			PurchaseFailed?.Invoke(this, new PurchaseFailedEventArgs(purchaseResult));
 		}
 
 		/// <summary>
@@ -165,7 +166,16 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_observable.OnCompleted();
+					_purchases?.OnCompleted();
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, 0, e);
+				}
+
+				try
+				{
+					_failedPurchases?.OnCompleted();
 				}
 				catch (Exception e)
 				{
@@ -173,7 +183,6 @@ namespace UnityFx.Purchasing
 				}
 
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
-				_console.Close();
 				_storeController = null;
 			}
 		}
@@ -210,7 +219,32 @@ namespace UnityFx.Purchasing
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 		/// <inheritdoc/>
-		public IObservable<PurchaseInfo> Purchases => _observable;
+		public IObservable<PurchaseResult> Purchases
+		{
+			get
+			{
+				if (_purchases == null)
+				{
+					_purchases = new StoreObservable<PurchaseResult>();
+				}
+
+				return _purchases;
+			}
+		}
+
+		/// <inheritdoc/>
+		public IObservable<FailedPurchaseResult> FailedPurchases
+		{
+			get
+			{
+				if (_failedPurchases == null)
+				{
+					_failedPurchases = new StoreObservable<FailedPurchaseResult>();
+				}
+
+				return _failedPurchases;
+			}
+		}
 
 		/// <inheritdoc/>
 		public IStoreServiceSettings Settings => this;
@@ -370,7 +404,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (StorePurchaseException e)
 				{
-					InvokePurchaseFailed(productId, e.Result, e.Reason, e);
+					InvokePurchaseFailed(new FailedPurchaseResult(productId, e));
 					throw;
 				}
 				catch (StoreInitializeException e)
@@ -381,7 +415,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-					InvokePurchaseFailed(productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
+					InvokePurchaseFailed(new FailedPurchaseResult(productId, null, null, StorePurchaseError.Unknown, e));
 					throw;
 				}
 				finally
