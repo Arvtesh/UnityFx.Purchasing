@@ -15,8 +15,8 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private const string _resultSerializationName = "Result";
-		private const string _reasonSerializationName = "Reason";
+		private const string _resultSerializationName = "_result";
+		private const string _reasonSerializationName = "_reason";
 
 		#endregion
 

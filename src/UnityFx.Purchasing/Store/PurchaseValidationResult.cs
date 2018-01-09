@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
 
 namespace UnityFx.Purchasing
 {
@@ -31,11 +30,11 @@ namespace UnityFx.Purchasing
 	/// A purchase validation result.
 	/// </summary>
 	[Serializable]
-	public class PurchaseValidationResult : ISerializable
+	public class PurchaseValidationResult
 	{
 		#region data
 
-		private const string _statusSerializationName = "Status";
+		private PurchaseValidationStatus _status;
 
 		#endregion
 
@@ -44,32 +43,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the validation status. Read only.
 		/// </summary>
-		public PurchaseValidationStatus Status { get; }
+		public PurchaseValidationStatus Status => _status;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseValidationResult"/> class.
 		/// </summary>
 		public PurchaseValidationResult(PurchaseValidationStatus status)
 		{
-			Status = status;
-		}
-
-		#endregion
-
-		#region ISerializable
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseValidationResult"/> class.
-		/// </summary>
-		protected PurchaseValidationResult(SerializationInfo info, StreamingContext context)
-		{
-			Status = (PurchaseValidationStatus)info.GetValue(_statusSerializationName, typeof(PurchaseValidationStatus));
-		}
-
-		/// <inheritdoc/>
-		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue(_statusSerializationName, Status);
+			_status = status;
 		}
 
 		#endregion
