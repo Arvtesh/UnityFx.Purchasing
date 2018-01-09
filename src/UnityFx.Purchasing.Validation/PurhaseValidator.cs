@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// An assembly entry point.
 	/// </summary>
 	public static class PurhaseValidator
 	{

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// AppStore purchase validation result.
 	/// </summary>
 	public class AppStoreValidationResult : IPurchaseValidationResult
 	{

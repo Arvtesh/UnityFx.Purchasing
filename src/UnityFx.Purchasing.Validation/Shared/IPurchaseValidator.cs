@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// A generic purchase validator.
 	/// </summary>
 	public interface IPurchaseValidator : IDisposable
 	{
-		
 	}
 }

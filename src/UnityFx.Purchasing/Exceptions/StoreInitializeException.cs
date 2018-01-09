@@ -68,7 +68,7 @@ namespace UnityFx.Purchasing
 		private StoreInitializeException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			Reason = (InitializationFailureReason)info.GetValue(_reasonSerializationName,typeof(InitializationFailureReason));
+			Reason = (InitializationFailureReason)info.GetValue(_reasonSerializationName, typeof(InitializationFailureReason));
 		}
 
 		/// <inheritdoc/>

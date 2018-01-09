@@ -63,7 +63,6 @@ namespace UnityFx.Purchasing
 			_exception = e;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>

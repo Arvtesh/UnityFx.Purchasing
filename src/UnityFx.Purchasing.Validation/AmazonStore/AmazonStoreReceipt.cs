@@ -6,23 +6,23 @@ using System;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// Enumerates Amazon product types.
 	/// </summary>
 	/// <seealso cref="AmazonStoreReceipt"/>
 	public enum AmazonStoreProductType
 	{
 		/// <summary>
-		/// 
+		/// Consumable product.
 		/// </summary>
 		Consumable,
 
 		/// <summary>
-		/// 
+		/// Subscription product.
 		/// </summary>
 		Subscription,
 
 		/// <summary>
-		/// 
+		/// Entitled product.
 		/// </summary>
 		Entitled
 	}

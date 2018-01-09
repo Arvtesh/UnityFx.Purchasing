@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Json;
 using System.IO;
+using System.Json;
 using System.Net;
 #if NETSTANDARD1_3
 using System.Net.Http;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// Amazon Store validation helpers. 
+	/// Amazon Store validation helpers.
 	/// </summary>
 	internal static class AmazonStoreValidator
 	{
@@ -65,7 +65,7 @@ namespace UnityFx.Purchasing.Validation
 #endif
 		}
 
-		internal async static Task<AmazonStoreValidationResult> ValidatePurchaseAsync(string receiptId, string userId, string sharedSecret, bool sandboxStore)
+		internal static async Task<AmazonStoreValidationResult> ValidatePurchaseAsync(string receiptId, string userId, string sharedSecret, bool sandboxStore)
 		{
 			var responseString = await ValidatePurchaseRawAsync(receiptId, userId, sharedSecret, sandboxStore);
 			var receipt = new AmazonStoreReceipt();
@@ -81,7 +81,7 @@ namespace UnityFx.Purchasing.Validation
 			// optional fields
 			if (json.ContainsKey(_renewalDateValueName))
 			{
-				receipt.RenewalDate =  GetDate(json[_renewalDateValueName]);
+				receipt.RenewalDate = GetDate(json[_renewalDateValueName]);
 			}
 
 			if (json.ContainsKey(_termValueName))
@@ -107,7 +107,7 @@ namespace UnityFx.Purchasing.Validation
 			return new AmazonStoreValidationResult(0, responseString, receipt);
 		}
 
-		internal async static Task<AmazonStoreValidationResult> ValidatePurchaseAsync(string receipt, string sharedSecret)
+		internal static async Task<AmazonStoreValidationResult> ValidatePurchaseAsync(string receipt, string sharedSecret)
 		{
 			var json = JsonValue.Parse(receipt);
 			var receiptId = (string)json["receiptId"];

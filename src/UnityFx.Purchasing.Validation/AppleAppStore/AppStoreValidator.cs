@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Json;
 using System.IO;
+using System.Json;
 using System.Net;
 #if NETSTANDARD1_3
 using System.Net.Http;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// Apple App Store validation helpers. 
+	/// Apple App Store validation helpers.
 	/// </summary>
 	internal static class AppStoreValidator
 	{
@@ -163,7 +163,7 @@ namespace UnityFx.Purchasing.Validation
 		private static void ParseAppReceipt(JsonValue json, AppStoreReceipt receipt)
 		{
 			// required fields
-			receipt.BundleId = json[_bundleIdValueName]; 
+			receipt.BundleId = json[_bundleIdValueName];
 			receipt.AppVersion = json[_appVersionValueName];
 			receipt.OriginalAppVersion = json[_originalAppVersionValueName];
 			receipt.CreationDate = ParseDateTimeRfc3339(json[_receiptCreationDateValueName]);

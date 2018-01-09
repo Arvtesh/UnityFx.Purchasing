@@ -36,7 +36,7 @@ namespace UnityFx.Purchasing
 		public Task FetchTask => _fetchOp?.Task;
 
 		public bool IsPurchasePending => _purchaseOp != null;
-		
+
 		public StoreListener(StoreService storeService, TraceSource console)
 		{
 			_storeService = storeService;

@@ -70,7 +70,7 @@ namespace UnityFx.Purchasing
 		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <see langword="null"/> result value to indicate that no validation is needed (default behaviour).
 		/// </summary>
 		/// <remarks>
-		/// Typical implementation would first do client validation of the purchase and (if that passes) then initiate server-side validation. 
+		/// Typical implementation would first do client validation of the purchase and (if that passes) then initiate server-side validation.
 		/// </remarks>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
 		protected internal virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo)

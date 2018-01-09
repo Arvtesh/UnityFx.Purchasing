@@ -6,7 +6,7 @@ using System;
 namespace UnityFx.Purchasing.Validation
 {
 	/// <summary>
-	/// 
+	/// Enumerates possible AppStore subscription expiration reasons.
 	/// </summary>
 	/// <seealso href="https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html"/>
 	/// <seealso cref="AppStoreInAppReceipt"/>
@@ -40,7 +40,7 @@ namespace UnityFx.Purchasing.Validation
 	}
 
 	/// <summary>
-	/// 
+	/// Enumerates possible AppStore purchase cancellation reasons.
 	/// </summary>
 	/// <seealso href="https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html"/>
 	/// <seealso cref="AppStoreInAppReceipt"/>
@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing.Validation
 	}
 
 	/// <summary>
-	/// 
+	/// AppStore in-app receipt.
 	/// </summary>
 	/// <seealso href="https://developer.apple.com/library/content/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html"/>
 	/// <seealso cref="AppStoreReceipt"/>
