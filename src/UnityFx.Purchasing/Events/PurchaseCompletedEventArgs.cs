@@ -2,12 +2,11 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event argument for <see cref="IStoreService.PurchaseCompleted"/>.
+	/// Event arguments for <see cref="IStoreService.PurchaseCompleted"/>.
 	/// </summary>
 	public class PurchaseCompletedEventArgs : EventArgs
 	{

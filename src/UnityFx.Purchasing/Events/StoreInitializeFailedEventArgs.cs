@@ -2,12 +2,11 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event argument for <see cref="IStoreService.StoreInitializeFailed"/>.
+	/// Event arguments for <see cref="IStoreService.StoreInitializeFailed"/> and <see cref="IStoreService.StoreFetchFailed"/>.
 	/// </summary>
 	public class StoreInitializeFailedEventArgs : EventArgs
 	{

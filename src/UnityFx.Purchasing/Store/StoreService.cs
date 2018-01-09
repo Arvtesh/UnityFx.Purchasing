@@ -11,10 +11,12 @@ using UnityEngine.Purchasing.Extension;
 
 namespace UnityFx.Purchasing
 {
+	using Debug = System.Diagnostics.Debug;
+
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
-	public abstract partial class StoreService : IStoreService, IStoreServiceSettings
+	public abstract class StoreService : IStoreService, IStoreServiceSettings
 	{
 		#region data
 
@@ -45,11 +47,6 @@ namespace UnityFx.Purchasing
 		protected TraceSource TraceSource => _console;
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the service is disposed; <see langword="false"/> otherwise. Read only.
-		/// </summary>
-		protected bool IsDisposed => _disposed;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		protected StoreService(string name, IPurchasingModule purchasingModule)
@@ -67,7 +64,7 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typlical implementation would connect app server for information on products available.
 		/// </remarks>
-		protected abstract Task<StoreConfig> GetStoreConfigAsync();
+		protected internal abstract Task<StoreConfig> GetStoreConfigAsync();
 
 		/// <summary>
 		/// Validates the purchase. May return a <see cref="Task{TResult}"/> with <see langword="null"/> result value to indicate that no validation is needed (default behaviour).
@@ -76,7 +73,7 @@ namespace UnityFx.Purchasing
 		/// Typical implementation would first do client validation of the purchase and (if that passes) then initiate server-side validation. 
 		/// </remarks>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
-		protected virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo)
+		protected internal virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transactionInfo)
 		{
 			return Task.FromResult<PurchaseValidationResult>(null);
 		}
@@ -187,6 +184,252 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		/// <summary>
+		/// Throws an <see cref="ObjectDisposedException"/> if the instance is already disposed.
+		/// </summary>
+		protected void ThrowIfDisposed()
+		{
+			if (_disposed)
+			{
+				throw new ObjectDisposedException(_serviceName);
+			}
+		}
+
+		/// <summary>
+		/// Throws an <see cref="ArgumentException"/> if the specified <paramref name="productId"/> is <see langword="null"/> or empty string.
+		/// </summary>
+		protected void ThrowIfInvalidProductId(string productId)
+		{
+			if (string.IsNullOrEmpty(productId))
+			{
+				throw new ArgumentException(_serviceName + " product identifier cannot be null or empty string", nameof(productId));
+			}
+		}
+
+		/// <summary>
+		/// Throws an <see cref="InvalidOperationException"/> if the service is not initialized yet.
+		/// </summary>
+		protected void ThrowIfNotInitialized()
+		{
+			if (_storeController == null)
+			{
+				throw new InvalidOperationException(_serviceName + " is not initialized");
+			}
+		}
+
+		/// <summary>
+		/// Throws an <see cref="InvalidOperationException"/> if a purchase operation is currently running.
+		/// </summary>
+		protected void ThrowIfBusy()
+		{
+			if (_storeListener.IsPurchasePending)
+			{
+				throw new InvalidOperationException(_serviceName + " is busy");
+			}
+		}
+
+		#endregion
+
+		#region internals
+
+		internal enum TraceEventId
+		{
+			Default,
+			Initialize,
+			Fetch,
+			Purchase
+		}
+
+		internal void SetStoreController(IStoreController controller)
+		{
+			_storeController = controller;
+			_products.SetController(controller);
+		}
+
+		internal void InvokeInitializeInitiated()
+		{
+			try
+			{
+				OnInitializeInitiated();
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+			}
+		}
+
+		internal void InvokeInitializeCompleted(ProductCollection products)
+		{
+			try
+			{
+				OnInitializeCompleted(products);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+			}
+		}
+
+		internal void InvokeInitializeFailed(StoreInitializeError reason, Exception ex)
+		{
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Initialize, TraceEventId.Initialize.ToString() + " error: " + reason);
+
+			try
+			{
+				OnInitializeFailed(reason, ex);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+			}
+		}
+
+		internal void InvokeFetchInitiated()
+		{
+			try
+			{
+				OnFetchInitiated();
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+			}
+		}
+
+		internal void InvokeFetchCompleted(ProductCollection products)
+		{
+			try
+			{
+				OnInitializeCompleted(products);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+			}
+		}
+
+		internal void InvokeFetchFailed(StoreInitializeError reason, Exception ex)
+		{
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Fetch, TraceEventId.Fetch.ToString() + " error: " + reason);
+
+			try
+			{
+				OnInitializeFailed(reason, ex);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+			}
+		}
+
+		internal void InvokePurchaseInitiated(string productId, bool restored)
+		{
+			Debug.Assert(!string.IsNullOrEmpty(productId));
+
+			try
+			{
+				OnPurchaseInitiated(productId, restored);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			}
+		}
+
+		internal void InvokePurchaseCompleted(string productId, PurchaseResult purchaseResult)
+		{
+			Debug.Assert(purchaseResult != null);
+
+			try
+			{
+				_purchases?.OnNext(purchaseResult);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			}
+
+			try
+			{
+				OnPurchaseCompleted(purchaseResult);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			}
+		}
+
+		internal void InvokePurchaseFailed(FailedPurchaseResult purchaseResult)
+		{
+			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {purchaseResult.ProductId}, reason = {purchaseResult.Error}");
+
+			try
+			{
+				_failedPurchases?.OnNext(purchaseResult);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			}
+
+			try
+			{
+				OnPurchaseFailed(purchaseResult);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			}
+		}
+
+		internal static StoreInitializeError GetInitializeError(InitializationFailureReason error)
+		{
+			switch (error)
+			{
+				case InitializationFailureReason.AppNotKnown:
+					return StoreInitializeError.AppNotKnown;
+
+				case InitializationFailureReason.NoProductsAvailable:
+					return StoreInitializeError.NoProductsAvailable;
+
+				case InitializationFailureReason.PurchasingUnavailable:
+					return StoreInitializeError.PurchasingUnavailable;
+
+				default:
+					return StoreInitializeError.Unknown;
+			}
+		}
+
+		internal static StorePurchaseError GetPurchaseError(PurchaseFailureReason error)
+		{
+			switch (error)
+			{
+				case PurchaseFailureReason.PurchasingUnavailable:
+					return StorePurchaseError.PurchasingUnavailable;
+
+				case PurchaseFailureReason.ExistingPurchasePending:
+					return StorePurchaseError.ExistingPurchasePending;
+
+				case PurchaseFailureReason.ProductUnavailable:
+					return StorePurchaseError.ProductUnavailable;
+
+				case PurchaseFailureReason.SignatureInvalid:
+					return StorePurchaseError.SignatureInvalid;
+
+				case PurchaseFailureReason.UserCancelled:
+					return StorePurchaseError.UserCanceled;
+
+				case PurchaseFailureReason.PaymentDeclined:
+					return StorePurchaseError.PaymentDeclined;
+
+				case PurchaseFailureReason.DuplicateTransaction:
+					return StorePurchaseError.DuplicateTransaction;
+
+				default:
+					return StorePurchaseError.Unknown;
+			}
+		}
+
 		#endregion
 
 		#region IStoreService
@@ -223,6 +466,8 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
+				ThrowIfDisposed();
+
 				if (_purchases == null)
 				{
 					_purchases = new StoreObservable<PurchaseResult>();
@@ -237,6 +482,8 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
+				ThrowIfDisposed();
+
 				if (_failedPurchases == null)
 				{
 					_failedPurchases = new StoreObservable<FailedPurchaseResult>();
@@ -247,19 +494,54 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreServiceSettings Settings => this;
+		public IStoreServiceSettings Settings
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return this;
+			}
+		}
 
 		/// <inheritdoc/>
-		public IStoreProductCollection Products => _products;
+		public IStoreProductCollection Products
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _products;
+			}
+		}
 
 		/// <inheritdoc/>
-		public IStoreController Controller => _storeController;
+		public IStoreController Controller
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _storeController;
+			}
+		}
 
 		/// <inheritdoc/>
-		public bool IsInitialized => _storeController != null;
+		public bool IsInitialized
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _storeController != null;
+			}
+		}
 
 		/// <inheritdoc/>
-		public bool IsBusy => _storeListener.IsPurchasePending;
+		public bool IsBusy
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return _storeListener.IsPurchasePending;
+			}
+		}
 
 		/// <inheritdoc/>
 		public async Task InitializeAsync()
@@ -449,39 +731,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
-
-		private void ThrowIfDisposed()
-		{
-			if (_disposed)
-			{
-				throw new ObjectDisposedException(_serviceName);
-			}
-		}
-
-		private void ThrowIfInvalidProductId(string productId)
-		{
-			if (string.IsNullOrEmpty(productId))
-			{
-				throw new ArgumentException(_serviceName + " product identifier cannot be null or empty string", nameof(productId));
-			}
-		}
-
-		private void ThrowIfNotInitialized()
-		{
-			if (_storeController == null)
-			{
-				throw new InvalidOperationException(_serviceName + " is not initialized");
-			}
-		}
-
-		private void ThrowIfBusy()
-		{
-			if (_storeListener.IsPurchasePending)
-			{
-				throw new InvalidOperationException(_serviceName + " is busy");
-			}
-		}
-
 		#endregion
 	}
 }

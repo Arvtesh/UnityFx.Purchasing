@@ -20,22 +20,22 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns identifier of the transaction. Read only.
 		/// </summary>
-		public string TransactionId { get; internal set; }
+		public string TransactionId { get; }
 
 		/// <summary>
 		/// Returns identifier of the target store. Read only.
 		/// </summary>
-		public string StoreId { get; internal set; }
+		public string StoreId { get; }
 
 		/// <summary>
 		/// Returns native transaction receipt (differs from Unity receipt). Read only.
 		/// </summary>
-		public string Receipt { get; internal set; }
+		public string Receipt { get; }
 
 		/// <summary>
 		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
 		/// </summary>
-		public bool IsRestored { get; internal set; }
+		public bool IsRestored { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.

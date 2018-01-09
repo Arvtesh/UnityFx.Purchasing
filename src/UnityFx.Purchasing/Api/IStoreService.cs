@@ -106,7 +106,7 @@ namespace UnityFx.Purchasing
 	}
 
 	/// <summary>
-	/// A generic platform store.
+	/// A generic platform store service.
 	/// </summary>
 	public interface IStoreService : IDisposable
 	{
@@ -158,40 +158,47 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IObservable<PurchaseResult> Purchases { get; }
 
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IObservable<FailedPurchaseResult> FailedPurchases { get; }
 
 		/// <summary>
 		/// Returns store products list. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreProductCollection Products { get; }
 
 		/// <summary>
 		/// Returns the service settings. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
 		/// Returns Unity3d store controller. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IStoreController Controller { get; }
 
 		/// <summary>
 		/// Returns <see langword="true"/> if the store is initialized (the product list is loaded from native store); <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsInitialized { get; }
 
 		/// <summary>
 		/// Returns <see langword="true"/> if the store has pending purchase operation; <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsBusy { get; }
 
 		/// <summary>
-		/// Initializes the store (if not initialized already).
+		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
 		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
@@ -205,8 +212,12 @@ namespace UnityFx.Purchasing
 		Task FetchAsync();
 
 		/// <summary>
-		/// Initiates purchasing a product.
+		/// Initiates purchasing the specified product.
 		/// </summary>
+		/// <remarks>
+		/// If <see cref="InitializeAsync"/> or <see cref="FetchAsync"/> is in progress, waits for them to complete before proceed.
+		/// If the store is not initialized yet calls <see cref="InitializeAsync"/> first.
+		/// </remarks>
 		/// <param name="productId">Product identifier as specified in the store.</param>
 		/// <exception cref="StorePurchaseException">Thrown if an purchase-related errors.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>

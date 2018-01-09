@@ -143,7 +143,7 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
 
-				var validationResult = await _storeService.ValidatePurchase(transactionInfo);
+				var validationResult = await _storeService.ValidatePurchaseAsync(transactionInfo);
 
 				// Do nothing if the store has been disposed while we were waiting for validation.
 				if (!IsDisposed)

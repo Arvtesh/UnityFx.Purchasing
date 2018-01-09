@@ -8,7 +8,7 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Extensions of <see cref="Product"/>.
+	/// Extensions for <see cref="Product"/> class.
 	/// </summary>
 	public static class ProductExtensions
 	{
