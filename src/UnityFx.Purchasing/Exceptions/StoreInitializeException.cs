@@ -13,6 +13,14 @@ namespace UnityFx.Purchasing
 	[Serializable]
 	public sealed class StoreInitializeException : StoreException
 	{
+		#region data
+
+		private const string _reasonSerializationName = "Reason";
+
+		#endregion
+
+		#region interface
+
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
 		/// </summary>
@@ -50,18 +58,26 @@ namespace UnityFx.Purchasing
 		{
 		}
 
+		#endregion
+
+		#region ISerializable
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
 		/// </summary>
 		private StoreInitializeException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
+			Reason = (InitializationFailureReason)info.GetValue(_reasonSerializationName,typeof(InitializationFailureReason));
 		}
 
 		/// <inheritdoc/>
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
+			info.AddValue(_reasonSerializationName, Reason.ToString());
 		}
+
+		#endregion
 	}
 }

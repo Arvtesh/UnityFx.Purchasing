@@ -3,7 +3,7 @@
 
 using System;
 using System.Runtime.Serialization;
-using UnityEngine.Purchasing;
+using System.Security.Permissions;
 
 namespace UnityFx.Purchasing
 {
@@ -13,6 +13,15 @@ namespace UnityFx.Purchasing
 	[Serializable]
 	public sealed class StorePurchaseException : StoreException
 	{
+		#region data
+
+		private const string _resultSerializationName = "Result";
+		private const string _reasonSerializationName = "Reason";
+
+		#endregion
+
+		#region interface
+
 		/// <summary>
 		/// Returns the purchase result. Read only.
 		/// </summary>
@@ -66,18 +75,30 @@ namespace UnityFx.Purchasing
 			Reason = reason;
 		}
 
+		#endregion
+
+		#region ISerializable
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		private StorePurchaseException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
+			Result = info.GetValue(_resultSerializationName, typeof(PurchaseResult)) as PurchaseResult;
+			Reason = (StorePurchaseError)info.GetValue(_reasonSerializationName, typeof(StorePurchaseError));
 		}
 
 		/// <inheritdoc/>
+		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
+
+			info.AddValue(_resultSerializationName, Result, typeof(PurchaseResult));
+			info.AddValue(_reasonSerializationName, Reason.ToString());
 		}
+
+		#endregion
 	}
 }

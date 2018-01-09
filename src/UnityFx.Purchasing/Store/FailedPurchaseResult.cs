@@ -2,14 +2,26 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Runtime.Serialization;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
 	/// A store purchase result for failed purchases.
 	/// </summary>
+	[Serializable]
 	public class FailedPurchaseResult : PurchaseResult
 	{
+		#region data
+
+		private const string _productSerializationName = "ProductId";
+		private const string _errorResultSerializationName = "Error";
+		private const string _exceptionResultSerializationName = "Exception";
+
+		#endregion
+
+		#region interface
+
 		/// <summary>
 		/// Returns the product identifier. Read only.
 		/// </summary>
@@ -63,5 +75,32 @@ namespace UnityFx.Purchasing
 			Error = e.Reason;
 			Exception = e;
 		}
+
+		#endregion
+
+		#region ISerializable
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
+		/// </summary>
+		protected FailedPurchaseResult(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			ProductId = info.GetString(_productSerializationName);
+			Error = (StorePurchaseError)info.GetValue(_errorResultSerializationName, typeof(StorePurchaseError));
+			Exception = info.GetValue(_exceptionResultSerializationName, typeof(Exception)) as Exception;
+		}
+
+		/// <inheritdoc/>
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+
+			info.AddValue(_productSerializationName, ProductId);
+			info.AddValue(_errorResultSerializationName, Error);
+			info.AddValue(_exceptionResultSerializationName, Exception);
+		}
+
+		#endregion
 	}
 }
