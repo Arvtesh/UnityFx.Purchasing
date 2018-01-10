@@ -15,8 +15,6 @@ install:
 build_script:
   - ps: .\build.ps1
 
-test: off
-
 artifacts:
   - path: .\bin\net46
     name: UnityFx.Purchasing-net46
