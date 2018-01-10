@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -27,40 +28,73 @@ namespace UnityFx.Purchasing
 
 		#region IStoreProductCollection
 
-		public Product this[string productId] => _storeController?.products.WithID(productId);
-
-		public bool TryGetValue(string productId, out Product product)
+		public Product this[string productId]
 		{
-			if (_storeController != null)
+			get
 			{
-				product = _storeController.products.WithID(productId);
-			}
-			else
-			{
-				product = null;
-			}
+				if (productId == null)
+				{
+					throw new ArgumentNullException(nameof(productId));
+				}
 
-			return product != null;
+				var result = _storeController?.products.WithID(productId);
+
+				if (result == null)
+				{
+					throw new KeyNotFoundException("No product found with identifier: " + productId);
+				}
+
+				return result;
+			}
 		}
 
-		public bool ContainsKey(string productId)
+		public bool TryGetProduct(string productId, out Product product)
 		{
-			return _storeController != null && _storeController.products.WithID(productId) != null;
+			if (productId == null)
+			{
+				throw new ArgumentNullException(nameof(productId));
+			}
+
+			return (product = _storeController?.products.WithID(productId)) != null;
+		}
+
+		public bool Contains(string productId)
+		{
+			if (productId == null)
+			{
+				throw new ArgumentNullException(nameof(productId));
+			}
+
+			return _storeController?.products.WithID(productId) != null;
 		}
 
 		#endregion
 
 		#region IReadOnlyCollection
 
-		public int Count => _storeController.products.set.Count;
+		public int Count => _storeController?.products.set.Count ?? 0;
 
 		#endregion
 
 		#region IEnumerable
 
-		public IEnumerator<Product> GetEnumerator() => _storeController.products.set.GetEnumerator();
+		public IEnumerator<Product> GetEnumerator() => GetEnumeratorInternal();
 
-		IEnumerator IEnumerable.GetEnumerator() => _storeController.products.set.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumeratorInternal();
+
+		#endregion
+
+		#region implementation
+
+		private IEnumerator<Product> GetEnumeratorInternal()
+		{
+			if (_storeController != null)
+			{
+				return _storeController.products.set.GetEnumerator();
+			}
+
+			return Enumerable.Empty<Product>().GetEnumerator();
+		}
 
 		#endregion
 	}

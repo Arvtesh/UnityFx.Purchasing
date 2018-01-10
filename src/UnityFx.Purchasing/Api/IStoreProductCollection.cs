@@ -16,6 +16,8 @@ namespace UnityFx.Purchasing
 		/// Returns product for the specified identifier. Read only.
 		/// </summary>
 		/// <param name="productId">The store product identifier.</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
+		/// <exception cref="KeyNotFoundException">Thrown if no product with the specified identifier found.</exception>
 		Product this[string productId] { get; }
 
 		/// <summary>
@@ -23,12 +25,14 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <param name="productId">The product identifier.</param>
 		/// <param name="product">The product instance.</param>
-		bool TryGetValue(string productId, out Product product);
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
+		bool TryGetProduct(string productId, out Product product);
 
 		/// <summary>
 		/// Determines whether a product with the specified identifier is present in the collection.
 		/// </summary>
 		/// <param name="productId">The product identifier.</param>
-		bool ContainsKey(string productId);
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
+		bool Contains(string productId);
 	}
 }

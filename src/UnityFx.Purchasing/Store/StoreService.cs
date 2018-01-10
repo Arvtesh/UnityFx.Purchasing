@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -159,6 +160,7 @@ namespace UnityFx.Purchasing
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
+				_products.SetController(null);
 				_storeListener.Dispose();
 
 				try
@@ -200,9 +202,14 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected void ThrowIfInvalidProductId(string productId)
 		{
+			if (productId == null)
+			{
+				throw new ArgumentNullException(_serviceName + " product identifier cannot be null", nameof(productId));
+			}
+
 			if (string.IsNullOrEmpty(productId))
 			{
-				throw new ArgumentException(_serviceName + " product identifier cannot be null or empty string", nameof(productId));
+				throw new ArgumentException(_serviceName + " product identifier cannot be an empty string", nameof(productId));
 			}
 		}
 
