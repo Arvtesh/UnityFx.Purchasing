@@ -107,7 +107,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchInitiated()
 		{
-			StoreFetchInitiated?.Invoke(this, EventArgs.Empty);
+			StoreInitializeCompleted?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchCompleted(ProductCollection products)
 		{
-			StoreFetchCompleted?.Invoke(this, EventArgs.Empty);
+			StoreInitializeCompleted?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -123,7 +123,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchFailed(StoreInitializeError reason, Exception e)
 		{
-			StoreFetchFailed?.Invoke(this, new StoreInitializeFailedEventArgs(reason, e));
+			StoreInitializeFailed?.Invoke(this, new StoreInitializeFailedEventArgs(reason, e));
 		}
 
 		/// <summary>
@@ -442,15 +442,6 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		public event EventHandler<StoreInitializeFailedEventArgs> StoreInitializeFailed;
-
-		/// <inheritdoc/>
-		public event EventHandler StoreFetchInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler StoreFetchCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<StoreInitializeFailedEventArgs> StoreFetchFailed;
 
 		/// <inheritdoc/>
 		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;

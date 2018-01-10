@@ -126,21 +126,6 @@ namespace UnityFx.Purchasing
 		event EventHandler<StoreInitializeFailedEventArgs> StoreInitializeFailed;
 
 		/// <summary>
-		/// Triggered when the store fetch has been initiated.
-		/// </summary>
-		event EventHandler StoreFetchInitiated;
-
-		/// <summary>
-		/// Triggered when the store fetch has been completed.
-		/// </summary>
-		event EventHandler StoreFetchCompleted;
-
-		/// <summary>
-		/// Triggered when the store fetch has failed.
-		/// </summary>
-		event EventHandler<StoreInitializeFailedEventArgs> StoreFetchFailed;
-
-		/// <summary>
 		/// Triggered when a new purchase is initiated.
 		/// </summary>
 		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
