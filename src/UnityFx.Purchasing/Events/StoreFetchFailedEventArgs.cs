@@ -6,14 +6,14 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for <see cref="IStoreService.StoreInitializeFailed"/>.
+	/// Event arguments for <see cref="IStoreService.StoreFetchFailed"/>.
 	/// </summary>
-	public class StoreInitializeFailedEventArgs : EventArgs
+	public class StoreFetchFailedEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
 		/// </summary>
-		public StoreInitializeError Reason { get; }
+		public StoreFetchError Reason { get; }
 
 		/// <summary>
 		/// Returns exception that caused the failure (if any). Read only.
@@ -21,9 +21,9 @@ namespace UnityFx.Purchasing
 		public Exception Exception { get; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeFailedEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="StoreFetchFailedEventArgs"/> class.
 		/// </summary>
-		public StoreInitializeFailedEventArgs(StoreInitializeError reason, Exception e)
+		public StoreFetchFailedEventArgs(StoreFetchError reason, Exception e)
 		{
 			Reason = reason;
 			Exception = e;

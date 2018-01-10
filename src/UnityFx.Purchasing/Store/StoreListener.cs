@@ -132,7 +132,7 @@ namespace UnityFx.Purchasing
 				try
 				{
 					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Initialize, "OnInitializeFailed: " + error);
-					_initializeOp.SetException(new StoreInitializeException(error));
+					_initializeOp.SetException(new StoreFetchException(error));
 				}
 				catch (Exception e)
 				{
@@ -175,7 +175,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_fetchOp.SetException(new StoreInitializeException(error));
+					_fetchOp.SetException(new StoreFetchException(error));
 				}
 				catch (Exception e)
 				{
@@ -274,14 +274,14 @@ namespace UnityFx.Purchasing
 
 				if (_fetchOp != null)
 				{
-					_storeService.InvokeFetchFailed(StoreInitializeError.StoreDisposed, null);
+					_storeService.InvokeFetchFailed(StoreFetchError.StoreDisposed, null);
 					_fetchOp.Dispose();
 					_fetchOp = null;
 				}
 
 				if (_initializeOp != null)
 				{
-					_storeService.InvokeInitializeFailed(StoreInitializeError.StoreDisposed, null);
+					_storeService.InvokeInitializeFailed(StoreFetchError.StoreDisposed, null);
 					_initializeOp.Dispose();
 					_initializeOp = null;
 				}

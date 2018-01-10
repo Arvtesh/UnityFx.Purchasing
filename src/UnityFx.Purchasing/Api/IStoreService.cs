@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using UnityEngine.Purchasing;
 
@@ -11,15 +10,15 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Enumerates possible initialization errors.
 	/// </summary>
-	public enum StoreInitializeError
+	public enum StoreFetchError
 	{
 		/// <summary>
-		/// A catch-all for unrecognized initialize problems.
+		/// A catch-all for unrecognized fetch/initialize problems.
 		/// </summary>
 		Unknown,
 
 		/// <summary>
-		/// The manager was disposed while an initialize operation was pending.
+		/// The manager was disposed while a fetch/initialize operation was pending.
 		/// </summary>
 		StoreDisposed,
 
@@ -113,17 +112,17 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Triggered when the store initialization has been initiated.
 		/// </summary>
-		event EventHandler StoreInitializeInitiated;
+		event EventHandler StoreFetchInitiated;
 
 		/// <summary>
 		/// Triggered when the store has been initialized.
 		/// </summary>
-		event EventHandler StoreInitializeCompleted;
+		event EventHandler StoreFetchCompleted;
 
 		/// <summary>
 		/// Triggered when the store initialization has failed.
 		/// </summary>
-		event EventHandler<StoreInitializeFailedEventArgs> StoreInitializeFailed;
+		event EventHandler<StoreFetchFailedEventArgs> StoreFetchFailed;
 
 		/// <summary>
 		/// Triggered when a new purchase is initiated.
@@ -185,14 +184,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if store initialization fails.</exception>
+		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task InitializeAsync();
 
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
-		/// <exception cref="StoreInitializeException">Thrown if operation fails.</exception>
+		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task FetchAsync();
 
