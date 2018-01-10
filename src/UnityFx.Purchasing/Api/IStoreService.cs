@@ -113,12 +113,12 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Triggered when the store initialization has been initiated.
 		/// </summary>
-		event EventHandler StoreFetchInitiated;
+		event EventHandler<StoreFetchEventArgs> StoreFetchInitiated;
 
 		/// <summary>
 		/// Triggered when the store has been initialized.
 		/// </summary>
-		event EventHandler StoreFetchCompleted;
+		event EventHandler<StoreFetchEventArgs> StoreFetchCompleted;
 
 		/// <summary>
 		/// Triggered when the store initialization has failed.

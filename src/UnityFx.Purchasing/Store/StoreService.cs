@@ -84,7 +84,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnInitializeInitiated()
 		{
-			StoreFetchInitiated?.Invoke(this, EventArgs.Empty);
+			StoreFetchInitiated?.Invoke(this, new StoreFetchEventArgs(false));
 		}
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnInitializeCompleted(ProductCollection products)
 		{
-			StoreFetchCompleted?.Invoke(this, EventArgs.Empty);
+			StoreFetchCompleted?.Invoke(this, new StoreFetchEventArgs(false));
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnInitializeFailed(StoreFetchError reason, Exception e)
 		{
-			StoreFetchFailed?.Invoke(this, new StoreFetchFailedEventArgs(reason, e));
+			StoreFetchFailed?.Invoke(this, new StoreFetchFailedEventArgs(false, reason, e));
 		}
 
 		/// <summary>
@@ -108,7 +108,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchInitiated()
 		{
-			StoreFetchCompleted?.Invoke(this, EventArgs.Empty);
+			StoreFetchCompleted?.Invoke(this, new StoreFetchEventArgs(true));
 		}
 
 		/// <summary>
@@ -116,7 +116,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchCompleted(ProductCollection products)
 		{
-			StoreFetchCompleted?.Invoke(this, EventArgs.Empty);
+			StoreFetchCompleted?.Invoke(this, new StoreFetchEventArgs(true));
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnFetchFailed(StoreFetchError reason, Exception e)
 		{
-			StoreFetchFailed?.Invoke(this, new StoreFetchFailedEventArgs(reason, e));
+			StoreFetchFailed?.Invoke(this, new StoreFetchFailedEventArgs(true, reason, e));
 		}
 
 		/// <summary>
@@ -442,10 +442,10 @@ namespace UnityFx.Purchasing
 		#region IStoreService
 
 		/// <inheritdoc/>
-		public event EventHandler StoreFetchInitiated;
+		public event EventHandler<StoreFetchEventArgs> StoreFetchInitiated;
 
 		/// <inheritdoc/>
-		public event EventHandler StoreFetchCompleted;
+		public event EventHandler<StoreFetchEventArgs> StoreFetchCompleted;
 
 		/// <inheritdoc/>
 		public event EventHandler<StoreFetchFailedEventArgs> StoreFetchFailed;
