@@ -40,6 +40,8 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
+#if !NET35
+
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
@@ -51,5 +53,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		IObservable<FailedPurchaseResult> FailedPurchases { get; }
+
+#endif
 	}
 }

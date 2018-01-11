@@ -139,20 +139,52 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		bool IsBusy { get; }
 
+#if NET35
+		/// <summary>
+		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
+		/// </summary>
+		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		AsyncResult Initialize();
+#else
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task InitializeAsync();
+#endif
 
+#if NET35
+		/// <summary>
+		/// Fetches product information from the store.
+		/// </summary>
+		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		AsyncResult Fetch();
+#else
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task FetchAsync();
+#endif
 
+#if NET35
+		/// <summary>
+		/// Initiates purchasing the specified product.
+		/// </summary>
+		/// <remarks>
+		/// 
+		/// </remarks>
+		/// <param name="productId">Product identifier as specified in the store.</param>
+		/// <exception cref="StorePurchaseException">Thrown if an purchase-related errors.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>
+		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		AsyncResult<PurchaseResult> Purchase(string productId);
+#else
 		/// <summary>
 		/// Initiates purchasing the specified product.
 		/// </summary>
@@ -166,5 +198,6 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		Task<PurchaseResult> PurchaseAsync(string productId);
+#endif
 	}
 }
