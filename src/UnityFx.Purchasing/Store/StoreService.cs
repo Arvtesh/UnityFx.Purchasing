@@ -159,8 +159,9 @@ namespace UnityFx.Purchasing
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				_products?.SetController(null);
 				_storeListener.Dispose();
+
+				SetStoreController(null);
 
 				try
 				{
@@ -181,7 +182,6 @@ namespace UnityFx.Purchasing
 				}
 
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
-				_storeController = null;
 			}
 		}
 
@@ -505,7 +505,7 @@ namespace UnityFx.Purchasing
 			{
 				if (_storeListener.IsInitializePending)
 				{
-					await _storeListener.InitializeTask;
+					await _storeListener.InitializeTask.ConfigureAwait(false);
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
@@ -554,11 +554,11 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				await InitializeAsync();
+				await InitializeAsync().ConfigureAwait(false);
 			}
 			else if (_storeListener.IsFetchPending)
 			{
-				await _storeListener.FetchTask;
+				await _storeListener.FetchTask.ConfigureAwait(false);
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
