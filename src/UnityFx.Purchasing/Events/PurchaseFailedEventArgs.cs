@@ -6,7 +6,7 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for <see cref="IStoreService.PurchaseFailed"/>.
+	/// Event arguments for <see cref="IStoreEvents.PurchaseFailed"/>.
 	/// </summary>
 	public class PurchaseFailedEventArgs : EventArgs
 	{

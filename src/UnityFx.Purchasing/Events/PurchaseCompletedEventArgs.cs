@@ -6,7 +6,7 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for <see cref="IStoreService.PurchaseCompleted"/>.
+	/// Event arguments for <see cref="IStoreEvents.PurchaseCompleted"/>.
 	/// </summary>
 	public class PurchaseCompletedEventArgs : EventArgs
 	{
