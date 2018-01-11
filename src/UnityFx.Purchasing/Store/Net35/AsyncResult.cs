@@ -9,25 +9,25 @@ using System.Threading;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A simple asynchronous operation that can be yieled.
+	/// A simple yieledable asynchronous operation.
 	/// </summary>
 	/// <seealso cref="IAsyncResult"/>
 	public class AsyncResult : IAsyncResult, IEnumerator
 	{
 		#region data
 
+		private const int _statusInitialized = -1;
+		private const int _statusRunning = 0;
+		private const int _statusCompleted = 1;
+		private const int _statusFaulted = 2;
+		private const int _statusCanceled = 3;
+
 		private Exception _exception;
-		private int _status = StatusInitialized;
+		private int _status = _statusInitialized;
 
 		#endregion
 
 		#region interface
-
-		internal const int StatusInitialized = -1;
-		internal const int StatusRunning = 0;
-		internal const int StatusCompleted = 1;
-		internal const int StatusFaulted = 2;
-		internal const int StatusCanceled = 3;
 
 		/// <summary>
 		/// Returns an <see cref="System.Exception"/> that caused the operation to end prematurely. If the operation completed successfully
@@ -38,28 +38,33 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <c>true</c> if the operation has completed successfully, <c>false</c> otherwise. Read only.
 		/// </summary>
-		public bool IsCompletedSuccessfully => _status == StatusCompleted;
+		public bool IsCompletedSuccessfully => _status == _statusCompleted;
 
 		/// <summary>
 		/// Returns <c>true</c> if the operation has failed for any reason, <c>false</c> otherwise. Read only.
 		/// </summary>
-		public bool IsFaulted => _status > StatusCompleted;
+		public bool IsFaulted => _status > _statusCompleted;
 
 		/// <summary>
 		/// Returns <c>true</c> if the operation has been canceled by user, <c>false</c> otherwise. Read only.
 		/// </summary>
-		public bool IsCanceled => _status == StatusCanceled;
+		public bool IsCanceled => _status == _statusCanceled;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AsyncResult"/> class.
+		/// Throws exception if the operation has failed.
 		/// </summary>
-		public AsyncResult()
+		protected void ThrowIfNotCompleted()
 		{
+			if (_status != _statusCompleted)
+			{
+				throw new InvalidOperationException("The operation result is not available.", _exception);
+			}
 		}
 
-		/// <summary>
-		/// Transitions the operation into the canceled state.
-		/// </summary>
+		#endregion
+
+		#region internals
+
 		internal void SetCanceled()
 		{
 			if (!TrySetCanceled())
@@ -68,23 +73,11 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <summary>
-		/// Attempts to transition the operation into the canceled state.
-		/// </summary>
 		internal bool TrySetCanceled()
 		{
-			if (TrySetStatus(StatusCanceled))
-			{
-				OnCompleted();
-				return true;
-			}
-
-			return false;
+			return TrySetStatus(_statusCanceled);
 		}
 
-		/// <summary>
-		/// Transitions the operation into the faulted (or canceled) state.
-		/// </summary>
 		internal void SetException(Exception e)
 		{
 			if (!TrySetException(e))
@@ -93,26 +86,19 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <summary>
-		/// Attempts to transition the operation into the faulted (or canceled) state.
-		/// </summary>
 		internal bool TrySetException(Exception e)
 		{
-			var status = e is OperationCanceledException ? StatusCanceled : StatusFaulted;
+			var status = e is OperationCanceledException ? _statusCanceled : _statusFaulted;
 
 			if (TrySetStatus(status))
 			{
 				_exception = e;
-				OnCompleted();
 				return true;
 			}
 
 			return false;
 		}
 
-		/// <summary>
-		/// Transitions the operation into the completed state.
-		/// </summary>
 		internal void SetCompleted()
 		{
 			if (!TrySetCompleted())
@@ -121,63 +107,9 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <summary>
-		/// Attempts to transition the operation into the completed state.
-		/// </summary>
 		internal bool TrySetCompleted()
 		{
-			if (TrySetStatus(StatusCompleted))
-			{
-				OnCompleted();
-				return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Finished the operation (if it is not already finished). Do not use this method unless absolutely needed.
-		/// </summary>
-		protected bool TrySetStatus(int newStatus)
-		{
-			if (_status < StatusCompleted && newStatus > _status)
-			{
-				_status = newStatus;
-				return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Throws exception if the operation has failed.
-		/// </summary>
-		protected void ThrowIfFaulted()
-		{
-			if (_status > StatusCompleted)
-			{
-				throw new InvalidOperationException("The operation result is not available.", _exception);
-			}
-		}
-
-		/// <summary>
-		/// Updates the operation state. Called by <see cref="MoveNext"/>. Default implementation does nothing.
-		/// </summary>
-		/// <remarks>
-		/// Do not reference public class methods and properties in this method (except <see cref="SetCompleted"/>)
-		/// because their implementation may reference <see cref="MoveNext"/> and cause endless recursion.
-		/// </remarks>
-		/// <seealso cref="OnCompleted()"/>
-		protected virtual void OnUpdate()
-		{
-		}
-
-		/// <summary>
-		/// Called when the operation has completed (either successfully or not). Default implementation does nothing.
-		/// </summary>
-		/// <seealso cref="OnUpdate()"/>
-		protected virtual void OnCompleted()
-		{
+			return TrySetStatus(_statusCompleted);
 		}
 
 		#endregion
@@ -185,28 +117,28 @@ namespace UnityFx.Purchasing
 		#region IAsyncResult
 
 		/// <inheritdoc/>
-		public WaitHandle AsyncWaitHandle => throw new NotSupportedException();
+		WaitHandle IAsyncResult.AsyncWaitHandle => throw new NotSupportedException();
 
 		/// <inheritdoc/>
-		public object AsyncState => null;
+		object IAsyncResult.AsyncState => null;
 
 		/// <inheritdoc/>
-		public bool CompletedSynchronously => false;
+		bool IAsyncResult.CompletedSynchronously => false;
 
 		/// <inheritdoc/>
-		public bool IsCompleted => _status > StatusRunning;
+		public bool IsCompleted => _status > _statusRunning;
 
 		#endregion
 
 		#region IEnumerator
 
 		/// <inheritdoc/>
-		public object Current => null;
+		object IEnumerator.Current => null;
 
 		/// <inheritdoc/>
-		public bool MoveNext()
+		bool IEnumerator.MoveNext()
 		{
-			if (_status > StatusRunning)
+			if (_status > _statusRunning)
 			{
 				// The operation has completed.
 				return false;
@@ -214,27 +146,32 @@ namespace UnityFx.Purchasing
 			else
 			{
 				// If this is the first time MoveNext() is called, switch status to Running.
-				if (_status == StatusInitialized)
+				if (_status == _statusInitialized)
 				{
-					TrySetStatus(StatusRunning);
+					TrySetStatus(_statusRunning);
 				}
 
-				// The operation is pending.
-				try
-				{
-					OnUpdate();
-				}
-				catch (Exception e)
-				{
-					TrySetException(e);
-				}
-
-				return _status == StatusRunning;
+				return _status == _statusRunning;
 			}
 		}
 
 		/// <inheritdoc/>
-		public void Reset() => throw new NotSupportedException();
+		void IEnumerator.Reset() => throw new NotSupportedException();
+
+		#endregion
+
+		#region implementation
+
+		private bool TrySetStatus(int newStatus)
+		{
+			if (_status < _statusCompleted && newStatus > _status)
+			{
+				_status = newStatus;
+				return true;
+			}
+
+			return false;
+		}
 
 		#endregion
 	}

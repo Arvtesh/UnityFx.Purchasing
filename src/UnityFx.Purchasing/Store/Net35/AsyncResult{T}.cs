@@ -10,7 +10,6 @@ namespace UnityFx.Purchasing
 	/// </summary>
 	/// <typeparam name="T">Type of the operation result.</typeparam>
 	/// <seealso cref="IAsyncResult"/>
-	/// <seealso cref="AsyncResult"/>
 	public class AsyncResult<T> : AsyncResult
 	{
 		#region data
@@ -28,21 +27,15 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfFaulted();
+				ThrowIfNotCompleted();
 				return _result;
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AsyncResult{T}"/> class.
-		/// </summary>
-		public AsyncResult()
-		{
-		}
+		#endregion
 
-		/// <summary>
-		/// Transitions the operation into the completed state.
-		/// </summary>
+		#region internals
+
 		internal void SetResult(T result)
 		{
 			if (!TrySetResult(result))
@@ -51,15 +44,11 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <summary>
-		/// Attempts to transition the operation into the completed state.
-		/// </summary>
 		internal bool TrySetResult(T result)
 		{
-			if (TrySetStatus(StatusCompleted))
+			if (TrySetCompleted())
 			{
 				_result = result;
-				OnCompleted();
 				return true;
 			}
 
