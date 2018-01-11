@@ -442,56 +442,6 @@ namespace UnityFx.Purchasing
 		#region IStoreService
 
 		/// <inheritdoc/>
-		public event EventHandler<StoreFetchEventArgs> StoreFetchInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<StoreFetchEventArgs> StoreFetchCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<StoreFetchFailedEventArgs> StoreFetchFailed;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
-
-		/// <inheritdoc/>
-		public IObservable<PurchaseResult> Purchases
-		{
-			get
-			{
-				ThrowIfDisposed();
-
-				if (_purchases == null)
-				{
-					_purchases = new StoreObservable<PurchaseResult>();
-				}
-
-				return _purchases;
-			}
-		}
-
-		/// <inheritdoc/>
-		public IObservable<FailedPurchaseResult> FailedPurchases
-		{
-			get
-			{
-				ThrowIfDisposed();
-
-				if (_failedPurchases == null)
-				{
-					_failedPurchases = new StoreObservable<FailedPurchaseResult>();
-				}
-
-				return _failedPurchases;
-			}
-		}
-
-		/// <inheritdoc/>
 		public IStoreServiceSettings Settings
 		{
 			get
@@ -714,6 +664,60 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		public TraceListenerCollection TraceListeners => _console.Listeners;
+
+		#endregion
+
+		#region IStoreEvents
+
+		/// <inheritdoc/>
+		public event EventHandler<StoreFetchEventArgs> StoreFetchInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler<StoreFetchEventArgs> StoreFetchCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<StoreFetchFailedEventArgs> StoreFetchFailed;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
+
+		/// <inheritdoc/>
+		public IObservable<PurchaseResult> Purchases
+		{
+			get
+			{
+				ThrowIfDisposed();
+
+				if (_purchases == null)
+				{
+					_purchases = new StoreObservable<PurchaseResult>();
+				}
+
+				return _purchases;
+			}
+		}
+
+		/// <inheritdoc/>
+		public IObservable<FailedPurchaseResult> FailedPurchases
+		{
+			get
+			{
+				ThrowIfDisposed();
+
+				if (_failedPurchases == null)
+				{
+					_failedPurchases = new StoreObservable<FailedPurchaseResult>();
+				}
+
+				return _failedPurchases;
+			}
+		}
 
 		#endregion
 
