@@ -24,9 +24,9 @@ namespace UnityFx.Purchasing
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
 		private readonly IPurchasingModule _purchasingModule;
-		private readonly StoreProductCollection _products;
 		private readonly StoreListener _storeListener;
 
+		private StoreProductCollection _products;
 		private StoreObservable<PurchaseResult> _purchases;
 		private StoreObservable<FailedPurchaseResult> _failedPurchases;
 
@@ -55,7 +55,6 @@ namespace UnityFx.Purchasing
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
 			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
-			_products = new StoreProductCollection();
 			_storeListener = new StoreListener(this, _console);
 		}
 
@@ -160,7 +159,7 @@ namespace UnityFx.Purchasing
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				_products.SetController(null);
+				_products?.SetController(null);
 				_storeListener.Dispose();
 
 				try
@@ -250,7 +249,7 @@ namespace UnityFx.Purchasing
 		internal void SetStoreController(IStoreController controller)
 		{
 			_storeController = controller;
-			_products.SetController(controller);
+			_products?.SetController(controller);
 		}
 
 		internal void InvokeInitializeInitiated()
@@ -457,6 +456,12 @@ namespace UnityFx.Purchasing
 			get
 			{
 				ThrowIfDisposed();
+
+				if (_products == null)
+				{
+					_products = new StoreProductCollection(_storeController);
+				}
+
 				return _products;
 			}
 		}
