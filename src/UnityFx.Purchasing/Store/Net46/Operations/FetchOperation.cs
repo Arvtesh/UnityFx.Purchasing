@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		public FetchOperation(TraceSource console)
-			: base(console, StoreService.TraceEventId.Fetch, null, null)
+			: base(console, TraceEventId.Fetch, null, null)
 		{
 		}
 

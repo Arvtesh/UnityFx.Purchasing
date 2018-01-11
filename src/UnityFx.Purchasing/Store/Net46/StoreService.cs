@@ -238,14 +238,6 @@ namespace UnityFx.Purchasing
 
 		#region internals
 
-		internal enum TraceEventId
-		{
-			Default,
-			Initialize,
-			Fetch,
-			Purchase
-		}
-
 		internal void SetStoreController(IStoreController controller)
 		{
 			_storeController = controller;

@@ -26,7 +26,7 @@ namespace UnityFx.Purchasing
 		public string ProductId => _productId;
 
 		public PurchaseOperation(StoreService storeService, TraceSource console, string productId, bool restored)
-			: base(console, StoreService.TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId)
+			: base(console, TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId)
 		{
 			Debug.Assert(storeService != null);
 			Debug.Assert(productId != null);
@@ -141,7 +141,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
+				_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
 
 				var validationResult = await _storeService.ValidatePurchaseAsync(transactionInfo);
 
@@ -191,7 +191,7 @@ namespace UnityFx.Purchasing
 
 		private void ConfirmPendingPurchase(Product product)
 		{
-			_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
+			_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
 			_storeService.Controller.ConfirmPendingPurchase(product);
 		}
 

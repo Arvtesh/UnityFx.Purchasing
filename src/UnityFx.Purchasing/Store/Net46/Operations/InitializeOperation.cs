@@ -14,7 +14,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		public InitializeOperation(TraceSource console)
-			: base(console, StoreService.TraceEventId.Initialize, null, null)
+			: base(console, TraceEventId.Initialize, null, null)
 		{
 		}
 

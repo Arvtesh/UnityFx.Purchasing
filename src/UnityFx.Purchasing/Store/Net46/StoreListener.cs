@@ -107,13 +107,13 @@ namespace UnityFx.Purchasing
 			{
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Initialize, "OnInitialized");
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitialized");
 					_storeService.SetStoreController(controller);
 					_initializeOp.SetResult(null);
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)StoreService.TraceEventId.Initialize, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 					_initializeOp?.TrySetException(e);
 				}
 				finally
@@ -131,12 +131,12 @@ namespace UnityFx.Purchasing
 			{
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Initialize, "OnInitializeFailed: " + error);
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitializeFailed: " + error);
 					_initializeOp.SetException(new StoreFetchException(error));
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)StoreService.TraceEventId.Initialize, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 					_initializeOp?.TrySetException(e);
 				}
 				finally
@@ -152,12 +152,12 @@ namespace UnityFx.Purchasing
 			{
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Fetch, "OnFetch");
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetch");
 					_fetchOp.SetResult(null);
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)StoreService.TraceEventId.Fetch, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 					_fetchOp?.TrySetException(e);
 				}
 				finally
@@ -171,7 +171,7 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
-				_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Fetch, "OnFetchFailed: " + error);
+				_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetchFailed: " + error);
 
 				try
 				{
@@ -179,7 +179,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)StoreService.TraceEventId.Fetch, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 					_fetchOp?.TrySetException(e);
 				}
 				finally
@@ -201,8 +201,8 @@ namespace UnityFx.Purchasing
 					var product = args.purchasedProduct;
 					var productId = product.definition.id;
 
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, "ProcessPurchase: " + productId);
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ProcessPurchase: " + productId);
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
@@ -214,7 +214,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)StoreService.TraceEventId.Purchase, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 					_purchaseOp?.TrySetException(e);
 				}
 				finally
@@ -233,7 +233,7 @@ namespace UnityFx.Purchasing
 				try
 				{
 					var productId = product?.definition.id ?? "null";
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreService.TraceEventId.Purchase, $"OnPurchaseFailed: {productId}, reason={reason}");
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"OnPurchaseFailed: {productId}, reason={reason}");
 
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
@@ -245,7 +245,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)StoreService.TraceEventId.Purchase, e);
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 					_purchaseOp?.TrySetException(e);
 				}
 				finally
