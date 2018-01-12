@@ -489,6 +489,14 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		public AsyncResult Initialize()
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc/>
 		public async Task InitializeAsync()
 		{
 			ThrowIfDisposed();
@@ -540,6 +548,14 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		public AsyncResult Fetch()
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc/>
 		public async Task FetchAsync()
 		{
 			ThrowIfDisposed();
@@ -586,6 +602,16 @@ namespace UnityFx.Purchasing
 					}
 				}
 			}
+		}
+
+		/// <inheritdoc/>
+		public AsyncResult<PurchaseResult> Purchase(string productId)
+		{
+			ThrowIfInvalidProductId(productId);
+			ThrowIfDisposed();
+			ThrowIfBusy();
+
+			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc/>
@@ -684,6 +710,7 @@ namespace UnityFx.Purchasing
 		/// <inheritdoc/>
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
+#if !NET35
 		/// <inheritdoc/>
 		public IObservable<PurchaseResult> Purchases
 		{
@@ -715,6 +742,7 @@ namespace UnityFx.Purchasing
 				return _failedPurchases;
 			}
 		}
+#endif
 
 		#endregion
 

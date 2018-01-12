@@ -131,72 +131,96 @@ namespace UnityFx.Purchasing
 		/// Returns <see langword="true"/> if the store is initialized (the product list is loaded from native store); <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="IsBusy"/>
 		bool IsInitialized { get; }
 
 		/// <summary>
 		/// Returns <see langword="true"/> if the store has pending purchase operation; <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="IsInitialized"/>
 		bool IsBusy { get; }
 
-#if NET35
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="Fetch"/>
+		/// <seealso cref="Purchase(string)"/>
 		AsyncResult Initialize();
-#else
+
+#if !NET35
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="Initialize"/>
+		/// <seealso cref="FetchAsync"/>
+		/// <seealso cref="PurchaseAsync(string)"/>
 		Task InitializeAsync();
 #endif
 
-#if NET35
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="Initialize"/>
+		/// <seealso cref="Purchase(string)"/>
 		AsyncResult Fetch();
-#else
+
+#if !NET35
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="Fetch"/>
+		/// <seealso cref="InitializeAsync"/>
+		/// <seealso cref="PurchaseAsync(string)"/>
 		Task FetchAsync();
 #endif
 
-#if NET35
 		/// <summary>
 		/// Initiates purchasing the specified product.
 		/// </summary>
 		/// <remarks>
-		/// 
+		/// If <see cref="Initialize"/> or <see cref="Fetch"/> is in progress, waits for them to complete before proceed.
+		/// If the store is not initialized yet calls <see cref="Initialize"/> first. Please note that the call would fail
+		/// if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
 		/// </remarks>
-		/// <param name="productId">Product identifier as specified in the store.</param>
-		/// <exception cref="StorePurchaseException">Thrown if an purchase-related errors.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>
+		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
+		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
+		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="Initialize"/>
+		/// <seealso cref="Fetch"/>
+		/// <seealso cref="IsBusy"/>
 		AsyncResult<PurchaseResult> Purchase(string productId);
-#else
+
+#if !NET35
 		/// <summary>
 		/// Initiates purchasing the specified product.
 		/// </summary>
 		/// <remarks>
 		/// If <see cref="InitializeAsync"/> or <see cref="FetchAsync"/> is in progress, waits for them to complete before proceed.
-		/// If the store is not initialized yet calls <see cref="InitializeAsync"/> first.
+		/// If the store is not initialized yet calls <see cref="InitializeAsync"/> first. Please note that the call would fail
+		/// if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
 		/// </remarks>
-		/// <param name="productId">Product identifier as specified in the store.</param>
-		/// <exception cref="StorePurchaseException">Thrown if an purchase-related errors.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases.</exception>
+		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
+		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
+		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="Purchase(string)"/>
+		/// <seealso cref="InitializeAsync"/>
+		/// <seealso cref="FetchAsync"/>
+		/// <seealso cref="IsBusy"/>
 		Task<PurchaseResult> PurchaseAsync(string productId);
 #endif
 	}
