@@ -31,9 +31,13 @@ namespace UnityFx.Purchasing
 
 		public Task InitializeTask => _initializeOp?.Task;
 
+		public AsyncResult InitializeAsyncResult => throw new NotImplementedException();
+
 		public bool IsFetchPending => _fetchOp != null;
 
 		public Task FetchTask => _fetchOp?.Task;
+
+		public AsyncResult FetchAsyncResult => throw new NotImplementedException();
 
 		public bool IsPurchasePending => _purchaseOp != null;
 
@@ -54,6 +58,20 @@ namespace UnityFx.Purchasing
 			return _initializeOp;
 		}
 
+		public void EndInitialize(Exception e)
+		{
+			try
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+				_storeService.InvokeInitializeFailed(StoreFetchError.Unknown, e);
+				_initializeOp = null;
+			}
+			finally
+			{
+				////op.Dispose();
+			}
+		}
+
 		public void EndInitialize()
 		{
 			_initializeOp = null;
@@ -69,6 +87,20 @@ namespace UnityFx.Purchasing
 			_storeService.InvokeFetchInitiated();
 
 			return _fetchOp;
+		}
+
+		public void EndFetch(Exception e)
+		{
+			try
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+				_storeService.InvokeFetchFailed(StoreFetchError.Unknown, e);
+				_fetchOp = null;
+			}
+			finally
+			{
+				////op.Dispose();
+			}
 		}
 
 		public void EndFetch()

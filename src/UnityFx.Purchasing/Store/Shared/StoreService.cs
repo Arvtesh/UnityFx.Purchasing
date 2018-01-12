@@ -572,11 +572,42 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				var result = new AsyncResult();
+				if (_storeListener.IsInitializePending)
+				{
+					return _storeListener.InitializeAsyncResult;
+				}
+				else if (Application.isMobilePlatform || Application.isEditor)
+				{
+					var op = _storeListener.BeginInitialize();
 
-				throw new NotImplementedException();
+					try
+					{
+						// Get user-defined store config.
+						GetStoreConfig(
+							storeConfig =>
+							{
+								// Configure Unity store.
+								var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
+								configurationBuilder.AddProducts(storeConfig.Products);
 
-				return result;
+								// Initialize Unity store.
+								UnityPurchasing.Initialize(_storeListener, configurationBuilder);
+							},
+							_storeListener.EndInitialize);
+					}
+					catch (Exception e)
+					{
+						_storeListener.EndInitialize(e);
+						throw;
+					}
+
+					// TODO: use op.??? here
+					return _storeListener.InitializeAsyncResult;
+				}
+				else
+				{
+					throw new NotSupportedException();
+				}
 			}
 
 			return AsyncResult.Completed;
@@ -631,6 +662,10 @@ namespace UnityFx.Purchasing
 						}
 					}
 				}
+				else
+				{
+					throw new NotSupportedException();
+				}
 			}
 		}
 #endif
@@ -644,9 +679,38 @@ namespace UnityFx.Purchasing
 			{
 				return Initialize();
 			}
+			else if (_storeListener.IsFetchPending)
+			{
+				return _storeListener.FetchAsyncResult;
+			}
+			else if (Application.isMobilePlatform || Application.isEditor)
+			{
+				var op = _storeListener.BeginFetch();
+
+				try
+				{
+					// Get user-defined store config.
+					GetStoreConfig(
+						storeConfig =>
+						{
+							// Fetch Unity store.
+							var products = new HashSet<ProductDefinition>(storeConfig.Products);
+							_storeController.FetchAdditionalProducts(products, _storeListener.OnFetch, _storeListener.OnFetchFailed);
+						},
+						_storeListener.EndFetch);
+				}
+				catch (Exception e)
+				{
+					_storeListener.EndFetch(e);
+					throw;
+				}
+
+				// TODO: use op.??? here
+				return _storeListener.FetchAsyncResult;
+			}
 			else
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 		}
 
@@ -697,6 +761,10 @@ namespace UnityFx.Purchasing
 						_storeListener.EndFetch();
 					}
 				}
+			}
+			else
+			{
+				throw new NotSupportedException();
 			}
 		}
 #endif

@@ -144,7 +144,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
-		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
+		/// <exception cref="NotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="Purchase(string)"/>
@@ -155,6 +155,7 @@ namespace UnityFx.Purchasing
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if store initialization fails.</exception>
+		/// <exception cref="NotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="FetchAsync"/>
@@ -165,7 +166,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
-		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
+		/// <exception cref="NotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Purchase(string)"/>
@@ -176,6 +177,7 @@ namespace UnityFx.Purchasing
 		/// Fetches product information from the store.
 		/// </summary>
 		/// <exception cref="StoreFetchException">Thrown if operation fails.</exception>
+		/// <exception cref="NotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="InitializeAsync"/>
@@ -196,6 +198,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
+		/// <exception cref="NotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Fetch"/>
@@ -216,6 +219,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
+		/// <exception cref="NotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Purchase(string)"/>
 		/// <seealso cref="InitializeAsync"/>
