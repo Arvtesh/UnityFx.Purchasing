@@ -21,7 +21,7 @@ namespace UnityFx.Purchasing
 		private const int _statusFaulted = 2;
 		private const int _statusCanceled = 3;
 
-		private static AsyncResult _completed = new AsyncResult(_statusCompleted);
+		private static AsyncResult _completed;
 
 		private Exception _exception;
 		private int _status;
@@ -33,7 +33,18 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns a completed operation. Read only.
 		/// </summary>
-		public static AsyncResult Completed => _completed;
+		public static AsyncResult Completed
+		{
+			get
+			{
+				if (_completed == null)
+				{
+					_completed = new AsyncResult(_statusCompleted);
+				}
+
+				return _completed;
+			}
+		}
 
 		/// <summary>
 		/// Returns an <see cref="System.Exception"/> that caused the operation to end prematurely. If the operation completed successfully
