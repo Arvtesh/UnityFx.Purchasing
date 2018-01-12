@@ -25,6 +25,7 @@ namespace UnityFx.Purchasing
 
 		private Exception _exception;
 		private int _status;
+		private Action<AsyncResult> _continuation;
 
 		#endregion
 
@@ -76,6 +77,21 @@ namespace UnityFx.Purchasing
 		public bool IsCanceled => _status == _statusCanceled;
 
 		/// <summary>
+		/// Executes operation continuations.
+		/// </summary>
+		protected void OnCompleted()
+		{
+			try
+			{
+				_continuation?.Invoke(this);
+			}
+			finally
+			{
+				_continuation = null;
+			}
+		}
+
+		/// <summary>
 		/// Throws exception if the operation has failed.
 		/// </summary>
 		protected void ThrowIfNotCompleted()
@@ -99,17 +115,35 @@ namespace UnityFx.Purchasing
 			_status = status;
 		}
 
-		internal void SetCanceled()
+		internal void ContinueWith(Action<AsyncResult> continuation)
 		{
-			if (!TrySetCanceled())
+			if (_status > _statusRunning)
+			{
+				continuation(this);
+			}
+			else
+			{
+				_continuation += continuation;
+			}
+		}
+
+		internal void SetCompleted()
+		{
+			if (!TrySetCompleted())
 			{
 				throw new InvalidOperationException();
 			}
 		}
 
-		internal bool TrySetCanceled()
+		internal bool TrySetCompleted()
 		{
-			return TrySetStatus(_statusCanceled);
+			if (TrySetStatus(_statusCompleted))
+			{
+				OnCompleted();
+				return true;
+			}
+
+			return false;
 		}
 
 		internal void SetException(Exception e)
@@ -127,23 +161,30 @@ namespace UnityFx.Purchasing
 			if (TrySetStatus(status))
 			{
 				_exception = e;
+				OnCompleted();
 				return true;
 			}
 
 			return false;
 		}
 
-		internal void SetCompleted()
+		internal void SetCanceled()
 		{
-			if (!TrySetCompleted())
+			if (!TrySetCanceled())
 			{
 				throw new InvalidOperationException();
 			}
 		}
 
-		internal bool TrySetCompleted()
+		internal bool TrySetCanceled()
 		{
-			return TrySetStatus(_statusCompleted);
+			if (TrySetStatus(_statusCanceled))
+			{
+				OnCompleted();
+				return true;
+			}
+
+			return false;
 		}
 
 		#endregion

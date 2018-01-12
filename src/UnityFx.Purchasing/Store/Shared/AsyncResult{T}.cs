@@ -43,7 +43,10 @@ namespace UnityFx.Purchasing
 
 		internal AsyncResult(T result)
 		{
-			SetResult(result);
+			if (TrySetCompleted())
+			{
+				_result = result;
+			}
 		}
 
 		internal void SetResult(T result)
@@ -59,6 +62,7 @@ namespace UnityFx.Purchasing
 			if (TrySetCompleted())
 			{
 				_result = result;
+				OnCompleted();
 				return true;
 			}
 
