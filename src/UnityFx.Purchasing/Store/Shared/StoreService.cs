@@ -540,30 +540,7 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				if (_storeListener.IsInitializePending)
-				{
-					return _storeListener.InitializeAsyncResult;
-				}
-				else if (Application.isMobilePlatform || Application.isEditor)
-				{
-					var result = _storeListener.BeginInitialize();
-
-					try
-					{
-						GetStoreConfig(InitializeGetConfigCallback, InitializeGetConfigErrorCallback);
-					}
-					catch (Exception e)
-					{
-						_storeListener.EndInitialize(e);
-						throw;
-					}
-
-					return result;
-				}
-				else
-				{
-					throw new PlatformNotSupportedException();
-				}
+				return InitializeInternal();
 			}
 
 			return AsyncResult.Completed;
@@ -624,7 +601,7 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				return Initialize();
+				return InitializeInternal();
 			}
 			else if (_storeListener.IsFetchPending)
 			{
@@ -706,35 +683,41 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			// 1) Initialize store transaction.
 			var result = _storeListener.BeginPurchase(productId, false);
 
 			try
 			{
-				// 2) Wait untill the store initialization is finished.
+				AsyncResult fetchOp = null;
+
 				if (_storeController == null)
 				{
-					// TODO
+					fetchOp = InitializeInternal();
+				}
+				else if (_storeListener.IsFetchPending)
+				{
+					fetchOp = _storeListener.FetchAsyncResult;
 				}
 
-				// 3) Wait for the fetch operation to complete (if any).
-				if (_storeListener.IsFetchPending)
+				if (fetchOp != null)
 				{
-					// TODO
-				}
-
-				// 4) Look up the Product reference with the product identifier and the Purchasing system's products collection.
-				var product = _storeController.products.WithID(productId);
-
-				// 5) If the look up found a product for this device's store and that product is ready to be sold initiate the purchase.
-				if (product != null && product.availableToPurchase)
-				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-					_storeController.InitiatePurchase(product);
+					fetchOp.ContinueWith(asyncResult =>
+					{
+						if (!_disposed)
+						{
+							if (asyncResult.IsCompletedSuccessfully)
+							{
+								PurchaseInternal(productId);
+							}
+							else
+							{
+								_storeListener.EndPurchase(asyncResult.Exception);
+							}
+						}
+					});
 				}
 				else
 				{
-					throw new StorePurchaseException(new PurchaseResult(product), StorePurchaseError.ProductUnavailable);
+					PurchaseInternal(productId);
 				}
 			}
 			catch (Exception e)
@@ -891,6 +874,49 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
+
+		private AsyncResult InitializeInternal()
+		{
+			if (_storeListener.IsInitializePending)
+			{
+				return _storeListener.InitializeAsyncResult;
+			}
+			else if (Application.isMobilePlatform || Application.isEditor)
+			{
+				var result = _storeListener.BeginInitialize();
+
+				try
+				{
+					GetStoreConfig(InitializeGetConfigCallback, InitializeGetConfigErrorCallback);
+				}
+				catch (Exception e)
+				{
+					_storeListener.EndInitialize(e);
+					throw;
+				}
+
+				return result;
+			}
+			else
+			{
+				throw new PlatformNotSupportedException();
+			}
+		}
+
+		private void PurchaseInternal(string productId)
+		{
+			var product = _storeController.products.WithID(productId);
+
+			if (product != null && product.availableToPurchase)
+			{
+				_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+				_storeController.InitiatePurchase(product);
+			}
+			else
+			{
+				_storeListener.EndPurchase(new StorePurchaseException(new PurchaseResult(product), StorePurchaseError.ProductUnavailable));
+			}
+		}
 
 		private void InitializeGetConfigCallback(StoreConfig storeConfig)
 		{
