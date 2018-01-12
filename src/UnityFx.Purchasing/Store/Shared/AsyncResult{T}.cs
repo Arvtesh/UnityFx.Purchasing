@@ -37,6 +37,15 @@ namespace UnityFx.Purchasing
 
 		#region internals
 
+		internal AsyncResult()
+		{
+		}
+
+		internal AsyncResult(T result)
+		{
+			SetResult(result);
+		}
+
 		internal void SetResult(T result)
 		{
 			if (!TrySetResult(result))
