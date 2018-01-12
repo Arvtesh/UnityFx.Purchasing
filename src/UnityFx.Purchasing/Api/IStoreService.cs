@@ -2,7 +2,9 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+#if !NET35
 using System.Threading.Tasks;
+#endif
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -122,10 +124,20 @@ namespace UnityFx.Purchasing
 		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
-		/// Returns Unity3d store controller. Read only.
+		/// Returns Unity3d store controller. Never returns <see langword="null"/>. Read only.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="IsInitialized"/>
 		IStoreController Controller { get; }
+
+		/// <summary>
+		/// Returns store extensions provider. Never returns <see langword="null"/>. Read only.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <seealso cref="IsInitialized"/>
+		IExtensionProvider Extensions { get; }
 
 		/// <summary>
 		/// Returns <see langword="true"/> if the store is initialized (the product list is loaded from native store); <see langword="false"/> otherwise. Read only.

@@ -5,7 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if !NET35
 using System.Threading.Tasks;
+#endif
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -34,6 +36,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		private IStoreController _storeController;
+		private IExtensionProvider _storeExtensions;
 		private bool _disposed;
 
 		#endregion
@@ -216,7 +219,7 @@ namespace UnityFx.Purchasing
 				_disposed = true;
 				_storeListener.Dispose();
 
-				SetStoreController(null);
+				SetStoreController(null, null);
 
 #if !NET35
 				try
@@ -311,9 +314,10 @@ namespace UnityFx.Purchasing
 
 		#region internals
 
-		internal void SetStoreController(IStoreController controller)
+		internal void SetStoreController(IStoreController controller, IExtensionProvider extensions)
 		{
 			_storeController = controller;
+			_storeExtensions = extensions;
 			_products?.SetController(controller);
 		}
 
@@ -457,54 +461,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal static StoreFetchError GetInitializeError(InitializationFailureReason error)
-		{
-			switch (error)
-			{
-				case InitializationFailureReason.AppNotKnown:
-					return StoreFetchError.AppNotKnown;
-
-				case InitializationFailureReason.NoProductsAvailable:
-					return StoreFetchError.NoProductsAvailable;
-
-				case InitializationFailureReason.PurchasingUnavailable:
-					return StoreFetchError.PurchasingUnavailable;
-
-				default:
-					return StoreFetchError.Unknown;
-			}
-		}
-
-		internal static StorePurchaseError GetPurchaseError(PurchaseFailureReason error)
-		{
-			switch (error)
-			{
-				case PurchaseFailureReason.PurchasingUnavailable:
-					return StorePurchaseError.PurchasingUnavailable;
-
-				case PurchaseFailureReason.ExistingPurchasePending:
-					return StorePurchaseError.ExistingPurchasePending;
-
-				case PurchaseFailureReason.ProductUnavailable:
-					return StorePurchaseError.ProductUnavailable;
-
-				case PurchaseFailureReason.SignatureInvalid:
-					return StorePurchaseError.SignatureInvalid;
-
-				case PurchaseFailureReason.UserCancelled:
-					return StorePurchaseError.UserCanceled;
-
-				case PurchaseFailureReason.PaymentDeclined:
-					return StorePurchaseError.PaymentDeclined;
-
-				case PurchaseFailureReason.DuplicateTransaction:
-					return StorePurchaseError.DuplicateTransaction;
-
-				default:
-					return StorePurchaseError.Unknown;
-			}
-		}
-
 		#endregion
 
 		#region IStoreService
@@ -541,7 +497,19 @@ namespace UnityFx.Purchasing
 			get
 			{
 				ThrowIfDisposed();
+				ThrowIfNotInitialized();
 				return _storeController;
+			}
+		}
+
+		/// <inheritdoc/>
+		public IExtensionProvider Extensions
+		{
+			get
+			{
+				ThrowIfDisposed();
+				ThrowIfNotInitialized();
+				return _storeExtensions;
 			}
 		}
 
@@ -578,7 +546,7 @@ namespace UnityFx.Purchasing
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
-					var op = _storeListener.BeginInitialize();
+					var result = _storeListener.BeginInitialize();
 
 					try
 					{
@@ -590,8 +558,7 @@ namespace UnityFx.Purchasing
 						throw;
 					}
 
-					// TODO: use op.??? here
-					return _storeListener.InitializeAsyncResult;
+					return result;
 				}
 				else
 				{
@@ -616,7 +583,7 @@ namespace UnityFx.Purchasing
 				}
 				else if (Application.isMobilePlatform || Application.isEditor)
 				{
-					var op = _storeListener.BeginInitialize();
+					var result = _storeListener.BeginInitialize().Task;
 
 					try
 					{
@@ -638,7 +605,7 @@ namespace UnityFx.Purchasing
 						throw;
 					}
 
-					return op.Task;
+					return result;
 				}
 				else
 				{
@@ -665,7 +632,7 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				var op = _storeListener.BeginFetch();
+				var result = _storeListener.BeginFetch();
 
 				try
 				{
@@ -677,8 +644,7 @@ namespace UnityFx.Purchasing
 					throw;
 				}
 
-				// TODO: use op.??? here
-				return _storeListener.FetchAsyncResult;
+				return result;
 			}
 			else
 			{
@@ -702,7 +668,7 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				var op = _storeListener.BeginFetch();
+				var result = _storeListener.BeginFetch().Task;
 
 				try
 				{
@@ -724,7 +690,7 @@ namespace UnityFx.Purchasing
 					throw;
 				}
 
-				return op.Task;
+				return result;
 			}
 			else
 			{
@@ -741,7 +707,7 @@ namespace UnityFx.Purchasing
 			ThrowIfBusy();
 
 			// 1) Initialize store transaction.
-			var op = _storeListener.BeginPurchase(productId, false);
+			var result = _storeListener.BeginPurchase(productId, false);
 
 			try
 			{
@@ -765,9 +731,6 @@ namespace UnityFx.Purchasing
 				{
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 					_storeController.InitiatePurchase(product);
-
-					// TODO: use op.??? here
-					return _storeListener.PurchaseAsyncResult;
 				}
 				else
 				{
@@ -779,6 +742,8 @@ namespace UnityFx.Purchasing
 				_storeListener.EndPurchase(e);
 				throw;
 			}
+
+			return result;
 		}
 
 #if !NET35

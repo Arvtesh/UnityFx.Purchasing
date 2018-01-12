@@ -3,7 +3,9 @@
 
 using System;
 using System.Diagnostics;
+#if !NET35
 using System.Threading.Tasks;
+#endif
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -29,21 +31,27 @@ namespace UnityFx.Purchasing
 
 		public bool IsInitializePending => _initializeOp != null;
 
+#if !NET35
 		public Task InitializeTask => _initializeOp?.Task;
+#endif
 
-		public AsyncResult InitializeAsyncResult => throw new NotImplementedException();
+		public AsyncResult InitializeAsyncResult => _initializeOp;
 
 		public bool IsFetchPending => _fetchOp != null;
 
+#if !NET35
 		public Task FetchTask => _fetchOp?.Task;
+#endif
 
-		public AsyncResult FetchAsyncResult => throw new NotImplementedException();
+		public AsyncResult FetchAsyncResult => _fetchOp;
 
 		public bool IsPurchasePending => _purchaseOp != null;
 
+#if !NET35
 		public Task<PurchaseResult> PurchaseTask => _purchaseOp?.Task;
+#endif
 
-		public AsyncResult<PurchaseResult> PurchaseAsyncResult => throw new NotImplementedException();
+		public AsyncResult<PurchaseResult> PurchaseAsyncResult => _purchaseOp;
 
 		public StoreListener(StoreService storeService, TraceSource console)
 		{
@@ -71,7 +79,7 @@ namespace UnityFx.Purchasing
 
 			if (e is StoreFetchException sfe)
 			{
-				_storeService.InvokeInitializeFailed(StoreService.GetInitializeError(sfe.Reason), e);
+				_storeService.InvokeInitializeFailed(GetInitializeError(sfe.Reason), e);
 			}
 			else
 			{
@@ -79,12 +87,6 @@ namespace UnityFx.Purchasing
 			}
 
 			_initializeOp.TrySetException(e);
-			_initializeOp.Dispose();
-			_initializeOp = null;
-		}
-
-		public void EndInitialize()
-		{
 			_initializeOp.Dispose();
 			_initializeOp = null;
 		}
@@ -110,7 +112,7 @@ namespace UnityFx.Purchasing
 
 			if (e is StoreFetchException sfe)
 			{
-				_storeService.InvokeFetchFailed(StoreService.GetInitializeError(sfe.Reason), e);
+				_storeService.InvokeFetchFailed(GetInitializeError(sfe.Reason), e);
 			}
 			else
 			{
@@ -118,12 +120,6 @@ namespace UnityFx.Purchasing
 			}
 
 			_fetchOp.TrySetException(e);
-			_fetchOp.Dispose();
-			_fetchOp = null;
-		}
-
-		public void EndFetch()
-		{
 			_fetchOp.Dispose();
 			_fetchOp = null;
 		}
@@ -174,7 +170,7 @@ namespace UnityFx.Purchasing
 				try
 				{
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitialized");
-					_storeService.SetStoreController(controller);
+					_storeService.SetStoreController(controller, extensions);
 					_storeService.InvokeInitializeCompleted();
 					_initializeOp.SetResult(null);
 				}
@@ -202,7 +198,7 @@ namespace UnityFx.Purchasing
 					var e = new StoreFetchException(error);
 
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitializeFailed: " + error);
-					_storeService.InvokeInitializeFailed(StoreService.GetInitializeError(error), e);
+					_storeService.InvokeInitializeFailed(GetInitializeError(error), e);
 					_initializeOp.SetException(e);
 				}
 				catch (Exception e)
@@ -254,7 +250,7 @@ namespace UnityFx.Purchasing
 					var e = new StoreFetchException(error);
 
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetchFailed: " + error);
-					_storeService.InvokeFetchFailed(StoreService.GetInitializeError(error), e);
+					_storeService.InvokeFetchFailed(GetInitializeError(error), e);
 					_fetchOp.SetException(e);
 				}
 				catch (Exception e)
@@ -322,7 +318,7 @@ namespace UnityFx.Purchasing
 						_purchaseOp = BeginPurchase(productId, true);
 					}
 
-					_purchaseOp.SetPurchaseFailed(product, StoreService.GetPurchaseError(reason), null);
+					_purchaseOp.SetPurchaseFailed(product, GetPurchaseError(reason), null);
 				}
 				catch (Exception e)
 				{
@@ -372,6 +368,55 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
+
+		private static StoreFetchError GetInitializeError(InitializationFailureReason error)
+		{
+			switch (error)
+			{
+				case InitializationFailureReason.AppNotKnown:
+					return StoreFetchError.AppNotKnown;
+
+				case InitializationFailureReason.NoProductsAvailable:
+					return StoreFetchError.NoProductsAvailable;
+
+				case InitializationFailureReason.PurchasingUnavailable:
+					return StoreFetchError.PurchasingUnavailable;
+
+				default:
+					return StoreFetchError.Unknown;
+			}
+		}
+
+		private static StorePurchaseError GetPurchaseError(PurchaseFailureReason error)
+		{
+			switch (error)
+			{
+				case PurchaseFailureReason.PurchasingUnavailable:
+					return StorePurchaseError.PurchasingUnavailable;
+
+				case PurchaseFailureReason.ExistingPurchasePending:
+					return StorePurchaseError.ExistingPurchasePending;
+
+				case PurchaseFailureReason.ProductUnavailable:
+					return StorePurchaseError.ProductUnavailable;
+
+				case PurchaseFailureReason.SignatureInvalid:
+					return StorePurchaseError.SignatureInvalid;
+
+				case PurchaseFailureReason.UserCancelled:
+					return StorePurchaseError.UserCanceled;
+
+				case PurchaseFailureReason.PaymentDeclined:
+					return StorePurchaseError.PaymentDeclined;
+
+				case PurchaseFailureReason.DuplicateTransaction:
+					return StorePurchaseError.DuplicateTransaction;
+
+				default:
+					return StorePurchaseError.Unknown;
+			}
+		}
+
 		#endregion
 	}
 }
