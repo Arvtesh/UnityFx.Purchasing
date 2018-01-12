@@ -16,14 +16,13 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private const int _statusInitialized = -1;
 		private const int _statusRunning = 0;
 		private const int _statusCompleted = 1;
 		private const int _statusFaulted = 2;
 		private const int _statusCanceled = 3;
 
 		private Exception _exception;
-		private int _status = _statusInitialized;
+		private int _status;
 
 		#endregion
 
@@ -33,21 +32,29 @@ namespace UnityFx.Purchasing
 		/// Returns an <see cref="System.Exception"/> that caused the operation to end prematurely. If the operation completed successfully
 		/// or has not yet thrown any exceptions, this will return <c>null</c>. Read only.
 		/// </summary>
+		/// <seealso cref="IsFaulted"/>
 		public Exception Exception => _exception;
 
 		/// <summary>
-		/// Returns <c>true</c> if the operation has completed successfully, <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the operation has completed successfully, <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <seealso cref="IsFaulted"/>
+		/// <seealso cref="IsCanceled"/>
 		public bool IsCompletedSuccessfully => _status == _statusCompleted;
 
 		/// <summary>
-		/// Returns <c>true</c> if the operation has failed for any reason, <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the operation has failed for any reason, <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <seealso cref="Exception"/>
+		/// <seealso cref="IsCompletedSuccessfully"/>
+		/// <seealso cref="IsCanceled"/>
 		public bool IsFaulted => _status > _statusCompleted;
 
 		/// <summary>
-		/// Returns <c>true</c> if the operation has been canceled by user, <c>false</c> otherwise. Read only.
+		/// Returns <see langword="true"/> if the operation has been canceled by user, <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <seealso cref="IsCompletedSuccessfully"/>
+		/// <seealso cref="IsFaulted"/>
 		public bool IsCanceled => _status == _statusCanceled;
 
 		/// <summary>
@@ -136,24 +143,7 @@ namespace UnityFx.Purchasing
 		object IEnumerator.Current => null;
 
 		/// <inheritdoc/>
-		bool IEnumerator.MoveNext()
-		{
-			if (_status > _statusRunning)
-			{
-				// The operation has completed.
-				return false;
-			}
-			else
-			{
-				// If this is the first time MoveNext() is called, switch status to Running.
-				if (_status == _statusInitialized)
-				{
-					TrySetStatus(_statusRunning);
-				}
-
-				return _status == _statusRunning;
-			}
-		}
+		bool IEnumerator.MoveNext() => _status == _statusRunning;
 
 		/// <inheritdoc/>
 		void IEnumerator.Reset() => throw new NotSupportedException();
@@ -164,7 +154,7 @@ namespace UnityFx.Purchasing
 
 		private bool TrySetStatus(int newStatus)
 		{
-			if (_status < _statusCompleted && newStatus > _status)
+			if (_status < _statusCompleted)
 			{
 				_status = newStatus;
 				return true;

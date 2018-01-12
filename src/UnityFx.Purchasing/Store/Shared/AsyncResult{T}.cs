@@ -21,8 +21,9 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Returns the result value of this operation. Read only.
+		/// Returns the operation result. Read only.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Throws if the operation is either not completed or failed/canceled.</exception>
 		public T Result
 		{
 			get
