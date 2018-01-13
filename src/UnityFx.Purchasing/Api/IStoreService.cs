@@ -51,9 +51,14 @@ namespace UnityFx.Purchasing
 		Unknown,
 
 		/// <summary>
-		/// The manager was disposed while a purchase operation was pending.
+		/// The store was disposed while a purchase operation was pending.
 		/// </summary>
 		StoreDisposed,
+
+		/// <summary>
+		/// The store is not initialized.
+		/// </summary>
+		StoreNotInitialized,
 
 		/// <summary>
 		/// The system purchasing feature is unavailable (<see cref="PurchaseFailureReason.PurchasingUnavailable"/>).
@@ -160,7 +165,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="Purchase(string)"/>
-		AsyncResult Initialize();
+		IAsyncOperation Initialize();
 
 #if !NET35
 		/// <summary>
@@ -182,7 +187,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Purchase(string)"/>
-		AsyncResult Fetch();
+		IAsyncOperation Fetch();
 
 #if !NET35
 		/// <summary>
@@ -215,7 +220,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="IsBusy"/>
-		AsyncResult<PurchaseResult> Purchase(string productId);
+		IAsyncOperation<PurchaseResult> Purchase(string productId);
 
 #if !NET35
 		/// <summary>

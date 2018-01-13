@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -44,6 +45,17 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>
+		public FailedPurchaseResult(string productId, Product product, StorePurchaseError error, Exception e)
+			: base(product)
+		{
+			_productId = productId;
+			_error = error;
+			_exception = e;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
+		/// </summary>
 		public FailedPurchaseResult(string productId, PurchaseResult purchaseResult, StorePurchaseError error, Exception e)
 			: base(purchaseResult.TransactionInfo, purchaseResult.ValidationResult)
 		{
@@ -66,10 +78,10 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>
-		public FailedPurchaseResult(string productId, StorePurchaseException e)
+		public FailedPurchaseResult(StorePurchaseException e)
 			: base(e.Result.TransactionInfo, e.Result.ValidationResult)
 		{
-			_productId = productId;
+			_productId = e.ProductId;
 			_error = e.Reason;
 			_exception = e;
 		}

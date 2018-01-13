@@ -19,11 +19,15 @@ namespace UnityFx.Purchasing
 		private readonly string _productId;
 		private readonly bool _restored;
 
+		private StoreTransaction _transaction;
+
 		#endregion
 
 		#region interface
 
 		public string ProductId => _productId;
+
+		public StoreTransaction Transaction => _transaction;
 
 		public PurchaseOperation(StoreService storeService, TraceSource console, string productId, bool restored)
 			: base(console, TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId)
@@ -37,164 +41,68 @@ namespace UnityFx.Purchasing
 			_restored = restored;
 		}
 
-		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
+		public bool ProcessPurchase(Product product)
 		{
-			Debug.Assert(args != null);
-			Debug.Assert(args.purchasedProduct != null);
-
-			var product = args.purchasedProduct;
 			var productId = product.definition.id;
 
-			try
+			// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
+			// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
+			if (_restored || _productId == productId)
 			{
-				// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
-				// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
-				if (_restored || _productId == productId)
-				{
-					var transactionInfo = new StoreTransaction(product, _restored);
-
-					if (string.IsNullOrEmpty(transactionInfo.Receipt))
-					{
-						SetPurchaseFailed(transactionInfo, null, StorePurchaseError.ReceiptNullOrEmpty);
-					}
-					else
-					{
-						ValidatePurchase(transactionInfo);
-						return PurchaseProcessingResult.Pending;
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				SetPurchaseFailed(new StoreTransaction(product, _restored), null, StorePurchaseError.Unknown, e);
+				_transaction = new StoreTransaction(product, _restored);
+				return true;
 			}
 
-			return PurchaseProcessingResult.Complete;
+			return false;
 		}
 
-		public void SetPurchaseCompleted(StoreTransaction transactionInfo, PurchaseValidationResult validationResult)
+		public FailedPurchaseResult GetFailedResult(Product product, StorePurchaseError reason, Exception e)
 		{
-			var result = new PurchaseResult(transactionInfo, validationResult);
+			return new FailedPurchaseResult(_productId, product, reason, e);
+		}
 
-			if (_restored)
+		public FailedPurchaseResult GetFailedResult(StorePurchaseError reason, Exception e)
+		{
+			return new FailedPurchaseResult(_productId, _transaction, null, reason, e);
+		}
+
+		public void SetPurchaseCompleted(PurchaseValidationResult validationResult)
+		{
+			var result = new PurchaseResult(_transaction, validationResult);
+			_storeService.InvokePurchaseCompleted(_productId, result);
+			SetResult(result);
+		}
+
+		public void SetPurchaseFailed(StorePurchaseError failReason)
+		{
+			SetPurchaseFailed(failReason);
+		}
+
+		public void SetPurchaseFailed(Product product, StorePurchaseError failReason)
+		{
+			var result = new FailedPurchaseResult(_productId, product, failReason, null);
+			_storeService.InvokePurchaseFailed(result);
+
+			if (failReason == StorePurchaseError.UserCanceled)
 			{
-				try
-				{
-					_storeService.InvokePurchaseCompleted(_productId, result);
-				}
-				finally
-				{
-					Dispose();
-				}
+				SetCanceled();
 			}
 			else
 			{
-				SetResult(result);
+				SetException(new StorePurchaseException(result));
 			}
 		}
 
-		public void SetPurchaseFailed(Product product, StorePurchaseError failReason, Exception e = null)
+		public void SetPurchaseFailed(PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e)
 		{
-			SetPurchaseFailed(new StoreTransaction(product, _restored), null, failReason, e);
-		}
-
-		public void SetPurchaseFailed(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e = null)
-		{
-			var result = new FailedPurchaseResult(_productId, transactionInfo, validationResult, failReason, e);
-
-			if (_restored)
-			{
-				try
-				{
-					_storeService.InvokePurchaseFailed(result);
-				}
-				finally
-				{
-					Dispose();
-				}
-			}
-			else
-			{
-				if (failReason == StorePurchaseError.UserCanceled)
-				{
-					SetCanceled();
-				}
-				else if (e != null)
-				{
-					SetException(new StorePurchaseException(result, failReason, e));
-				}
-				else
-				{
-					SetException(new StorePurchaseException(result, failReason));
-				}
-			}
+			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, failReason, e);
+			_storeService.InvokePurchaseFailed(result);
+			SetException(new StorePurchaseException(result));
 		}
 
 		#endregion
 
 		#region implementation
-
-		private async void ValidatePurchase(StoreTransaction transactionInfo)
-		{
-			var product = transactionInfo.Product;
-			var resultStatus = PurchaseValidationStatus.Failure;
-
-			try
-			{
-				_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"ValidatePurchase: {product.definition.id}, transactionId = {product.transactionID}");
-
-				var validationResult = await _storeService.ValidatePurchaseAsync(transactionInfo);
-
-				// Do nothing if the store has been disposed while we were waiting for validation.
-				if (!IsDisposed)
-				{
-					if (validationResult == null)
-					{
-						// No result returned from the validator means validation succeeded.
-						ConfirmPendingPurchase(product);
-						SetPurchaseCompleted(transactionInfo, validationResult);
-					}
-					else
-					{
-						resultStatus = validationResult.Status;
-
-						if (resultStatus == PurchaseValidationStatus.Ok)
-						{
-							// The purchase validation succeeded.
-							ConfirmPendingPurchase(product);
-							SetPurchaseCompleted(transactionInfo, validationResult);
-						}
-						else if (resultStatus == PurchaseValidationStatus.Failure)
-						{
-							// The purchase validation failed: confirm to avoid processing it again.
-							ConfirmPendingPurchase(product);
-							SetPurchaseFailed(transactionInfo, validationResult, StorePurchaseError.ReceiptValidationFailed);
-						}
-						else
-						{
-							// Need to re-validate the purchase: do not confirm.
-							SetPurchaseFailed(transactionInfo, validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
-						}
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				// NOTE: Should not really get here (do we need to confirm it in this case?).
-				if (!IsDisposed)
-				{
-					ConfirmPendingPurchase(product);
-					SetPurchaseFailed(transactionInfo, null, StorePurchaseError.ReceiptValidationFailed, e);
-				}
-			}
-		}
-
-		private void ConfirmPendingPurchase(Product product)
-		{
-			_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
-			_storeService.Controller.ConfirmPendingPurchase(product);
-		}
-
 		#endregion
 	}
 }

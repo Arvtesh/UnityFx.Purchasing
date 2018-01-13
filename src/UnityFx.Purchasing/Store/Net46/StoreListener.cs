@@ -3,9 +3,6 @@
 
 using System;
 using System.Diagnostics;
-#if !NET35
-using System.Threading.Tasks;
-#endif
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -31,27 +28,15 @@ namespace UnityFx.Purchasing
 
 		public bool IsInitializePending => _initializeOp != null;
 
-#if !NET35
-		public Task InitializeTask => _initializeOp?.Task;
-#endif
-
-		public AsyncResult InitializeAsyncResult => _initializeOp;
+		public AsyncResult<object> InitializeOp => _initializeOp;
 
 		public bool IsFetchPending => _fetchOp != null;
 
-#if !NET35
-		public Task FetchTask => _fetchOp?.Task;
-#endif
-
-		public AsyncResult FetchAsyncResult => _fetchOp;
+		public AsyncResult<object> FetchOp => _fetchOp;
 
 		public bool IsPurchasePending => _purchaseOp != null;
 
-#if !NET35
-		public Task<PurchaseResult> PurchaseTask => _purchaseOp?.Task;
-#endif
-
-		public AsyncResult<PurchaseResult> PurchaseAsyncResult => _purchaseOp;
+		public AsyncResult<PurchaseResult> PurchaseOp => _purchaseOp;
 
 		public StoreListener(StoreService storeService, TraceSource console)
 		{
@@ -77,18 +62,21 @@ namespace UnityFx.Purchasing
 
 			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 
-			if (e is StoreFetchException sfe)
+			if (_initializeOp != null)
 			{
-				_storeService.InvokeInitializeFailed(GetInitializeError(sfe.Reason), e);
-			}
-			else
-			{
-				_storeService.InvokeInitializeFailed(StoreFetchError.Unknown, e);
-			}
+				if (e is StoreFetchException sfe)
+				{
+					_storeService.InvokeInitializeFailed(GetInitializeError(sfe.Reason), e);
+				}
+				else
+				{
+					_storeService.InvokeInitializeFailed(StoreFetchError.Unknown, e);
+				}
 
-			_initializeOp.TrySetException(e);
-			_initializeOp.Dispose();
-			_initializeOp = null;
+				_initializeOp.TrySetException(e);
+				_initializeOp.Dispose();
+				_initializeOp = null;
+			}
 		}
 
 		public FetchOperation BeginFetch()
@@ -110,18 +98,21 @@ namespace UnityFx.Purchasing
 
 			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 
-			if (e is StoreFetchException sfe)
+			if (_fetchOp != null)
 			{
-				_storeService.InvokeFetchFailed(GetInitializeError(sfe.Reason), e);
-			}
-			else
-			{
-				_storeService.InvokeFetchFailed(StoreFetchError.Unknown, e);
-			}
+				if (e is StoreFetchException sfe)
+				{
+					_storeService.InvokeFetchFailed(GetInitializeError(sfe.Reason), e);
+				}
+				else
+				{
+					_storeService.InvokeFetchFailed(StoreFetchError.Unknown, e);
+				}
 
-			_fetchOp.TrySetException(e);
-			_fetchOp.Dispose();
-			_fetchOp = null;
+				_fetchOp.TrySetException(e);
+				_fetchOp.Dispose();
+				_fetchOp = null;
+			}
 		}
 
 		public PurchaseOperation BeginPurchase(string productId, bool isRestored)
@@ -142,16 +133,26 @@ namespace UnityFx.Purchasing
 			Debug.Assert(!_disposed);
 
 			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-			_storeService.InvokePurchaseFailed(new FailedPurchaseResult(_purchaseOp.ProductId, null, null, StorePurchaseError.Unknown, e));
-			_purchaseOp.TrySetException(e);
-			_purchaseOp.Dispose();
-			_purchaseOp = null;
-		}
 
-		public void EndPurchase()
-		{
-			_purchaseOp.Dispose();
-			_purchaseOp = null;
+			if (_purchaseOp != null)
+			{
+				if (e is StorePurchaseException spe)
+				{
+					_storeService.InvokePurchaseFailed(new FailedPurchaseResult(spe));
+				}
+				else if (e is StoreFetchException sfe)
+				{
+					_storeService.InvokePurchaseFailed(_purchaseOp.GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
+				}
+				else
+				{
+					_storeService.InvokePurchaseFailed(_purchaseOp.GetFailedResult(StorePurchaseError.Unknown, e));
+				}
+
+				_purchaseOp.TrySetException(e);
+				_purchaseOp.Dispose();
+				_purchaseOp = null;
+			}
 		}
 
 		#endregion
@@ -275,6 +276,7 @@ namespace UnityFx.Purchasing
 			{
 				try
 				{
+					var result = PurchaseProcessingResult.Complete;
 					var product = args.purchasedProduct;
 					var productId = product.definition.id;
 
@@ -287,16 +289,43 @@ namespace UnityFx.Purchasing
 						_purchaseOp = BeginPurchase(productId, true);
 					}
 
-					return _purchaseOp.ProcessPurchase(args);
+					// Validate the purchase transaction.
+					if (_purchaseOp.ProcessPurchase(product))
+					{
+						var transactionInfo = _purchaseOp.Transaction;
+
+						_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"ValidatePurchase: {productId}, transactionId = {product.transactionID}");
+
+						if (string.IsNullOrEmpty(transactionInfo.Receipt))
+						{
+							_purchaseOp.SetPurchaseFailed(StorePurchaseError.ReceiptNullOrEmpty);
+						}
+						else if (_storeService.ValidatePurchase(transactionInfo, ValidatePurchaseCallback))
+						{
+							// Check if the validation callback was called synchronously.
+							if (!_purchaseOp.IsCompleted)
+							{
+								result = PurchaseProcessingResult.Pending;
+							}
+						}
+						else
+						{
+							_purchaseOp.SetPurchaseCompleted(new PurchaseValidationResult(PurchaseValidationStatus.Suppressed));
+						}
+					}
+
+					// Release the operation if done.
+					if (result == PurchaseProcessingResult.Complete)
+					{
+						_purchaseOp.Dispose();
+						_purchaseOp = null;
+					}
+
+					return result;
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-					_purchaseOp?.TrySetException(e);
-				}
-				finally
-				{
-					_purchaseOp = null;
+					EndPurchase(e);
 				}
 			}
 
@@ -309,6 +338,7 @@ namespace UnityFx.Purchasing
 			{
 				try
 				{
+					// NOTE: in some cases product might have null value.
 					var productId = product?.definition.id ?? "null";
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"OnPurchaseFailed: {productId}, reason={reason}");
 
@@ -318,7 +348,7 @@ namespace UnityFx.Purchasing
 						_purchaseOp = BeginPurchase(productId, true);
 					}
 
-					_purchaseOp.SetPurchaseFailed(product, GetPurchaseError(reason), null);
+					_purchaseOp.SetPurchaseFailed(product, GetPurchaseError(reason));
 				}
 				catch (Exception e)
 				{
@@ -327,6 +357,7 @@ namespace UnityFx.Purchasing
 				}
 				finally
 				{
+					_purchaseOp?.Dispose();
 					_purchaseOp = null;
 				}
 			}
@@ -368,6 +399,60 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
+
+		private void ValidatePurchaseCallback(PurchaseValidationResult validationResult)
+		{
+			if (!_disposed)
+			{
+				Debug.Assert(_purchaseOp != null);
+
+				try
+				{
+					if (validationResult == null)
+					{
+						validationResult = new PurchaseValidationResult(PurchaseValidationStatus.Suppressed);
+					}
+
+					var resultStatus = validationResult.Status;
+					var transactionInfo = _purchaseOp.Transaction;
+					var product = transactionInfo.Product;
+
+					if (resultStatus == PurchaseValidationStatus.Ok || resultStatus == PurchaseValidationStatus.Suppressed)
+					{
+						// The purchase validation succeeded.
+						ConfirmPendingPurchase(product);
+						_purchaseOp.SetPurchaseCompleted(validationResult);
+					}
+					else if (resultStatus == PurchaseValidationStatus.Failure)
+					{
+						// The purchase validation failed: confirm to avoid processing it again.
+						ConfirmPendingPurchase(product);
+						_purchaseOp.SetPurchaseFailed(validationResult, StorePurchaseError.ReceiptValidationFailed, null);
+					}
+					else
+					{
+						// Need to re-validate the purchase: do not confirm.
+						_purchaseOp.SetPurchaseFailed(validationResult, StorePurchaseError.ReceiptValidationNotAvailable, null);
+					}
+				}
+				catch (Exception e)
+				{
+					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+					_purchaseOp?.TrySetException(e);
+				}
+				finally
+				{
+					_purchaseOp.Dispose();
+					_purchaseOp = null;
+				}
+			}
+		}
+
+		private void ConfirmPendingPurchase(Product product)
+		{
+			_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
+			_storeService.Controller.ConfirmPendingPurchase(product);
+		}
 
 		private static StoreFetchError GetInitializeError(InitializationFailureReason error)
 		{

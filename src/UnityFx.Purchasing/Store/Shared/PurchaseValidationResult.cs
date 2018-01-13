@@ -21,7 +21,12 @@ namespace UnityFx.Purchasing
 		Failure,
 
 		/// <summary>
-		/// Result is not available. The purchase will not be commited ans has to be re-validated. For example transport error while executing verification request.
+		/// Validation is not implemented.
+		/// </summary>
+		Suppressed,
+
+		/// <summary>
+		/// Result is not available. The purchase will not be commited and has to be re-validated. For example transport error while executing verification request.
 		/// </summary>
 		NotAvailable,
 	}
