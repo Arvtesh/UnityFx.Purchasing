@@ -51,7 +51,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the <see cref="System.Diagnostics.TraceSource"/> instance used by the service. Read only.
 		/// </summary>
-		protected TraceSource TraceSource => _console;
+		protected internal TraceSource TraceSource => _console;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
@@ -61,7 +61,7 @@ namespace UnityFx.Purchasing
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
 			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
-			_storeListener = new StoreListener(this, _console);
+			_storeListener = new StoreListener(this);
 		}
 
 		/// <summary>
@@ -519,7 +519,7 @@ namespace UnityFx.Purchasing
 				return InitializeInternal();
 			}
 
-			return InitializeOperation.Completed;
+			return FetchOperation.Completed;
 		}
 
 #if !NET35

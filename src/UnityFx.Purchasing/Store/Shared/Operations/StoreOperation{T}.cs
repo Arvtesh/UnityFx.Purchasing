@@ -9,24 +9,24 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A generic disposable store operation that logs start/end events.
 	/// </summary>
-	internal abstract class StoreOperation<T> : AsyncResult<T>, IDisposable
+	internal abstract class StoreOperation<T> : AsyncResult<T>
 	{
 		#region data
 
-		private readonly TraceSource _console;
+		private readonly StoreOperationContainer _parent;
 		private readonly TraceEventId _traceEvent;
 		private readonly string _args;
-		private bool _disposed;
 
 		#endregion
 
 		#region interface
 
-		protected bool IsDisposed => _disposed;
+		protected StoreOperationContainer Parent => _parent;
+		protected StoreService Store => _parent.Store;
 
-		public StoreOperation(TraceSource console, TraceEventId eventId, string comment, string args)
+		public StoreOperation(StoreOperationContainer parent, TraceEventId eventId, string comment, string args)
 		{
-			_console = console;
+			_parent = parent;
 			_traceEvent = eventId;
 			_args = args;
 
@@ -42,19 +42,17 @@ namespace UnityFx.Purchasing
 				s += ": " + args;
 			}
 
-			_console.TraceEvent(TraceEventType.Start, (int)eventId, s);
+			parent.Store.TraceSource.TraceEvent(TraceEventType.Start, (int)eventId, s);
 		}
 
 		#endregion
 
-		#region IDisposable
+		#region AsyncResult
 
-		public void Dispose()
+		protected override void OnCompleted()
 		{
-			if (!_disposed)
+			try
 			{
-				_disposed = true;
-
 				var s = _traceEvent.ToString() + (IsCompletedSuccessfully ? " completed" : " failed");
 
 				if (!string.IsNullOrEmpty(_args))
@@ -62,7 +60,12 @@ namespace UnityFx.Purchasing
 					s += ": " + _args;
 				}
 
-				_console.TraceEvent(TraceEventType.Stop, (int)_traceEvent, s);
+				_parent.Store.TraceSource.TraceEvent(TraceEventType.Stop, (int)_traceEvent, s);
+			}
+			finally
+			{
+				_parent.ReleaseOperation(this);
+				base.OnCompleted();
 			}
 		}
 

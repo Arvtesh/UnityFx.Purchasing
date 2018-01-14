@@ -3,21 +3,20 @@
 
 using System;
 using System.Diagnostics;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// An initialize operation.
-	/// </summary>
-	internal class InitializeOperation : StoreOperation<object>
+	internal abstract class StoreOperationContainer
 	{
 		#region interface
 
-		public InitializeOperation(TraceSource console)
-			: base(console, TraceEventId.Initialize, null, null)
-		{
-		}
+		public abstract StoreService Store { get; }
+		public abstract void ReleaseOperation(IAsyncOperation op);
 
+		#endregion
+
+		#region implementation
 		#endregion
 	}
 }

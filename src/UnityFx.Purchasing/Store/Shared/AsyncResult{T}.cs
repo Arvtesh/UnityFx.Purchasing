@@ -85,6 +85,14 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		/// <summary>
+		/// Called when the operation has been completed (with or without exceptions).
+		/// </summary>
+		protected virtual void OnCompleted()
+		{
+			_continuation?.Invoke(this);
+		}
+
 		#endregion
 
 		#region internals
@@ -255,18 +263,6 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
-		}
-
-		private void OnCompleted()
-		{
-			try
-			{
-				_continuation?.Invoke(this);
-			}
-			finally
-			{
-				_continuation = null;
-			}
 		}
 
 		#endregion

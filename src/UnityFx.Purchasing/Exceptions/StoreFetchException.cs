@@ -24,7 +24,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
 		/// </summary>
-		public InitializationFailureReason Reason { get; }
+		public StoreFetchError Reason { get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
@@ -44,7 +44,15 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreFetchException(InitializationFailureReason reason)
+		public StoreFetchException(string message, Exception innerException)
+			: base(message, innerException)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
+		/// </summary>
+		public StoreFetchException(StoreFetchError reason)
 			: base(reason.ToString())
 		{
 			Reason = reason;
@@ -53,9 +61,10 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreFetchException(string message, Exception innerException)
-			: base(message, innerException)
+		public StoreFetchException(StoreFetchError reason, Exception innerException)
+			: base(reason.ToString(), innerException)
 		{
+			Reason = reason;
 		}
 
 		#endregion
@@ -68,7 +77,7 @@ namespace UnityFx.Purchasing
 		private StoreFetchException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			Reason = (InitializationFailureReason)info.GetValue(_reasonSerializationName, typeof(InitializationFailureReason));
+			Reason = (StoreFetchError)info.GetValue(_reasonSerializationName, typeof(StoreFetchError));
 		}
 
 		/// <inheritdoc/>

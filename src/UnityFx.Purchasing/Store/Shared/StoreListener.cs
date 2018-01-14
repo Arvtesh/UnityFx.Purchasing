@@ -10,14 +10,14 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreListener"/>.
 	/// </summary>
-	internal sealed class StoreListener : IStoreListener, IDisposable
+	internal sealed class StoreListener : StoreOperationContainer, IStoreListener, IDisposable
 	{
 		#region data
 
 		private readonly StoreService _storeService;
 		private readonly TraceSource _console;
 
-		private InitializeOperation _initializeOp;
+		private FetchOperation _initializeOp;
 		private FetchOperation _fetchOp;
 		private PurchaseOperation _purchaseOp;
 		private bool _disposed;
@@ -38,19 +38,19 @@ namespace UnityFx.Purchasing
 
 		public AsyncResult<PurchaseResult> PurchaseOp => _purchaseOp;
 
-		public StoreListener(StoreService storeService, TraceSource console)
+		public StoreListener(StoreService storeService)
 		{
 			_storeService = storeService;
-			_console = console;
+			_console = storeService.TraceSource;
 		}
 
-		public InitializeOperation BeginInitialize()
+		public FetchOperation BeginInitialize()
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			_initializeOp = new InitializeOperation(_console);
+			_initializeOp = new FetchOperation(this, TraceEventId.Initialize);
 			_storeService.InvokeInitializeInitiated();
 
 			return _initializeOp;
@@ -61,22 +61,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(!_disposed);
 
 			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
-
-			if (_initializeOp != null)
-			{
-				if (e is StoreFetchException sfe)
-				{
-					_storeService.InvokeInitializeFailed(GetInitializeError(sfe.Reason), e);
-				}
-				else
-				{
-					_storeService.InvokeInitializeFailed(StoreFetchError.Unknown, e);
-				}
-
-				_initializeOp.TrySetException(e);
-				_initializeOp.Dispose();
-				_initializeOp = null;
-			}
+			_initializeOp?.SetFailed(e);
 		}
 
 		public FetchOperation BeginFetch()
@@ -86,7 +71,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_purchaseOp == null);
 
-			_fetchOp = new FetchOperation(_console);
+			_fetchOp = new FetchOperation(this, TraceEventId.Fetch);
 			_storeService.InvokeFetchInitiated();
 
 			return _fetchOp;
@@ -97,33 +82,31 @@ namespace UnityFx.Purchasing
 			Debug.Assert(!_disposed);
 
 			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
-
-			if (_fetchOp != null)
-			{
-				if (e is StoreFetchException sfe)
-				{
-					_storeService.InvokeFetchFailed(GetInitializeError(sfe.Reason), e);
-				}
-				else
-				{
-					_storeService.InvokeFetchFailed(StoreFetchError.Unknown, e);
-				}
-
-				_fetchOp.TrySetException(e);
-				_fetchOp.Dispose();
-				_fetchOp = null;
-			}
+			_fetchOp?.SetFailed(e);
 		}
 
-		public PurchaseOperation BeginPurchase(string productId, bool isRestored)
+		public PurchaseOperation BeginPurchase(string productId, bool restored)
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(_purchaseOp == null);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			_purchaseOp = new PurchaseOperation(_storeService, _console, productId, isRestored);
-			_storeService.InvokePurchaseInitiated(productId, isRestored);
+			_purchaseOp = new PurchaseOperation(this, productId, restored);
+			_storeService.InvokePurchaseInitiated(productId, restored);
+
+			return _purchaseOp;
+		}
+
+		public PurchaseOperation BeginPurchase(Product product)
+		{
+			Debug.Assert(!_disposed);
+			Debug.Assert(_purchaseOp == null);
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_fetchOp == null);
+
+			_purchaseOp = new PurchaseOperation(this, product);
+			_storeService.InvokePurchaseInitiated(product.definition.id, true);
 
 			return _purchaseOp;
 		}
@@ -133,24 +116,27 @@ namespace UnityFx.Purchasing
 			Debug.Assert(!_disposed);
 
 			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			_purchaseOp?.SetFailed(e);
+		}
 
-			if (_purchaseOp != null)
+		#endregion
+
+		#region StoreOperationContainer
+
+		public override StoreService Store => _storeService;
+
+		public override void ReleaseOperation(IAsyncOperation op)
+		{
+			if (op == _initializeOp)
 			{
-				if (e is StorePurchaseException spe)
-				{
-					_storeService.InvokePurchaseFailed(new FailedPurchaseResult(spe));
-				}
-				else if (e is StoreFetchException sfe)
-				{
-					_storeService.InvokePurchaseFailed(_purchaseOp.GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
-				}
-				else
-				{
-					_storeService.InvokePurchaseFailed(_purchaseOp.GetFailedResult(StorePurchaseError.Unknown, e));
-				}
-
-				_purchaseOp.TrySetException(e);
-				_purchaseOp.Dispose();
+				_initializeOp = null;
+			}
+			else if (op == _fetchOp)
+			{
+				_fetchOp = null;
+			}
+			else if (op == _purchaseOp)
+			{
 				_purchaseOp = null;
 			}
 		}
@@ -180,11 +166,6 @@ namespace UnityFx.Purchasing
 					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 					_initializeOp.TrySetException(e);
 				}
-				finally
-				{
-					_initializeOp.Dispose();
-					_initializeOp = null;
-				}
 			}
 		}
 
@@ -196,21 +177,17 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					var e = new StoreFetchException(error);
+					var failReson = GetInitializeError(error);
+					var e = new StoreFetchException(failReson);
 
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitializeFailed: " + error);
-					_storeService.InvokeInitializeFailed(GetInitializeError(error), e);
+					_storeService.InvokeInitializeFailed(failReson, e);
 					_initializeOp.SetException(e);
 				}
 				catch (Exception e)
 				{
 					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 					_initializeOp.TrySetException(e);
-				}
-				finally
-				{
-					_initializeOp.Dispose();
-					_initializeOp = null;
 				}
 			}
 		}
@@ -232,11 +209,6 @@ namespace UnityFx.Purchasing
 					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 					_fetchOp.TrySetException(e);
 				}
-				finally
-				{
-					_fetchOp.Dispose();
-					_fetchOp = null;
-				}
 			}
 		}
 
@@ -248,21 +220,17 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					var e = new StoreFetchException(error);
+					var failReson = GetInitializeError(error);
+					var e = new StoreFetchException(failReson);
 
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetchFailed: " + error);
-					_storeService.InvokeFetchFailed(GetInitializeError(error), e);
+					_storeService.InvokeFetchFailed(failReson, e);
 					_fetchOp.SetException(e);
 				}
 				catch (Exception e)
 				{
 					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 					_fetchOp.TrySetException(e);
-				}
-				finally
-				{
-					_fetchOp.Dispose();
-					_fetchOp = null;
 				}
 			}
 		}
@@ -276,7 +244,6 @@ namespace UnityFx.Purchasing
 			{
 				try
 				{
-					var result = PurchaseProcessingResult.Complete;
 					var product = args.purchasedProduct;
 					var productId = product.definition.id;
 
@@ -286,42 +253,20 @@ namespace UnityFx.Purchasing
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
 					{
-						_purchaseOp = BeginPurchase(productId, true);
+						_purchaseOp = BeginPurchase(product);
+						return _purchaseOp.ValidatePurchase(product);
 					}
-
-					// Validate the purchase transaction.
-					if (_purchaseOp.ProcessPurchase(product))
+					else if (_purchaseOp.ProcessPurchase(product))
 					{
-						var transactionInfo = _purchaseOp.Transaction;
-
-						_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"ValidatePurchase: {productId}, transactionId = {product.transactionID}");
-
-						if (string.IsNullOrEmpty(transactionInfo.Receipt))
-						{
-							_purchaseOp.SetPurchaseFailed(StorePurchaseError.ReceiptNullOrEmpty);
-						}
-						else if (_storeService.ValidatePurchase(transactionInfo, ValidatePurchaseCallback))
-						{
-							// Check if the validation callback was called synchronously.
-							if (!_purchaseOp.IsCompleted)
-							{
-								result = PurchaseProcessingResult.Pending;
-							}
-						}
-						else
-						{
-							_purchaseOp.SetPurchaseCompleted(new PurchaseValidationResult(PurchaseValidationStatus.Suppressed));
-						}
+						return _purchaseOp.ValidatePurchase(product);
 					}
-
-					// Release the operation if done.
-					if (result == PurchaseProcessingResult.Complete)
+					else
 					{
-						_purchaseOp.Dispose();
-						_purchaseOp = null;
-					}
+						_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, "ProcessPurchase called for a different product than expected.");
 
-					return result;
+						var purchaseOp = BeginPurchase(product);
+						return purchaseOp.ValidatePurchase(product);
+					}
 				}
 				catch (Exception e)
 				{
@@ -348,17 +293,12 @@ namespace UnityFx.Purchasing
 						_purchaseOp = BeginPurchase(productId, true);
 					}
 
-					_purchaseOp.SetPurchaseFailed(product, GetPurchaseError(reason));
+					_purchaseOp.SetFailed(product, GetPurchaseError(reason));
 				}
 				catch (Exception e)
 				{
 					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 					_purchaseOp?.TrySetException(e);
-				}
-				finally
-				{
-					_purchaseOp?.Dispose();
-					_purchaseOp = null;
 				}
 			}
 		}
@@ -372,87 +312,15 @@ namespace UnityFx.Purchasing
 			if (!_disposed)
 			{
 				_disposed = true;
-
-				if (_purchaseOp != null)
-				{
-					_storeService.InvokePurchaseFailed(new FailedPurchaseResult(_purchaseOp.ProductId, null, null, StorePurchaseError.StoreDisposed, null));
-					_purchaseOp.Dispose();
-					_purchaseOp = null;
-				}
-
-				if (_fetchOp != null)
-				{
-					_storeService.InvokeFetchFailed(StoreFetchError.StoreDisposed, null);
-					_fetchOp.Dispose();
-					_fetchOp = null;
-				}
-
-				if (_initializeOp != null)
-				{
-					_storeService.InvokeInitializeFailed(StoreFetchError.StoreDisposed, null);
-					_initializeOp.Dispose();
-					_initializeOp = null;
-				}
+				_purchaseOp?.SetFailed(StorePurchaseError.StoreDisposed);
+				_fetchOp?.SetFailed(StoreFetchError.StoreDisposed);
+				_initializeOp?.SetFailed(StoreFetchError.StoreDisposed);
 			}
 		}
 
 		#endregion
 
 		#region implementation
-
-		private void ValidatePurchaseCallback(PurchaseValidationResult validationResult)
-		{
-			if (!_disposed)
-			{
-				Debug.Assert(_purchaseOp != null);
-
-				try
-				{
-					if (validationResult == null)
-					{
-						validationResult = new PurchaseValidationResult(PurchaseValidationStatus.Suppressed);
-					}
-
-					var resultStatus = validationResult.Status;
-					var transactionInfo = _purchaseOp.Transaction;
-					var product = transactionInfo.Product;
-
-					if (resultStatus == PurchaseValidationStatus.Ok || resultStatus == PurchaseValidationStatus.Suppressed)
-					{
-						// The purchase validation succeeded.
-						ConfirmPendingPurchase(product);
-						_purchaseOp.SetPurchaseCompleted(validationResult);
-					}
-					else if (resultStatus == PurchaseValidationStatus.Failure)
-					{
-						// The purchase validation failed: confirm to avoid processing it again.
-						ConfirmPendingPurchase(product);
-						_purchaseOp.SetPurchaseFailed(validationResult, StorePurchaseError.ReceiptValidationFailed, null);
-					}
-					else
-					{
-						// Need to re-validate the purchase: do not confirm.
-						_purchaseOp.SetPurchaseFailed(validationResult, StorePurchaseError.ReceiptValidationNotAvailable, null);
-					}
-				}
-				catch (Exception e)
-				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-					_purchaseOp?.TrySetException(e);
-				}
-				finally
-				{
-					_purchaseOp.Dispose();
-					_purchaseOp = null;
-				}
-			}
-		}
-
-		private void ConfirmPendingPurchase(Product product)
-		{
-			_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
-			_storeService.Controller.ConfirmPendingPurchase(product);
-		}
 
 		private static StoreFetchError GetInitializeError(InitializationFailureReason error)
 		{
