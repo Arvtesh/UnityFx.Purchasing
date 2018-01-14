@@ -3,22 +3,20 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// A fetch operation.
-	/// </summary>
-	internal class FetchOperation : StoreOperation<object>
+	internal abstract class StoreOperationContainer
 	{
 		#region interface
 
-		public FetchOperation(TraceSource console)
-			: base(console, StoreService.TraceEventId.Fetch, null, null)
-		{
-		}
+		public abstract StoreService Store { get; }
+		public abstract void ReleaseOperation(IAsyncOperation op);
 
+		#endregion
+
+		#region implementation
 		#endregion
 	}
 }

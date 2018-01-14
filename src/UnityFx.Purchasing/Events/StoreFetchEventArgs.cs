@@ -11,8 +11,8 @@ namespace UnityFx.Purchasing
 	public class StoreFetchEventArgs : EventArgs
 	{
 		/// <summary>
-		/// Returns <see langword="true"/> if this event is caused by a <see cref="IStoreService.FetchAsync"/> call;
-		/// <see langword="false"/> if <see cref="IStoreService.InitializeAsync"/> was called. Read only.
+		/// Returns <see langword="true"/> if this event is caused by a <see cref="IStoreService.Fetch"/> call;
+		/// <see langword="false"/> if <see cref="IStoreService.Initialize"/> was called. Read only.
 		/// </summary>
 		public bool IsFetch { get; }
 

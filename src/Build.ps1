@@ -3,6 +3,7 @@ $solutionPath = Join-Path $scriptPath "UnityFx.sln"
 $configuration = $args[0]
 $packagesPath = Join-Path $scriptPath "..\temp\BuildTools"
 $binPath = Join-Path $scriptPath "..\bin"
+$binPath35 = Join-Path $binPath "net35"
 $binPath46 = Join-Path $binPath "net46"
 $binPathStandard20 = Join-Path $binPath "netstandard2.0"
 $msbuildPath = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MsBuild.exe"
@@ -16,6 +17,10 @@ Write-Host "BinPath:" $binPath
 # create output folders if needed
 if (!(Test-Path $packagesPath)) {
 	New-Item $packagesPath -ItemType Directory
+}
+
+if (!(Test-Path $binPath35)) {
+	New-Item $binPath35 -ItemType Directory
 }
 
 if (!(Test-Path $binPath46)) {
@@ -53,6 +58,12 @@ if ($LastExitCode -ne 0) {
 }
 
 # publish build results to .\Build\Bin
+$filesToPublish35 =
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net35\UnityFx.Purchasing.dll"))),
+	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net35\UnityFx.Purchasing.xml")))
+
+Copy-Item -Path $filesToPublish35 -Destination $binPath35 -Force
+
 $filesToPublish46 =
 	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.dll"))),
 	(Join-Path $scriptPath (Join-Path "UnityFx.Purchasing\bin" (Join-Path $configuration "net46\UnityFx.Purchasing.xml"))),

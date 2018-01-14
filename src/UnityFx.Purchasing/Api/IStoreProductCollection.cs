@@ -10,8 +10,19 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A read-only collection of <see cref="IStoreService"/> products.
 	/// </summary>
+#if NET35
+	public interface IStoreProductCollection : IEnumerable<Product>
+#else
 	public interface IStoreProductCollection : IReadOnlyCollection<Product>
+#endif
 	{
+#if NET35
+		/// <summary>
+		/// Returns the number of elements in the collection. Read only.
+		/// </summary>
+		int Count { get; }
+#endif
+
 		/// <summary>
 		/// Returns product for the specified identifier. Read only.
 		/// </summary>

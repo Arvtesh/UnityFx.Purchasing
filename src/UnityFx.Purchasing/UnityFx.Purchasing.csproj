@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net46;net35</TargetFrameworks>
 		<Description>Purchasing for Unity3d.</Description>
 		<Company />
 		<Authors>Alexander Bogarsukov</Authors>
@@ -33,6 +33,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
+		<Compile Remove="Store/Net46/**" />
 	</ItemGroup>
 
 	<ItemGroup>

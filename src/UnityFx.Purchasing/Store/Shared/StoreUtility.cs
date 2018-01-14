@@ -7,17 +7,20 @@ using System.Diagnostics;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// An initialize operation.
+	/// Enumerates identifiers for <see cref="TraceSource"/> methods.
 	/// </summary>
-	internal class InitializeOperation : StoreOperation<object>
+	internal enum TraceEventId
 	{
-		#region interface
+		Default,
+		Initialize,
+		Fetch,
+		Purchase
+	}
 
-		public InitializeOperation(TraceSource console)
-			: base(console, StoreService.TraceEventId.Initialize, null, null)
-		{
-		}
-
-		#endregion
+	/// <summary>
+	/// Helpers.
+	/// </summary>
+	internal static class StoreUtility
+	{
 	}
 }
