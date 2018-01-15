@@ -57,7 +57,6 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(!_disposed);
 
-			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
 			_initializeOp?.SetFailed(e);
 		}
 
@@ -75,7 +74,6 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(!_disposed);
 
-			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
 			_fetchOp?.SetFailed(e);
 		}
 
@@ -103,7 +101,6 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(!_disposed);
 
-			_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			_purchaseOp?.SetFailed(e);
 		}
 

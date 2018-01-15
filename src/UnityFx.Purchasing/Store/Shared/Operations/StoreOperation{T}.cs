@@ -23,6 +23,7 @@ namespace UnityFx.Purchasing
 
 		protected StoreOperationContainer Parent => _parent;
 		protected StoreService Store => _parent.Store;
+		protected TraceSource Console => _parent.Store.TraceSource;
 		protected TraceEventId EventId => _traceEvent;
 
 		public StoreOperation(StoreOperationContainer parent, TraceEventId eventId, string comment, string args)
@@ -43,7 +44,20 @@ namespace UnityFx.Purchasing
 				s += ": " + args;
 			}
 
-			parent.Store.TraceSource.TraceEvent(TraceEventType.Start, (int)eventId, s);
+			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
+		}
+
+		protected void TraceError(string s)
+		{
+			Console.TraceEvent(TraceEventType.Error, (int)_traceEvent, _traceEvent.ToString() + " error: " + s);
+		}
+
+		protected void TraceException(Exception e)
+		{
+			if (e != null)
+			{
+				Console.TraceData(TraceEventType.Error, (int)_traceEvent, e);
+			}
 		}
 
 		#endregion
@@ -61,7 +75,7 @@ namespace UnityFx.Purchasing
 					s += ": " + _args;
 				}
 
-				_parent.Store.TraceSource.TraceEvent(TraceEventType.Stop, (int)_traceEvent, s);
+				Console.TraceEvent(TraceEventType.Stop, (int)_traceEvent, s);
 			}
 			finally
 			{

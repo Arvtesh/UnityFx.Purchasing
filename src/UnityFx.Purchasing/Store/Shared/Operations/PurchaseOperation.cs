@@ -14,8 +14,6 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private readonly StoreService _storeService;
-		private readonly TraceSource _console;
 		private readonly string _productId;
 		private readonly bool _restored;
 
@@ -25,18 +23,12 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public string ProductId => _productId;
-
-		public StoreTransaction Transaction => _transaction;
-
 		public PurchaseOperation(StoreOperationContainer parent, string productId, bool restored)
 			: base(parent, TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId)
 		{
 			Debug.Assert(parent != null);
 			Debug.Assert(productId != null);
 
-			_storeService = parent.Store;
-			_console = _storeService.TraceSource;
 			_productId = productId;
 			_restored = restored;
 
@@ -68,13 +60,13 @@ namespace UnityFx.Purchasing
 		{
 			try
 			{
-				_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"ValidatePurchase: {_productId}, transactionId = {product.transactionID}");
+				Console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"ValidatePurchase: {_productId}, transactionId = {product.transactionID}");
 
 				if (string.IsNullOrEmpty(_transaction.Receipt))
 				{
 					SetFailed(StorePurchaseError.ReceiptNullOrEmpty);
 				}
-				else if (_storeService.ValidatePurchase(_transaction, ValidatePurchaseCallback))
+				else if (Store.ValidatePurchase(_transaction, ValidateCallback))
 				{
 					// Check if the validation callback was called synchronously.
 					if (!IsCompleted)
@@ -89,7 +81,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+				Console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 				TrySetException(e);
 			}
 
@@ -109,60 +101,78 @@ namespace UnityFx.Purchasing
 		public void SetCompleted(PurchaseValidationResult validationResult)
 		{
 			var result = new PurchaseResult(_transaction, validationResult);
-			_storeService.InvokePurchaseCompleted(_productId, result);
-			TrySetResult(result);
+
+			if (TrySetResult(result))
+			{
+				Store.InvokePurchaseCompleted(_productId, result);
+			}
 		}
 
 		public void SetFailed(StorePurchaseError failReason)
 		{
-			SetFailed(null, failReason, null);
+			SetFailed(default(PurchaseValidationResult), failReason);
 		}
 
 		public void SetFailed(Exception e)
 		{
-			if (e is StorePurchaseException spe)
-			{
-				_storeService.InvokePurchaseFailed(new FailedPurchaseResult(spe));
-			}
-			else if (e is StoreFetchException sfe)
-			{
-				_storeService.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
-			}
-			else
-			{
-				_storeService.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.Unknown, e));
-			}
+			TraceException(e);
 
-			TrySetException(e);
+			if (TrySetException(e))
+			{
+				if (e is StorePurchaseException spe)
+				{
+					Store.InvokePurchaseFailed(new FailedPurchaseResult(spe));
+				}
+				else if (e is StoreFetchException sfe)
+				{
+					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
+				}
+				else
+				{
+					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.Unknown, e));
+				}
+			}
 		}
 
 		public void SetFailed(Product product, StorePurchaseError failReason)
 		{
 			var result = new FailedPurchaseResult(_productId, product, failReason, null);
-			_storeService.InvokePurchaseFailed(result);
+
+			TraceError(failReason.ToString());
 
 			if (failReason == StorePurchaseError.UserCanceled)
 			{
-				TrySetCanceled();
+				if (TrySetCanceled())
+				{
+					Store.InvokePurchaseFailed(result);
+				}
 			}
 			else
 			{
-				TrySetException(new StorePurchaseException(result));
+				if (TrySetException(new StorePurchaseException(result)))
+				{
+					Store.InvokePurchaseFailed(result);
+				}
 			}
 		}
 
-		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError failReason, Exception e)
+		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError failReason)
 		{
-			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, failReason, e);
-			_storeService.InvokePurchaseFailed(result);
-			TrySetException(new StorePurchaseException(result));
+			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, failReason, null);
+
+			TraceError(failReason.ToString());
+
+			if (TrySetException(new StorePurchaseException(result)))
+			{
+				Store.InvokePurchaseFailed(result);
+			}
 		}
 
 		#endregion
 
 		#region implementation
 
-		private void ValidatePurchaseCallback(PurchaseValidationResult validationResult)
+		private void ValidateCallback(PurchaseValidationResult validationResult)
 		{
 			if (!IsCompleted)
 			{
@@ -179,17 +189,17 @@ namespace UnityFx.Purchasing
 					if (status == PurchaseValidationStatus.NotAvailable)
 					{
 						// Need to re-validate the purchase: do not confirm.
-						SetFailed(validationResult, StorePurchaseError.ReceiptValidationNotAvailable, null);
+						SetFailed(validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
 					}
 					else
 					{
-						_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
-						_storeService.Controller.ConfirmPendingPurchase(product);
+						Console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
+						Store.Controller.ConfirmPendingPurchase(product);
 
 						if (status == PurchaseValidationStatus.Failure)
 						{
 							// The purchase validation failed.
-							SetFailed(validationResult, StorePurchaseError.ReceiptValidationFailed, null);
+							SetFailed(validationResult, StorePurchaseError.ReceiptValidationFailed);
 						}
 						else
 						{
@@ -200,7 +210,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+					Console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 					TrySetException(e);
 				}
 			}

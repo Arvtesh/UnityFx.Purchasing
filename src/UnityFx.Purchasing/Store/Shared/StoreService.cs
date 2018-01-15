@@ -323,8 +323,6 @@ namespace UnityFx.Purchasing
 
 		internal void InvokeInitializeFailed(StoreFetchError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Initialize, TraceEventId.Initialize.ToString() + " error: " + reason);
-
 			try
 			{
 				OnInitializeFailed(reason, ex);
@@ -361,8 +359,6 @@ namespace UnityFx.Purchasing
 
 		internal void InvokeFetchFailed(StoreFetchError reason, Exception ex)
 		{
-			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Fetch, TraceEventId.Fetch.ToString() + " error: " + reason);
-
 			try
 			{
 				OnInitializeFailed(reason, ex);
@@ -391,6 +387,15 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(purchaseResult != null);
 
+			try
+			{
+				OnPurchaseCompleted(purchaseResult);
+			}
+			catch (Exception e)
+			{
+				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+			}
+
 #if !NET35
 			try
 			{
@@ -401,20 +406,18 @@ namespace UnityFx.Purchasing
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 #endif
+		}
 
+		internal void InvokePurchaseFailed(FailedPurchaseResult purchaseResult)
+		{
 			try
 			{
-				OnPurchaseCompleted(purchaseResult);
+				OnPurchaseFailed(purchaseResult);
 			}
 			catch (Exception e)
 			{
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
-		}
-
-		internal void InvokePurchaseFailed(FailedPurchaseResult purchaseResult)
-		{
-			_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, $"{TraceEventId.Purchase.ToString()} error: {purchaseResult.ProductId}, reason = {purchaseResult.Error}");
 
 #if !NET35
 			try
@@ -426,15 +429,6 @@ namespace UnityFx.Purchasing
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 #endif
-
-			try
-			{
-				OnPurchaseFailed(purchaseResult);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-			}
 		}
 
 		#endregion

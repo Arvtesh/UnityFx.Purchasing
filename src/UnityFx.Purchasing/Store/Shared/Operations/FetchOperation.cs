@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Diagnostics;
 
 namespace UnityFx.Purchasing
 {
@@ -27,59 +28,52 @@ namespace UnityFx.Purchasing
 
 		public void SetCompleted()
 		{
-			if (EventId == TraceEventId.Fetch)
+			if (TrySetResult(null))
 			{
-				Store.InvokeFetchCompleted();
+				if (EventId == TraceEventId.Fetch)
+				{
+					Store.InvokeFetchCompleted();
+				}
+				else
+				{
+					Store.InvokeInitializeCompleted();
+				}
 			}
-			else
-			{
-				Store.InvokeInitializeCompleted();
-			}
-
-			TrySetResult(null);
 		}
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			if (EventId == TraceEventId.Fetch)
-			{
-				Store.InvokeFetchFailed(reason, null);
-			}
-			else
-			{
-				Store.InvokeInitializeFailed(reason, null);
-			}
+			TraceError(reason.ToString());
 
-			TrySetException(new StoreFetchException(reason));
+			if (TrySetException(new StoreFetchException(reason)))
+			{
+				if (EventId == TraceEventId.Fetch)
+				{
+					Store.InvokeFetchFailed(reason, null);
+				}
+				else
+				{
+					Store.InvokeInitializeFailed(reason, null);
+				}
+			}
 		}
 
 		public void SetFailed(Exception e)
 		{
-			if (e is StoreFetchException sfe)
+			TraceException(e);
+
+			if (TrySetException(e))
 			{
+				var reason = e is StoreFetchException sfe ? sfe.Reason : StoreFetchError.Unknown;
+
 				if (EventId == TraceEventId.Fetch)
 				{
-					Store.InvokeFetchFailed(sfe.Reason, e);
+					Store.InvokeFetchFailed(reason, e);
 				}
 				else
 				{
-					Store.InvokeInitializeFailed(sfe.Reason, e);
+					Store.InvokeInitializeFailed(reason, e);
 				}
-
-				TrySetException(e);
-			}
-			else
-			{
-				if (EventId == TraceEventId.Fetch)
-				{
-					Store.InvokeFetchFailed(StoreFetchError.Unknown, e);
-				}
-				else
-				{
-					Store.InvokeInitializeFailed(StoreFetchError.Unknown, e);
-				}
-
-				TrySetException(new StoreFetchException(StoreFetchError.Unknown, e));
 			}
 		}
 
