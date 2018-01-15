@@ -101,7 +101,12 @@ namespace UnityFx.Purchasing
 		ReceiptNullOrEmpty,
 
 		/// <summary>
-		/// Store validation of purchase receipt failed.
+		/// Store local validation of purchase receipt failed.
+		/// </summary>
+		ReceiptLocalValidationFailed,
+
+		/// <summary>
+		/// Store validation (either local or not) of purchase receipt failed.
 		/// </summary>
 		ReceiptValidationFailed,
 
@@ -112,7 +117,7 @@ namespace UnityFx.Purchasing
 	}
 
 	/// <summary>
-	/// A generic platform store service.
+	/// A generic in-app store service.
 	/// </summary>
 	/// <remarks>
 	/// The interface defines a wrapper around <see href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</see>.

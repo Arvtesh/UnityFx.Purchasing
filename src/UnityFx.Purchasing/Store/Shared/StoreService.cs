@@ -19,6 +19,25 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
+	/// <example>
+	/// The following sample demonstrates usage of this class:
+	/// <code>
+	/// public class MySimpleStore : StoreService
+	/// {
+	///     public MySimpleStore()
+	///         : base(null, StandardPurchasingModule.Instance())
+	///     {
+	///     }
+	///
+	///     protected override void GetStoreConfig(Action&lt;StoreConfig&gt; onSuccess, Action&lt;Exception&gt; onFailure)
+	///     {
+	///         var products = new ProductDefinition[] { new ProductDefinition("test_product", ProductType.Consumable) };
+	///         onSuccess(new StoreConfig(products));
+	///     }
+	/// }
+	/// </code>
+	/// </example>
+	/// <seealso cref="IStoreService"/>
 	public abstract class StoreService : IStoreService, IStoreServiceSettings
 	{
 		#region data
@@ -54,6 +73,14 @@ namespace UnityFx.Purchasing
 		protected internal TraceSource TraceSource => _console;
 
 		/// <summary>
+		/// Returns tangent data for the platform. If this property returns <see langword="null"/> local validation is skipped. Read only.
+		/// </summary>
+		/// <remarks>
+		/// Should return either <c>AppleTangle.Data()</c> or <c>GooglePlayTangle.Data()</c> depending on platform.
+		/// </remarks>
+		protected internal byte[] TangentData { get; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		protected StoreService(string name, IPurchasingModule purchasingModule)
@@ -65,21 +92,19 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Requests the store configuration. Default implementation throws <see cref="NotImplementedException"/>.
+		/// Requests the store configuration.
 		/// </summary>
 		/// <remarks>
-		/// Typlical implementation would connect app server for information on products available.
+		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
 		/// <param name="onSuccess">Operation completed delegate.</param>
 		/// <param name="onFailure">Delegate called on operation failure.</param>
 		/// <seealso cref="ValidatePurchase(StoreTransaction, Action{PurchaseValidationResult})"/>
-		protected internal virtual void GetStoreConfig(Action<StoreConfig> onSuccess, Action<Exception> onFailure)
-		{
-			throw new NotImplementedException();
-		}
+		protected internal abstract void GetStoreConfig(Action<StoreConfig> onSuccess, Action<Exception> onFailure);
 
 		/// <summary>
-		/// Validates the purchase. Default implementatino does nothing.
+		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
+		/// Default implementation just returns <see langword="false"/>.
 		/// </summary>
 		/// <remarks>
 		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.

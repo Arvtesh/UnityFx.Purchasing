@@ -3,10 +3,14 @@
 
 using System;
 using System.Diagnostics;
+using UnityEngine;
 using UnityEngine.Purchasing;
+////using UnityEngine.Purchasing.Security;
 
 namespace UnityFx.Purchasing
 {
+	using Debug = System.Diagnostics.Debug;
+
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
@@ -66,23 +70,42 @@ namespace UnityFx.Purchasing
 				{
 					SetFailed(StorePurchaseError.ReceiptNullOrEmpty);
 				}
-				else if (Store.ValidatePurchase(_transaction, ValidateCallback))
-				{
-					// Check if the validation callback was called synchronously.
-					if (!IsCompleted)
-					{
-						return PurchaseProcessingResult.Pending;
-					}
-				}
 				else
 				{
-					SetCompleted(new PurchaseValidationResult(PurchaseValidationStatus.Suppressed));
+					// Execute Unity built-in local purchase validator if applicable.
+					var data = Store.TangentData;
+
+					if (data != null)
+					{
+						if (Application.platform == RuntimePlatform.Android)
+						{
+							////var validator = new CrossPlatformValidator(data, null, Application.identifier);
+							////validator.Validate(product.receipt);
+						}
+						else if (Application.platform == RuntimePlatform.IPhonePlayer)
+						{
+							////var validator = new CrossPlatformValidator(null, data, Application.identifier);
+							////validator.Validate(product.receipt);
+						}
+					}
+
+					if (Store.ValidatePurchase(_transaction, ValidateCallback))
+					{
+						// Check if the validation callback was called synchronously.
+						if (!IsCompleted)
+						{
+							return PurchaseProcessingResult.Pending;
+						}
+					}
+					else
+					{
+						SetCompleted(new PurchaseValidationResult(PurchaseValidationStatus.Suppressed));
+					}
 				}
 			}
 			catch (Exception e)
 			{
-				Console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-				TrySetException(e);
+				SetFailed(e);
 			}
 
 			return PurchaseProcessingResult.Complete;
@@ -127,6 +150,10 @@ namespace UnityFx.Purchasing
 				{
 					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
 				}
+				////else if (e is IAPSecurityException ise)
+				////{
+				////	Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.ReceiptLocalValidationFailed, e));
+				////}
 				else
 				{
 					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.Unknown, e));
