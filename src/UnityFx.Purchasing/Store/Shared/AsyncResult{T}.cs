@@ -57,44 +57,6 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
-		#region IAsyncOperation
-
-		/// <inheritdoc/>
-		public Exception Exception => _exception;
-
-		/// <inheritdoc/>
-		public bool IsCompletedSuccessfully => _status == _statusCompleted;
-
-		/// <inheritdoc/>
-		public bool IsFaulted => _status > _statusCompleted;
-
-		/// <inheritdoc/>
-		public bool IsCanceled => _status == _statusCanceled;
-
-		/// <inheritdoc/>
-		public T Result
-		{
-			get
-			{
-				if (_status != _statusCompleted)
-				{
-					throw new InvalidOperationException("The operation result is not available.", _exception);
-				}
-
-				return _result;
-			}
-		}
-
-		/// <summary>
-		/// Called when the operation has been completed (with or without exceptions).
-		/// </summary>
-		protected virtual void OnCompleted()
-		{
-			_continuation?.Invoke(this);
-		}
-
-		#endregion
-
 		#region internals
 
 #if !NET35
@@ -136,18 +98,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal void SetResult(T result)
-		{
-			if (!TrySetResult(result))
-			{
-				throw new InvalidOperationException();
-			}
-
-#if !NET35
-			_tcs?.SetResult(result);
-#endif
-		}
-
 		internal bool TrySetResult(T result)
 		{
 			if (TrySetStatus(_statusCompleted))
@@ -162,18 +112,6 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
-		}
-
-		internal void SetException(Exception e)
-		{
-			if (!TrySetException(e))
-			{
-				throw new InvalidOperationException();
-			}
-
-#if !NET35
-			_tcs?.SetException(e);
-#endif
 		}
 
 		internal bool TrySetException(Exception e)
@@ -194,18 +132,6 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-		internal void SetCanceled()
-		{
-			if (!TrySetCanceled())
-			{
-				throw new InvalidOperationException();
-			}
-
-#if !NET35
-			_tcs?.SetCanceled();
-#endif
-		}
-
 		internal bool TrySetCanceled()
 		{
 			if (TrySetStatus(_statusCanceled))
@@ -219,6 +145,44 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
+		}
+
+		#endregion
+
+		#region IAsyncOperation
+
+		/// <inheritdoc/>
+		public Exception Exception => _exception;
+
+		/// <inheritdoc/>
+		public bool IsCompletedSuccessfully => _status == _statusCompleted;
+
+		/// <inheritdoc/>
+		public bool IsFaulted => _status > _statusCompleted;
+
+		/// <inheritdoc/>
+		public bool IsCanceled => _status == _statusCanceled;
+
+		/// <inheritdoc/>
+		public T Result
+		{
+			get
+			{
+				if (_status != _statusCompleted)
+				{
+					throw new InvalidOperationException("The operation result is not available.", _exception);
+				}
+
+				return _result;
+			}
+		}
+
+		/// <summary>
+		/// Called when the operation has been completed (with or without exceptions).
+		/// </summary>
+		protected virtual void OnCompleted()
+		{
+			_continuation?.Invoke(this);
 		}
 
 		#endregion

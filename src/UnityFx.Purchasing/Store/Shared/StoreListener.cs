@@ -50,10 +50,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			_initializeOp = new FetchOperation(this, TraceEventId.Initialize);
-			_storeService.InvokeInitializeInitiated();
-
-			return _initializeOp;
+			return _initializeOp = new FetchOperation(this, TraceEventId.Initialize);
 		}
 
 		public void EndInitialize(Exception e)
@@ -71,10 +68,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_purchaseOp == null);
 
-			_fetchOp = new FetchOperation(this, TraceEventId.Fetch);
-			_storeService.InvokeFetchInitiated();
-
-			return _fetchOp;
+			return _fetchOp = new FetchOperation(this, TraceEventId.Fetch);
 		}
 
 		public void EndFetch(Exception e)
@@ -92,10 +86,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			_purchaseOp = new PurchaseOperation(this, productId, restored);
-			_storeService.InvokePurchaseInitiated(productId, restored);
-
-			return _purchaseOp;
+			return _purchaseOp = new PurchaseOperation(this, productId, restored);
 		}
 
 		public PurchaseOperation BeginPurchase(Product product)
@@ -105,10 +96,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			_purchaseOp = new PurchaseOperation(this, product);
-			_storeService.InvokePurchaseInitiated(product.definition.id, true);
-
-			return _purchaseOp;
+			return _purchaseOp = new PurchaseOperation(this, product);
 		}
 
 		public void EndPurchase(Exception e)
@@ -158,8 +146,7 @@ namespace UnityFx.Purchasing
 				{
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitialized");
 					_storeService.SetStoreController(controller, extensions);
-					_storeService.InvokeInitializeCompleted();
-					_initializeOp.SetResult(null);
+					_initializeOp.SetCompleted();
 				}
 				catch (Exception e)
 				{
@@ -177,12 +164,8 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					var failReson = GetInitializeError(error);
-					var e = new StoreFetchException(failReson);
-
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitializeFailed: " + error);
-					_storeService.InvokeInitializeFailed(failReson, e);
-					_initializeOp.SetException(e);
+					_initializeOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
 				{
@@ -201,8 +184,7 @@ namespace UnityFx.Purchasing
 				try
 				{
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetch");
-					_storeService.InvokeFetchCompleted();
-					_fetchOp.SetResult(null);
+					_fetchOp.SetCompleted();
 				}
 				catch (Exception e)
 				{
@@ -220,12 +202,8 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					var failReson = GetInitializeError(error);
-					var e = new StoreFetchException(failReson);
-
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetchFailed: " + error);
-					_storeService.InvokeFetchFailed(failReson, e);
-					_fetchOp.SetException(e);
+					_fetchOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
 				{
@@ -253,19 +231,16 @@ namespace UnityFx.Purchasing
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
 					{
-						_purchaseOp = BeginPurchase(product);
-						return _purchaseOp.ValidatePurchase(product);
+						return BeginPurchase(product).Validate(product);
 					}
 					else if (_purchaseOp.ProcessPurchase(product))
 					{
-						return _purchaseOp.ValidatePurchase(product);
+						return _purchaseOp.Validate(product);
 					}
 					else
 					{
 						_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, "ProcessPurchase called for a different product than expected.");
-
-						var purchaseOp = BeginPurchase(product);
-						return purchaseOp.ValidatePurchase(product);
+						return BeginPurchase(product).Validate(product);
 					}
 				}
 				catch (Exception e)
@@ -290,10 +265,12 @@ namespace UnityFx.Purchasing
 					// Handle restored transactions when the _purchaseOp is not initialized.
 					if (_purchaseOp == null)
 					{
-						_purchaseOp = BeginPurchase(productId, true);
+						BeginPurchase(productId, true).SetFailed(product, GetPurchaseError(reason));
 					}
-
-					_purchaseOp.SetFailed(product, GetPurchaseError(reason));
+					else
+					{
+						_purchaseOp.SetFailed(product, GetPurchaseError(reason));
+					}
 				}
 				catch (Exception e)
 				{

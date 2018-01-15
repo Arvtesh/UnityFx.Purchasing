@@ -23,6 +23,7 @@ namespace UnityFx.Purchasing
 
 		protected StoreOperationContainer Parent => _parent;
 		protected StoreService Store => _parent.Store;
+		protected TraceEventId EventId => _traceEvent;
 
 		public StoreOperation(StoreOperationContainer parent, TraceEventId eventId, string comment, string args)
 		{

@@ -787,10 +787,12 @@ namespace UnityFx.Purchasing
 			{
 				if (storeConfig != null)
 				{
-					if (storeConfig.Products != null)
+					var products = storeConfig.Products;
+
+					if (products != null)
 					{
 						var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-						configurationBuilder.AddProducts(storeConfig.Products);
+						configurationBuilder.AddProducts(products);
 
 						UnityPurchasing.Initialize(_storeListener, configurationBuilder);
 					}
@@ -820,10 +822,12 @@ namespace UnityFx.Purchasing
 			{
 				if (storeConfig != null)
 				{
-					if (storeConfig.Products != null)
+					var products = storeConfig.Products;
+
+					if (products != null)
 					{
-						var products = new HashSet<ProductDefinition>(storeConfig.Products);
-						_storeController.FetchAdditionalProducts(products, _storeListener.OnFetch, _storeListener.OnFetchFailed);
+						var productSet = new HashSet<ProductDefinition>(products);
+						_storeController.FetchAdditionalProducts(productSet, _storeListener.OnFetch, _storeListener.OnFetchFailed);
 					}
 					else
 					{

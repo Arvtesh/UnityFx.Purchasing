@@ -39,6 +39,8 @@ namespace UnityFx.Purchasing
 			_console = _storeService.TraceSource;
 			_productId = productId;
 			_restored = restored;
+
+			Store.InvokePurchaseInitiated(productId, restored);
 		}
 
 		public PurchaseOperation(StoreOperationContainer parent, Product product)
@@ -62,7 +64,7 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-		public PurchaseProcessingResult ValidatePurchase(Product product)
+		public PurchaseProcessingResult Validate(Product product)
 		{
 			try
 			{

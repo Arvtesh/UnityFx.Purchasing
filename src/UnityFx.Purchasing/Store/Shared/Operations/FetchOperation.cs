@@ -15,11 +15,41 @@ namespace UnityFx.Purchasing
 		public FetchOperation(StoreOperationContainer parent, TraceEventId eventId)
 			: base(parent, eventId, null, null)
 		{
+			if (EventId == TraceEventId.Fetch)
+			{
+				Store.InvokeFetchInitiated();
+			}
+			else
+			{
+				Store.InvokeInitializeInitiated();
+			}
+		}
+
+		public void SetCompleted()
+		{
+			if (EventId == TraceEventId.Fetch)
+			{
+				Store.InvokeFetchCompleted();
+			}
+			else
+			{
+				Store.InvokeInitializeCompleted();
+			}
+
+			TrySetResult(null);
 		}
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			Store.InvokeInitializeFailed(reason, null);
+			if (EventId == TraceEventId.Fetch)
+			{
+				Store.InvokeFetchFailed(reason, null);
+			}
+			else
+			{
+				Store.InvokeInitializeFailed(reason, null);
+			}
+
 			TrySetException(new StoreFetchException(reason));
 		}
 
@@ -27,12 +57,28 @@ namespace UnityFx.Purchasing
 		{
 			if (e is StoreFetchException sfe)
 			{
-				Store.InvokeInitializeFailed(sfe.Reason, e);
+				if (EventId == TraceEventId.Fetch)
+				{
+					Store.InvokeFetchFailed(sfe.Reason, e);
+				}
+				else
+				{
+					Store.InvokeInitializeFailed(sfe.Reason, e);
+				}
+
 				TrySetException(e);
 			}
 			else
 			{
-				Store.InvokeInitializeFailed(StoreFetchError.Unknown, e);
+				if (EventId == TraceEventId.Fetch)
+				{
+					Store.InvokeFetchFailed(StoreFetchError.Unknown, e);
+				}
+				else
+				{
+					Store.InvokeInitializeFailed(StoreFetchError.Unknown, e);
+				}
+
 				TrySetException(new StoreFetchException(StoreFetchError.Unknown, e));
 			}
 		}
