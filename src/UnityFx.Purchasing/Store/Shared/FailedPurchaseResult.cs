@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns an error that caused the purchase to fail. Read only.
 		/// </summary>
-		public StorePurchaseError Error => _error;
+		public StorePurchaseError Reason => _error;
 
 		/// <summary>
 		/// Returns exception that caused the failure (if any). Read only.

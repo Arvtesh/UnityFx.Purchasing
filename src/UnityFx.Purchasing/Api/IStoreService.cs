@@ -114,6 +114,12 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A generic platform store service.
 	/// </summary>
+	/// <remarks>
+	/// The interface defines a wrapper around <see href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</see>.
+	/// </remarks>
+	/// <seealso href="https://docs.unity3d.com/Manual/UnityIAP.html"/>
+	/// <seealso cref="IStoreController"/>
+	/// <seealso cref="IExtensionProvider"/>
 	public interface IStoreService : IStoreEvents, IDisposable
 	{
 		/// <summary>

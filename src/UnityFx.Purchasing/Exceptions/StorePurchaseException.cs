@@ -65,18 +65,18 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		public StorePurchaseException(FailedPurchaseResult result)
-			: base(result.Error.ToString(), result.Exception)
+			: base(GetMessage(result.ProductId, result.Reason), result.Exception)
 		{
 			ProductId = result.ProductId;
 			Result = result;
-			Reason = result.Error;
+			Reason = result.Reason;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		public StorePurchaseException(string productId, PurchaseResult result, StorePurchaseError reason)
-			: base(reason.ToString())
+			: base(GetMessage(productId, reason))
 		{
 			ProductId = productId;
 			Result = result;
@@ -87,11 +87,41 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		public StorePurchaseException(string productId, PurchaseResult result, StorePurchaseError reason, Exception innerException)
-			: base(reason.ToString(), innerException)
+			: base(GetMessage(productId, reason), innerException)
 		{
 			ProductId = productId;
 			Result = result;
 			Reason = reason;
+		}
+
+		#endregion
+
+		#region Exception
+
+		/// <inheritdoc/>
+		public override string Message
+		{
+			get
+			{
+				var s = base.Message;
+				var transactionInfo = Result.TransactionInfo;
+
+				if (transactionInfo != null)
+				{
+					s += " TransactionID: " + transactionInfo.TransactionId;
+
+					if (transactionInfo.IsRestored)
+					{
+						s += ", auto-restored.";
+					}
+					else
+					{
+						s += '.';
+					}
+				}
+
+				return s;
+			}
 		}
 
 		#endregion
@@ -118,6 +148,15 @@ namespace UnityFx.Purchasing
 			info.AddValue(_productIdSerializationName, ProductId);
 			info.AddValue(_resultSerializationName, Result, typeof(PurchaseResult));
 			info.AddValue(_reasonSerializationName, Reason.ToString());
+		}
+
+		#endregion
+
+		#region implementation
+
+		private static string GetMessage(string productId, StorePurchaseError reason)
+		{
+			return $"In-app purchase failed for product {productId} ({reason.ToString()}).";
 		}
 
 		#endregion
