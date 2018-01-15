@@ -73,14 +73,6 @@ namespace UnityFx.Purchasing
 		protected internal TraceSource TraceSource => _console;
 
 		/// <summary>
-		/// Returns tangent data for the platform. If this property returns <see langword="null"/> local validation is skipped. Read only.
-		/// </summary>
-		/// <remarks>
-		/// Should return either <c>AppleTangle.Data()</c> or <c>GooglePlayTangle.Data()</c> depending on platform.
-		/// </remarks>
-		protected internal byte[] TangentData { get; }
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		protected StoreService(string name, IPurchasingModule purchasingModule)
@@ -109,6 +101,7 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.
 		/// </remarks>
+		/// <returns>Returns <see langword="true"/> if validation is implemented; <see langword="false"/> if not.</returns>
 		/// <param name="transaction">The transaction data to validate.</param>
 		/// <param name="resultDelegate">Operation completed delegate.</param>
 		/// <seealso cref="GetStoreConfig(Action{StoreConfig}, Action{Exception})"/>

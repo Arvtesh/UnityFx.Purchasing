@@ -72,24 +72,20 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-					// Execute Unity built-in local purchase validator if applicable.
-					var data = Store.TangentData;
+					var validationImplemented = true;
 
-					if (data != null)
+					try
 					{
-						if (Application.platform == RuntimePlatform.Android)
-						{
-							////var validator = new CrossPlatformValidator(data, null, Application.identifier);
-							////validator.Validate(product.receipt);
-						}
-						else if (Application.platform == RuntimePlatform.IPhonePlayer)
-						{
-							////var validator = new CrossPlatformValidator(null, data, Application.identifier);
-							////validator.Validate(product.receipt);
-						}
+						validationImplemented = Store.ValidatePurchase(_transaction, ValidateCallback);
+					}
+					catch (Exception e)
+					{
+						TraceException(e);
+						SetFailed(StorePurchaseError.ReceiptValidationFailed);
+						return PurchaseProcessingResult.Complete;
 					}
 
-					if (Store.ValidatePurchase(_transaction, ValidateCallback))
+					if (validationImplemented)
 					{
 						// Check if the validation callback was called synchronously.
 						if (!IsCompleted)
@@ -150,10 +146,6 @@ namespace UnityFx.Purchasing
 				{
 					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
 				}
-				////else if (e is IAPSecurityException ise)
-				////{
-				////	Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.ReceiptLocalValidationFailed, e));
-				////}
 				else
 				{
 					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.Unknown, e));
