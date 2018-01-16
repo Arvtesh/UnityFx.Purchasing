@@ -51,7 +51,7 @@ namespace UnityFx.Purchasing
 
 		internal override StoreService Store => _storeService;
 
-		internal override void AddOperation(IAsyncOperation op)
+		internal override void AddOperation(IStoreOperation op)
 		{
 			Debug.Assert(!_disposed);
 
@@ -83,7 +83,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal override void ReleaseOperation(IAsyncOperation op)
+		internal override void ReleaseOperation(IStoreOperation op)
 		{
 			if (op == _initializeOp)
 			{

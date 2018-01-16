@@ -6,11 +6,11 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	///  Extends an <see cref="IAsyncOperation"/> interface with a result value.
+	///  Extends an <see cref="IStoreOperation"/> interface with a result value.
 	/// </summary>
 	/// <seealso cref="IAsyncResult"/>
-	/// <seealso cref="IAsyncOperation"/>
-	public interface IAsyncOperation<out T> : IAsyncOperation
+	/// <seealso cref="IStoreOperation"/>
+	public interface IStoreOperation<out T> : IStoreOperation
 	{
 		/// <summary>
 		/// Returns the result value of this operation. Accessing the property blocks the calling thread until the operation is complete. Read only.

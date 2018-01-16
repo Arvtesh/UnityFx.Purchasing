@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 	/// </summary>
 	/// <typeparam name="T">Type of the operation result.</typeparam>
 	/// <seealso cref="IAsyncResult"/>
-	internal class AsyncResult<T> : IAsyncOperation<T>, IEnumerator
+	internal class AsyncResult<T> : IStoreOperation<T>, IEnumerator
 	{
 		#region data
 
@@ -29,7 +29,7 @@ namespace UnityFx.Purchasing
 
 		private Exception _exception;
 		private int _status;
-		private Action<IAsyncOperation> _continuation;
+		private Action<IStoreOperation> _continuation;
 		private T _result;
 #if !NET35
 		private TaskCompletionSource<T> _tcs;
@@ -84,7 +84,7 @@ namespace UnityFx.Purchasing
 			_result = result;
 		}
 
-		internal void ContinueWith(Action<IAsyncOperation> continuation)
+		internal void ContinueWith(Action<IStoreOperation> continuation)
 		{
 			Debug.Assert(continuation != null);
 
@@ -158,6 +158,9 @@ namespace UnityFx.Purchasing
 		public bool IsCompletedSuccessfully => _status == _statusCompleted;
 
 		/// <inheritdoc/>
+		public bool IsCompleted => _status > _statusRunning;
+
+		/// <inheritdoc/>
 		public bool IsFaulted => _status > _statusCompleted;
 
 		/// <inheritdoc/>
@@ -184,22 +187,6 @@ namespace UnityFx.Purchasing
 		{
 			_continuation?.Invoke(this);
 		}
-
-		#endregion
-
-		#region IAsyncResult
-
-		/// <inheritdoc/>
-		public WaitHandle AsyncWaitHandle => throw new NotSupportedException();
-
-		/// <inheritdoc/>
-		public object AsyncState => null;
-
-		/// <inheritdoc/>
-		public bool CompletedSynchronously => false;
-
-		/// <inheritdoc/>
-		public bool IsCompleted => _status > _statusRunning;
 
 		#endregion
 

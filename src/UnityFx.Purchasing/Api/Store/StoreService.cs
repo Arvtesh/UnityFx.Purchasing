@@ -522,7 +522,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IAsyncOperation Initialize()
+		public IStoreOperation Initialize()
 		{
 			ThrowIfDisposed();
 
@@ -550,7 +550,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IAsyncOperation Fetch()
+		public IStoreOperation Fetch()
 		{
 			ThrowIfDisposed();
 
@@ -568,7 +568,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IAsyncOperation<PurchaseResult> Purchase(string productId)
+		public IStoreOperation<PurchaseResult> Purchase(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();

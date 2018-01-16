@@ -176,7 +176,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="Purchase(string)"/>
-		IAsyncOperation Initialize();
+		IStoreOperation Initialize();
 
 #if !NET35
 		/// <summary>
@@ -198,7 +198,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Purchase(string)"/>
-		IAsyncOperation Fetch();
+		IStoreOperation Fetch();
 
 #if !NET35
 		/// <summary>
@@ -231,7 +231,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="IsBusy"/>
-		IAsyncOperation<PurchaseResult> Purchase(string productId);
+		IStoreOperation<PurchaseResult> Purchase(string productId);
 
 #if !NET35
 		/// <summary>
