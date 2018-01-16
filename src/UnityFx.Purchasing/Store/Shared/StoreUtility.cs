@@ -22,5 +22,17 @@ namespace UnityFx.Purchasing
 	/// </summary>
 	internal static class StoreUtility
 	{
+		internal static void TraceError(this TraceSource traceSource, TraceEventId eventId, string s)
+		{
+			traceSource.TraceEvent(TraceEventType.Error, (int)eventId, eventId.ToString() + " error: " + s);
+		}
+
+		internal static void TraceException(this TraceSource traceSource, TraceEventId eventId, Exception e)
+		{
+			if (e != null)
+			{
+				traceSource.TraceData(TraceEventType.Error, (int)eventId, e);
+			}
+		}
 	}
 }

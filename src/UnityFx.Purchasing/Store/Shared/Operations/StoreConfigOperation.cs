@@ -40,7 +40,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			TraceError(reason.ToString());
+			Console.TraceError(EventId, reason.ToString());
 
 			if (TrySetException(new StoreFetchException(reason)))
 			{
@@ -50,7 +50,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason, Exception e)
 		{
-			TraceException(e);
+			Console.TraceException(EventId, e);
 
 			if (TrySetException(new StoreFetchException(reason, e)))
 			{
@@ -60,7 +60,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(Exception e)
 		{
-			TraceException(e);
+			Console.TraceException(EventId, e);
 
 			if (TrySetException(e))
 			{

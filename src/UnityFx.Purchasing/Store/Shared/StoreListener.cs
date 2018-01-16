@@ -83,7 +83,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			return _purchaseOp = new PurchaseOperation(this, product);
+			return _purchaseOp = new PurchaseOperation(this, product, true);
 		}
 
 		#endregion
@@ -199,6 +199,8 @@ namespace UnityFx.Purchasing
 
 			if (!_disposed)
 			{
+				var op = _purchaseOp;
+
 				try
 				{
 					var product = args.purchasedProduct;
@@ -207,24 +209,29 @@ namespace UnityFx.Purchasing
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ProcessPurchase: " + productId);
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
-					// Handle restored transactions when the _purchaseOp is not initialized.
-					if (_purchaseOp == null)
+					if (op == null)
 					{
-						return BeginPurchase(product).Validate(product);
+						// A restored transactions when the _purchaseOp is null.
+						op = BeginPurchase(product);
+						return op.Validate(product);
 					}
-					else if (_purchaseOp.ProcessPurchase(product))
+					else if (op.ProcessPurchase(product))
 					{
-						return _purchaseOp.Validate(product);
+						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
+						return op.Validate(product);
 					}
 					else
 					{
-						_console.TraceEvent(TraceEventType.Error, (int)TraceEventId.Purchase, "ProcessPurchase called for a different product than expected.");
-						return BeginPurchase(product).Validate(product);
+						// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase()
+						// call (bypassing IStoreService API). Do not process it.
+						op = null;
+						TraceUnexpectedProduct(productId);
+						return PurchaseProcessingResult.Complete;
 					}
 				}
 				catch (Exception e)
 				{
-					_purchaseOp?.SetFailed(e);
+					op?.SetFailed(e);
 				}
 			}
 
@@ -235,25 +242,45 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
+				var op = _purchaseOp;
+
 				try
 				{
 					// NOTE: in some cases product might have null value.
 					var productId = product?.definition.id ?? "null";
-					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"OnPurchaseFailed: {productId}, reason={reason}");
+					var errorDesc = productId + ", reson=" + reason.ToString();
 
-					// Handle restored transactions when the _purchaseOp is not initialized.
-					if (_purchaseOp == null)
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "OnPurchaseFailed: " + errorDesc);
+
+					if (op == null)
 					{
-						BeginPurchase(productId, true).SetFailed(product, GetPurchaseError(reason));
+						// A restored transaction.
+						if (product != null)
+						{
+							op = new PurchaseOperation(this, productId, true);
+							op.SetFailed(product, GetPurchaseError(reason));
+						}
+						else
+						{
+							_console.TraceError(TraceEventId.Purchase, reason.ToString());
+						}
+					}
+					else if (op.IsSame(product))
+					{
+						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
+						op.SetFailed(product, GetPurchaseError(reason));
 					}
 					else
 					{
-						_purchaseOp.SetFailed(product, GetPurchaseError(reason));
+						// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase()
+						// call (bypassing IStoreService API).
+						op = null;
+						TraceUnexpectedProduct(productId);
 					}
 				}
 				catch (Exception e)
 				{
-					_purchaseOp?.SetFailed(product, GetPurchaseError(reason), e);
+					op?.SetFailed(product, GetPurchaseError(reason), e);
 				}
 			}
 		}
@@ -276,6 +303,11 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region implementation
+
+		private void TraceUnexpectedProduct(string productId)
+		{
+			_console.TraceEvent(TraceEventType.Warning, (int)TraceEventId.Purchase, "Unexpected product: " + productId);
+		}
 
 		private static StoreFetchError GetInitializeError(InitializationFailureReason error)
 		{

@@ -47,19 +47,6 @@ namespace UnityFx.Purchasing
 			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
 		}
 
-		protected void TraceError(string s)
-		{
-			Console.TraceEvent(TraceEventType.Error, (int)_traceEvent, _traceEvent.ToString() + " error: " + s);
-		}
-
-		protected void TraceException(Exception e)
-		{
-			if (e != null)
-			{
-				Console.TraceData(TraceEventType.Error, (int)_traceEvent, e);
-			}
-		}
-
 		#endregion
 
 		#region AsyncResult
