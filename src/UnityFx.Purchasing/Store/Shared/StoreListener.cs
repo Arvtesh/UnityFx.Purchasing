@@ -76,16 +76,6 @@ namespace UnityFx.Purchasing
 			return _purchaseOp = new PurchaseOperation(this, productId, restored);
 		}
 
-		public PurchaseOperation BeginPurchase(Product product)
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(_purchaseOp == null);
-			Debug.Assert(_initializeOp == null);
-			Debug.Assert(_fetchOp == null);
-
-			return _purchaseOp = new PurchaseOperation(this, product, true);
-		}
-
 		#endregion
 
 		#region StoreOperationContainer
@@ -199,8 +189,6 @@ namespace UnityFx.Purchasing
 
 			if (!_disposed)
 			{
-				var op = _purchaseOp;
-
 				try
 				{
 					var product = args.purchasedProduct;
@@ -209,29 +197,28 @@ namespace UnityFx.Purchasing
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "ProcessPurchase: " + productId);
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
-					if (op == null)
+					if (_purchaseOp == null)
 					{
 						// A restored transactions when the _purchaseOp is null.
-						op = BeginPurchase(product);
-						return op.Validate(product);
+						_purchaseOp = new PurchaseOperation(this, product, true);
+						return _purchaseOp.Validate(product);
 					}
-					else if (op.ProcessPurchase(product))
+					else if (_purchaseOp.ProcessPurchase(product))
 					{
 						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-						return op.Validate(product);
+						return _purchaseOp.Validate(product);
 					}
 					else
 					{
 						// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase()
 						// call (bypassing IStoreService API). Do not process it.
-						op = null;
 						TraceUnexpectedProduct(productId);
 						return PurchaseProcessingResult.Complete;
 					}
 				}
 				catch (Exception e)
 				{
-					op?.SetFailed(e);
+					_console.TraceException(TraceEventId.Purchase, e);
 				}
 			}
 
@@ -242,8 +229,6 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
-				var op = _purchaseOp;
-
 				try
 				{
 					// NOTE: in some cases product might have null value.
@@ -252,12 +237,12 @@ namespace UnityFx.Purchasing
 
 					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, "OnPurchaseFailed: " + errorDesc);
 
-					if (op == null)
+					if (_purchaseOp == null)
 					{
 						// A restored transaction.
 						if (product != null)
 						{
-							op = new PurchaseOperation(this, productId, true);
+							var op = new PurchaseOperation(this, productId, true);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else
@@ -265,22 +250,21 @@ namespace UnityFx.Purchasing
 							_console.TraceError(TraceEventId.Purchase, reason.ToString());
 						}
 					}
-					else if (op.IsSame(product))
+					else if (_purchaseOp.IsSame(product))
 					{
 						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-						op.SetFailed(product, GetPurchaseError(reason));
+						_purchaseOp.SetFailed(product, GetPurchaseError(reason));
 					}
 					else
 					{
 						// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase()
 						// call (bypassing IStoreService API).
-						op = null;
 						TraceUnexpectedProduct(productId);
 					}
 				}
 				catch (Exception e)
 				{
-					op?.SetFailed(product, GetPurchaseError(reason), e);
+					_console.TraceException(TraceEventId.Purchase, e);
 				}
 			}
 		}
