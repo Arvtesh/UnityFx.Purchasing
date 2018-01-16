@@ -45,6 +45,7 @@ namespace UnityFx.Purchasing
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
 		private readonly StoreListener _storeListener;
+		private readonly IPurchasingModule _purchasingModule;
 
 		private StoreProductCollection _products;
 
@@ -78,7 +79,8 @@ namespace UnityFx.Purchasing
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
 			_console = new TraceSource(_serviceName);
-			_storeListener = new StoreListener(this, purchasingModule);
+			_purchasingModule = purchasingModule;
+			_storeListener = new StoreListener(this);
 		}
 
 		/// <summary>
@@ -676,7 +678,7 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				var result = _storeListener.BeginInitialize();
+				var result = new InitializeOperation(_storeListener, _purchasingModule, _storeListener);
 				result.Initiate();
 				return result;
 			}
@@ -698,7 +700,7 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				var result = _storeListener.BeginFetch();
+				var result = new FetchOperation(_storeListener, _storeListener.OnFetch, _storeListener.OnFetchFailed);
 				result.Initiate();
 				return result;
 			}
@@ -710,7 +712,7 @@ namespace UnityFx.Purchasing
 
 		private AsyncResult<PurchaseResult> PurchaseInternal(string productId)
 		{
-			var result = _storeListener.BeginPurchase(productId, false);
+			var result = new PurchaseOperation(_storeListener, productId, false);
 
 			try
 			{

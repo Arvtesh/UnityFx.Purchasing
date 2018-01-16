@@ -17,7 +17,6 @@ namespace UnityFx.Purchasing
 
 		private readonly StoreService _storeService;
 		private readonly TraceSource _console;
-		private readonly IPurchasingModule _purchasingModule;
 
 		private InitializeOperation _initializeOp;
 		private FetchOperation _fetchOp;
@@ -40,49 +39,51 @@ namespace UnityFx.Purchasing
 
 		public AsyncResult<PurchaseResult> PurchaseOp => _purchaseOp;
 
-		public StoreListener(StoreService storeService, IPurchasingModule purchasingModule)
+		public StoreListener(StoreService storeService)
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
-			_purchasingModule = purchasingModule;
-		}
-
-		public InitializeOperation BeginInitialize()
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(_initializeOp == null);
-			Debug.Assert(_fetchOp == null);
-
-			return _initializeOp = new InitializeOperation(this, _purchasingModule, this);
-		}
-
-		public FetchOperation BeginFetch()
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(_fetchOp == null);
-			Debug.Assert(_initializeOp == null);
-			Debug.Assert(_purchaseOp == null);
-
-			return _fetchOp = new FetchOperation(this, OnFetch, OnFetchFailed);
-		}
-
-		public PurchaseOperation BeginPurchase(string productId, bool restored)
-		{
-			Debug.Assert(!_disposed);
-			Debug.Assert(_purchaseOp == null);
-			Debug.Assert(_initializeOp == null);
-			Debug.Assert(_fetchOp == null);
-
-			return _purchaseOp = new PurchaseOperation(this, productId, restored);
 		}
 
 		#endregion
 
 		#region StoreOperationContainer
 
-		public override StoreService Store => _storeService;
+		internal override StoreService Store => _storeService;
 
-		public override void ReleaseOperation(IAsyncOperation op)
+		internal override void AddOperation(IAsyncOperation op)
+		{
+			Debug.Assert(!_disposed);
+
+			if (op is PurchaseOperation pop)
+			{
+				Debug.Assert(_initializeOp == null);
+				Debug.Assert(_fetchOp == null);
+				Debug.Assert(_purchaseOp == null);
+
+				_purchaseOp = pop;
+			}
+			else if (op is FetchOperation fop)
+			{
+				Debug.Assert(_initializeOp == null);
+				Debug.Assert(_fetchOp == null);
+
+				_fetchOp = fop;
+			}
+			else if (op is InitializeOperation iop)
+			{
+				Debug.Assert(_initializeOp == null);
+				Debug.Assert(_fetchOp == null);
+
+				_initializeOp = iop;
+			}
+			else
+			{
+				Debug.Fail("Unknown operation type");
+			}
+		}
+
+		internal override void ReleaseOperation(IAsyncOperation op)
 		{
 			if (op == _initializeOp)
 			{
@@ -120,7 +121,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_initializeOp.SetFailed(StoreFetchError.Unknown, e);
+					_console.TraceException(TraceEventId.Initialize, e, TraceEventType.Critical);
 				}
 			}
 		}
@@ -133,13 +134,13 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitializeFailed: " + error);
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Initialize, "OnInitializeFailed: " + error.ToString());
 					_initializeOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
-					_initializeOp.SetFailed(GetInitializeError(error), e);
+					_console.TraceException(TraceEventId.Initialize, e, TraceEventType.Critical);
 				}
 			}
 		}
@@ -158,7 +159,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_fetchOp.SetFailed(StoreFetchError.Unknown, e);
+					_console.TraceException(TraceEventId.Fetch, e, TraceEventType.Critical);
 				}
 			}
 		}
@@ -171,13 +172,13 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetchFailed: " + error);
+					_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Fetch, "OnFetchFailed: " + error.ToString());
 					_fetchOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
-					_fetchOp.SetFailed(GetInitializeError(error), e);
+					_console.TraceException(TraceEventId.Fetch, e, TraceEventType.Critical);
 				}
 			}
 		}
@@ -200,8 +201,8 @@ namespace UnityFx.Purchasing
 					if (_purchaseOp == null)
 					{
 						// A restored transactions when the _purchaseOp is null.
-						_purchaseOp = new PurchaseOperation(this, product, true);
-						return _purchaseOp.Validate(product);
+						var op = new PurchaseOperation(this, product, true);
+						return op.Validate(product);
 					}
 					else if (_purchaseOp.ProcessPurchase(product))
 					{
@@ -218,7 +219,8 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceException(TraceEventId.Purchase, e);
+					// Should never get here.
+					_console.TraceException(TraceEventId.Purchase, e, TraceEventType.Critical);
 				}
 			}
 
@@ -264,7 +266,8 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceException(TraceEventId.Purchase, e);
+					// Should never get here.
+					_console.TraceException(TraceEventId.Purchase, e, TraceEventType.Critical);
 				}
 			}
 		}

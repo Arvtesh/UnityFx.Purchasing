@@ -27,11 +27,11 @@ namespace UnityFx.Purchasing
 			traceSource.TraceEvent(TraceEventType.Error, (int)eventId, eventId.ToString() + " error: " + s);
 		}
 
-		internal static void TraceException(this TraceSource traceSource, TraceEventId eventId, Exception e)
+		internal static void TraceException(this TraceSource traceSource, TraceEventId eventId, Exception e, TraceEventType eventType = TraceEventType.Error)
 		{
 			if (e != null)
 			{
-				traceSource.TraceData(TraceEventType.Error, (int)eventId, e);
+				traceSource.TraceData(eventType, (int)eventId, e);
 			}
 		}
 	}

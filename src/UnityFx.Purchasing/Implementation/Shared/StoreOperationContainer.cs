@@ -11,8 +11,9 @@ namespace UnityFx.Purchasing
 	{
 		#region interface
 
-		public abstract StoreService Store { get; }
-		public abstract void ReleaseOperation(IAsyncOperation op);
+		internal abstract StoreService Store { get; }
+		internal abstract void AddOperation(IAsyncOperation op);
+		internal abstract void ReleaseOperation(IAsyncOperation op);
 
 		#endregion
 
