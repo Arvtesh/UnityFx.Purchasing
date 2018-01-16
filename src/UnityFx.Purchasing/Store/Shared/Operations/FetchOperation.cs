@@ -2,79 +2,52 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
 	/// A fetch operation.
 	/// </summary>
-	internal class FetchOperation : StoreOperation<object>
+	internal class FetchOperation : StoreConfigOperation
 	{
+		#region data
+
+		private readonly Action _fetchComplete;
+		private readonly Action<InitializationFailureReason> _fetchFailed;
+
+		#endregion
+
 		#region interface
 
-		public FetchOperation(StoreOperationContainer parent, TraceEventId eventId)
-			: base(parent, eventId, null, null)
+		public FetchOperation(StoreOperationContainer parent, Action onComplete, Action<InitializationFailureReason> onFailed)
+			: base(parent, TraceEventId.Fetch)
 		{
-			if (EventId == TraceEventId.Fetch)
-			{
-				Store.InvokeFetchInitiated();
-			}
-			else
-			{
-				Store.InvokeInitializeInitiated();
-			}
+			_fetchComplete = onComplete;
+			_fetchFailed = onFailed;
+
+			Store.InvokeFetchInitiated();
 		}
 
-		public void SetCompleted()
+		#endregion
+
+		#region StoreConfigOperation
+
+		protected override void Initiate(StoreConfig storeConfig)
 		{
-			if (TrySetResult(null))
-			{
-				if (EventId == TraceEventId.Fetch)
-				{
-					Store.InvokeFetchCompleted();
-				}
-				else
-				{
-					Store.InvokeInitializeCompleted();
-				}
-			}
+			var productSet = new HashSet<ProductDefinition>(storeConfig.Products);
+			Store.Controller.FetchAdditionalProducts(productSet, _fetchComplete, _fetchFailed);
 		}
 
-		public void SetFailed(StoreFetchError reason)
+		protected override void InvokeCompleted()
 		{
-			TraceError(reason.ToString());
-
-			if (TrySetException(new StoreFetchException(reason)))
-			{
-				if (EventId == TraceEventId.Fetch)
-				{
-					Store.InvokeFetchFailed(reason, null);
-				}
-				else
-				{
-					Store.InvokeInitializeFailed(reason, null);
-				}
-			}
+			Store.InvokeFetchCompleted();
 		}
 
-		public void SetFailed(Exception e)
+		protected override void InvokeFailed(StoreFetchError reason, Exception e)
 		{
-			TraceException(e);
-
-			if (TrySetException(e))
-			{
-				var reason = e is StoreFetchException sfe ? sfe.Reason : StoreFetchError.Unknown;
-
-				if (EventId == TraceEventId.Fetch)
-				{
-					Store.InvokeFetchFailed(reason, e);
-				}
-				else
-				{
-					Store.InvokeInitializeFailed(reason, e);
-				}
-			}
+			Store.InvokeFetchFailed(reason, e);
 		}
 
 		#endregion

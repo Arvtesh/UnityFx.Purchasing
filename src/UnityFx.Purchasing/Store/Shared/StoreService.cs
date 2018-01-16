@@ -44,7 +44,6 @@ namespace UnityFx.Purchasing
 
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
-		private readonly IPurchasingModule _purchasingModule;
 		private readonly StoreListener _storeListener;
 
 		private StoreProductCollection _products;
@@ -79,8 +78,7 @@ namespace UnityFx.Purchasing
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
 			_console = new TraceSource(_serviceName);
-			_purchasingModule = purchasingModule;
-			_storeListener = new StoreListener(this);
+			_storeListener = new StoreListener(this, purchasingModule);
 		}
 
 		/// <summary>
@@ -679,17 +677,7 @@ namespace UnityFx.Purchasing
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
 				var result = _storeListener.BeginInitialize();
-
-				try
-				{
-					GetStoreConfig(InitializeGetConfigCallback, InitializeGetConfigErrorCallback);
-				}
-				catch (Exception e)
-				{
-					_storeListener.EndInitialize(e);
-					throw;
-				}
-
+				result.Initiate();
 				return result;
 			}
 			else
@@ -711,17 +699,7 @@ namespace UnityFx.Purchasing
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
 				var result = _storeListener.BeginFetch();
-
-				try
-				{
-					GetStoreConfig(FetchGetConfigCallback, FetchGetConfigErrorCallback);
-				}
-				catch (Exception e)
-				{
-					_storeListener.EndFetch(e);
-					throw;
-				}
-
+				result.Initiate();
 				return result;
 			}
 			else
@@ -755,110 +733,27 @@ namespace UnityFx.Purchasing
 						{
 							if (asyncResult.IsCompletedSuccessfully)
 							{
-								InitiatePurchase(productId);
+								result.InitiatePurchase();
 							}
 							else
 							{
-								_storeListener.EndPurchase(asyncResult.Exception);
+								result.SetFailed(asyncResult.Exception);
 							}
 						}
 					});
 				}
 				else
 				{
-					InitiatePurchase(productId);
+					result.InitiatePurchase();
 				}
 			}
 			catch (Exception e)
 			{
-				_storeListener.EndPurchase(e);
+				result.SetFailed(e);
 				throw;
 			}
 
 			return result;
-		}
-
-		private void InitiatePurchase(string productId)
-		{
-			var product = _storeController.products.WithID(productId);
-
-			if (product != null && product.availableToPurchase)
-			{
-				_console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-				_storeController.InitiatePurchase(product);
-			}
-			else
-			{
-				_storeListener.EndPurchase(new StorePurchaseException(productId, new PurchaseResult(product), StorePurchaseError.ProductUnavailable));
-			}
-		}
-
-		private void InitializeGetConfigCallback(StoreConfig storeConfig)
-		{
-			if (!_disposed)
-			{
-				if (storeConfig != null)
-				{
-					var products = storeConfig.Products;
-
-					if (products != null)
-					{
-						var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-						configurationBuilder.AddProducts(products);
-
-						UnityPurchasing.Initialize(_storeListener, configurationBuilder);
-					}
-					else
-					{
-						_storeListener.EndInitialize(new ArgumentNullException(nameof(storeConfig.Products)));
-					}
-				}
-				else
-				{
-					_storeListener.EndInitialize(new ArgumentNullException(nameof(storeConfig)));
-				}
-			}
-		}
-
-		private void InitializeGetConfigErrorCallback(Exception e)
-		{
-			if (!_disposed)
-			{
-				_storeListener.EndInitialize(e);
-			}
-		}
-
-		private void FetchGetConfigCallback(StoreConfig storeConfig)
-		{
-			if (!_disposed)
-			{
-				if (storeConfig != null)
-				{
-					var products = storeConfig.Products;
-
-					if (products != null)
-					{
-						var productSet = new HashSet<ProductDefinition>(products);
-						_storeController.FetchAdditionalProducts(productSet, _storeListener.OnFetch, _storeListener.OnFetchFailed);
-					}
-					else
-					{
-						_storeListener.EndFetch(new ArgumentNullException(nameof(storeConfig.Products)));
-					}
-				}
-				else
-				{
-					_storeListener.EndFetch(new ArgumentNullException(nameof(storeConfig)));
-				}
-			}
-		}
-
-		private void FetchGetConfigErrorCallback(Exception e)
-		{
-			if (!_disposed)
-			{
-				_storeListener.EndFetch(e);
-			}
 		}
 
 		#endregion

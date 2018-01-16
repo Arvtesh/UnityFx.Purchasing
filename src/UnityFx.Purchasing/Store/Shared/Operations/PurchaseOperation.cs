@@ -45,6 +45,21 @@ namespace UnityFx.Purchasing
 			_transaction = new StoreTransaction(product, true);
 		}
 
+		public void InitiatePurchase()
+		{
+			var product = Store.Controller.products.WithID(_productId);
+
+			if (product != null && product.availableToPurchase)
+			{
+				Console.TraceEvent(TraceEventType.Verbose, (int)TraceEventId.Purchase, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+				Store.Controller.InitiatePurchase(product);
+			}
+			else
+			{
+				SetFailed(product, StorePurchaseError.ProductUnavailable);
+			}
+		}
+
 		public bool ProcessPurchase(Product product)
 		{
 			var productId = product.definition.id;
@@ -153,9 +168,9 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void SetFailed(Product product, StorePurchaseError failReason)
+		public void SetFailed(Product product, StorePurchaseError failReason, Exception e = null)
 		{
-			var result = new FailedPurchaseResult(_productId, product, failReason, null);
+			var result = new FailedPurchaseResult(_productId, product, failReason, e);
 
 			TraceError(failReason.ToString());
 

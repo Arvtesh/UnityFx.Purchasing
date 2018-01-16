@@ -64,7 +64,7 @@ namespace UnityFx.Purchasing
 
 		#region AsyncResult
 
-		protected override void OnCompleted()
+		protected sealed override void OnCompleted()
 		{
 			try
 			{

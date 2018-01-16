@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Extension;
 
 namespace UnityFx.Purchasing
 {
@@ -16,8 +17,9 @@ namespace UnityFx.Purchasing
 
 		private readonly StoreService _storeService;
 		private readonly TraceSource _console;
+		private readonly IPurchasingModule _purchasingModule;
 
-		private FetchOperation _initializeOp;
+		private InitializeOperation _initializeOp;
 		private FetchOperation _fetchOp;
 		private PurchaseOperation _purchaseOp;
 		private bool _disposed;
@@ -38,26 +40,20 @@ namespace UnityFx.Purchasing
 
 		public AsyncResult<PurchaseResult> PurchaseOp => _purchaseOp;
 
-		public StoreListener(StoreService storeService)
+		public StoreListener(StoreService storeService, IPurchasingModule purchasingModule)
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
+			_purchasingModule = purchasingModule;
 		}
 
-		public FetchOperation BeginInitialize()
+		public InitializeOperation BeginInitialize()
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			return _initializeOp = new FetchOperation(this, TraceEventId.Initialize);
-		}
-
-		public void EndInitialize(Exception e)
-		{
-			Debug.Assert(!_disposed);
-
-			_initializeOp?.SetFailed(e);
+			return _initializeOp = new InitializeOperation(this, _purchasingModule, this);
 		}
 
 		public FetchOperation BeginFetch()
@@ -67,14 +63,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_purchaseOp == null);
 
-			return _fetchOp = new FetchOperation(this, TraceEventId.Fetch);
-		}
-
-		public void EndFetch(Exception e)
-		{
-			Debug.Assert(!_disposed);
-
-			_fetchOp?.SetFailed(e);
+			return _fetchOp = new FetchOperation(this, OnFetch, OnFetchFailed);
 		}
 
 		public PurchaseOperation BeginPurchase(string productId, bool restored)
@@ -95,13 +84,6 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_fetchOp == null);
 
 			return _purchaseOp = new PurchaseOperation(this, product);
-		}
-
-		public void EndPurchase(Exception e)
-		{
-			Debug.Assert(!_disposed);
-
-			_purchaseOp?.SetFailed(e);
 		}
 
 		#endregion
@@ -242,7 +224,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					EndPurchase(e);
+					_purchaseOp?.SetFailed(e);
 				}
 			}
 
@@ -271,8 +253,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
-					_purchaseOp?.TrySetException(e);
+					_purchaseOp?.SetFailed(product, GetPurchaseError(reason), e);
 				}
 			}
 		}
