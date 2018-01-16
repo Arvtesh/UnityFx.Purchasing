@@ -670,7 +670,7 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private AsyncResult<object> InitializeInternal()
+		private StoreOperation<object> InitializeInternal()
 		{
 			if (_storeListener.IsInitializePending)
 			{
@@ -679,7 +679,17 @@ namespace UnityFx.Purchasing
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
 				var result = new InitializeOperation(_storeListener, _purchasingModule, _storeListener);
-				result.Initiate();
+
+				try
+				{
+					result.Initiate();
+				}
+				catch (Exception e)
+				{
+					result.SetFailed(e);
+					throw;
+				}
+
 				return result;
 			}
 			else
@@ -688,7 +698,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private AsyncResult<object> FetchInternal()
+		private StoreOperation<object> FetchInternal()
 		{
 			if (_storeController == null)
 			{
@@ -701,7 +711,17 @@ namespace UnityFx.Purchasing
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
 				var result = new FetchOperation(_storeListener, _storeListener.OnFetch, _storeListener.OnFetchFailed);
-				result.Initiate();
+
+				try
+				{
+					result.Initiate();
+				}
+				catch (Exception e)
+				{
+					result.SetFailed(e);
+					throw;
+				}
+
 				return result;
 			}
 			else
@@ -710,13 +730,13 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private AsyncResult<PurchaseResult> PurchaseInternal(string productId)
+		private StoreOperation<PurchaseResult> PurchaseInternal(string productId)
 		{
 			var result = new PurchaseOperation(_storeListener, productId, false);
 
 			try
 			{
-				AsyncResult<object> fetchOp = null;
+				StoreOperation<object> fetchOp = null;
 
 				if (_storeController == null)
 				{
@@ -735,7 +755,14 @@ namespace UnityFx.Purchasing
 						{
 							if (asyncResult.IsCompletedSuccessfully)
 							{
-								result.InitiatePurchase();
+								try
+								{
+									result.Initiate();
+								}
+								catch (Exception e)
+								{
+									result.SetFailed(e);
+								}
 							}
 							else
 							{
@@ -746,7 +773,7 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-					result.InitiatePurchase();
+					result.Initiate();
 				}
 			}
 			catch (Exception e)

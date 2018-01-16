@@ -19,15 +19,7 @@ namespace UnityFx.Purchasing
 
 		public void Initiate()
 		{
-			try
-			{
-				Store.GetStoreConfig(GetConfigCallback, GetConfigErrorCallback);
-			}
-			catch (Exception e)
-			{
-				SetFailed(e);
-				throw;
-			}
+			Store.GetStoreConfig(GetConfigCallback, GetConfigErrorCallback);
 		}
 
 		public void SetCompleted()

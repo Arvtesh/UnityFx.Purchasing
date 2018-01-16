@@ -98,7 +98,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal bool TrySetResult(T result)
+		protected bool TrySetResult(T result)
 		{
 			if (TrySetStatus(_statusCompleted))
 			{
@@ -114,7 +114,7 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-		internal bool TrySetException(Exception e)
+		protected bool TrySetException(Exception e)
 		{
 			var status = e is OperationCanceledException ? _statusCanceled : _statusFaulted;
 
@@ -132,7 +132,7 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-		internal bool TrySetCanceled()
+		protected bool TrySetCanceled()
 		{
 			if (TrySetStatus(_statusCanceled))
 			{

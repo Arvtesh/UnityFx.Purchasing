@@ -44,6 +44,8 @@ namespace UnityFx.Purchasing
 				s += ": " + args;
 			}
 
+			parent.AddOperation(this);
+
 			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
 		}
 

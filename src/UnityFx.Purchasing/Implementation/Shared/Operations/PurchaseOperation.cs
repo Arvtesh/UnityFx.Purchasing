@@ -45,7 +45,7 @@ namespace UnityFx.Purchasing
 			_transaction = new StoreTransaction(product, restored);
 		}
 
-		public void InitiatePurchase()
+		public void Initiate()
 		{
 			var product = Store.Controller.products.WithID(_productId);
 
