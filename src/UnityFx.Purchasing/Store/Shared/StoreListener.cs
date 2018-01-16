@@ -129,8 +129,8 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
-					_initializeOp.TrySetException(e);
+					// Should never get here.
+					_initializeOp.SetFailed(StoreFetchError.Unknown, e);
 				}
 			}
 		}
@@ -148,8 +148,8 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
-					_initializeOp.TrySetException(e);
+					// Should never get here.
+					_initializeOp.SetFailed(GetInitializeError(error), e);
 				}
 			}
 		}
@@ -167,8 +167,8 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
-					_fetchOp.TrySetException(e);
+					// Should never get here.
+					_fetchOp.SetFailed(StoreFetchError.Unknown, e);
 				}
 			}
 		}
@@ -186,8 +186,8 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
-					_fetchOp.TrySetException(e);
+					// Should never get here.
+					_fetchOp.SetFailed(GetInitializeError(error), e);
 				}
 			}
 		}

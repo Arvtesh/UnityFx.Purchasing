@@ -48,6 +48,16 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		public void SetFailed(StoreFetchError reason, Exception e)
+		{
+			TraceException(e);
+
+			if (TrySetException(new StoreFetchException(reason, e)))
+			{
+				InvokeFailed(reason, e);
+			}
+		}
+
 		public void SetFailed(Exception e)
 		{
 			TraceException(e);
