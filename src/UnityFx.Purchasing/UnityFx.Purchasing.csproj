@@ -36,7 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
-		<Compile Remove="Store/Net46/**" />
+		<Compile Remove="Implementation/Net46/**" />
 	</ItemGroup>
 
 	<ItemGroup>
