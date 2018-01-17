@@ -199,24 +199,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void ThrowIfError()
-		{
-			var e = Exception;
-
-			if (e != null)
-			{
-				if (e is StorePurchaseException spe)
-				{
-					// TODO
-					throw new StorePurchaseException(_productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
-				}
-				else
-				{
-					throw new StorePurchaseException(_productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
-				}
-			}
-		}
-
 		public bool IsSame(Product product)
 		{
 			return product != null && product.definition.id == _productId;

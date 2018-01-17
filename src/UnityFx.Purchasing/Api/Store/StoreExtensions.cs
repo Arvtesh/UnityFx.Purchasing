@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Extensions for <see cref="IStoreService"/>.
 	/// </summary>
-	public static class StoreServiceExtensions
+	public static class StoreExtensions
 	{
 #if !NET35
 		/// <summary>

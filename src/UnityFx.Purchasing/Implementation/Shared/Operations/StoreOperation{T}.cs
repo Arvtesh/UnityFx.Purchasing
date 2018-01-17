@@ -5,6 +5,9 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Threading;
+#if !NET35
+using System.Runtime.ExceptionServices;
+#endif
 
 namespace UnityFx.Purchasing
 {
@@ -80,9 +83,17 @@ namespace UnityFx.Purchasing
 			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
 		}
 
-		internal void WaitUntilCompleted()
+		internal void ThrowIfInvalidOwner(object owner)
 		{
-			if (IsCompleted)
+			if (_owner != owner)
+			{
+				throw new InvalidOperationException("Invalid operation owner");
+			}
+		}
+
+		internal void Join()
+		{
+			if (_status > _statusRunning)
 			{
 				_waitHandle?.Close();
 			}
@@ -93,13 +104,14 @@ namespace UnityFx.Purchasing
 				waitHandle.WaitOne();
 				waitHandle.Close();
 			}
-		}
 
-		internal void ThrowIfInvalidOwner(object owner)
-		{
-			if (_owner != owner)
+			if (_exception != null)
 			{
-				throw new InvalidOperationException("Invalid operation owner");
+#if NET35
+				throw _exception;
+#else
+				ExceptionDispatchInfo.Capture(_exception).Throw();
+#endif
 			}
 		}
 
@@ -159,18 +171,6 @@ namespace UnityFx.Purchasing
 		#region IAsyncOperation
 
 		/// <inheritdoc/>
-		public Exception Exception => _exception;
-
-		/// <inheritdoc/>
-		public bool IsCompletedSuccessfully => (_status & _statusCompleted) != 0;
-
-		/// <inheritdoc/>
-		public bool IsFaulted => _status >= _statusFaulted;
-
-		/// <inheritdoc/>
-		public bool IsCanceled => (_status & _statusCanceled) != 0;
-
-		/// <inheritdoc/>
 		public T Result
 		{
 			get
@@ -183,6 +183,18 @@ namespace UnityFx.Purchasing
 				return _result;
 			}
 		}
+
+		/// <inheritdoc/>
+		public Exception Exception => _exception;
+
+		/// <inheritdoc/>
+		public bool IsCompletedSuccessfully => (_status & _statusCompleted) != 0;
+
+		/// <inheritdoc/>
+		public bool IsFaulted => _status >= _statusFaulted;
+
+		/// <inheritdoc/>
+		public bool IsCanceled => (_status & _statusCanceled) != 0;
 
 		#endregion
 
@@ -278,6 +290,6 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-		#endregion
+#endregion
 	}
 }

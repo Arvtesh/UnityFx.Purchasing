@@ -550,8 +550,7 @@ namespace UnityFx.Purchasing
 			var op = ValidateAsyncResult<InitializeOperation>(asyncResult);
 
 			op.ThrowIfInvalidOwner(_storeListener);
-			op.WaitUntilCompleted();
-			op.ThrowIfError();
+			op.Join();
 		}
 
 		/// <inheritdoc/>
@@ -580,8 +579,7 @@ namespace UnityFx.Purchasing
 			var op = ValidateAsyncResult<FetchOperation>(asyncResult);
 
 			op.ThrowIfInvalidOwner(_storeListener);
-			op.WaitUntilCompleted();
-			op.ThrowIfError();
+			op.Join();
 		}
 
 		/// <inheritdoc/>
@@ -612,8 +610,7 @@ namespace UnityFx.Purchasing
 			var op = ValidateAsyncResult<PurchaseOperation>(asyncResult);
 
 			op.ThrowIfInvalidOwner(_storeListener);
-			op.WaitUntilCompleted();
-			op.ThrowIfError();
+			op.Join();
 
 			return op.Result;
 		}

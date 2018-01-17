@@ -65,24 +65,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void ThrowIfError()
-		{
-			var e = Exception;
-
-			if (e != null)
-			{
-				if (e is StoreFetchException sfe)
-				{
-					// TODO
-					throw new StoreFetchException(StoreFetchError.Unknown, e);
-				}
-				else
-				{
-					throw new StoreFetchException(StoreFetchError.Unknown, e);
-				}
-			}
-		}
-
 		protected abstract void InvokeCompleted();
 		protected abstract void InvokeFailed(StoreFetchError reason, Exception e);
 		protected abstract void Initiate(StoreConfig storeConfig);
