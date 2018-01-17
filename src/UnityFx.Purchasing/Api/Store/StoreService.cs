@@ -2,12 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-#if !NET35
-using System.Threading.Tasks;
-#endif
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -528,10 +523,10 @@ namespace UnityFx.Purchasing
 
 			if (_storeController == null)
 			{
-				return InitializeInternal();
+				return InitializeInternal(null, null);
 			}
 
-			return FetchOperation.Completed;
+			return new InitializeOperation(_storeListener, null, null);
 		}
 
 		/// <inheritdoc/>
@@ -539,7 +534,12 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			throw new NotImplementedException();
+			if (_storeController == null)
+			{
+				return InitializeInternal(userCallback, stateObject);
+			}
+
+			return new InitializeOperation(_storeListener, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -547,38 +547,29 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			throw new NotImplementedException();
+			var op = ValidateAsyncResult<InitializeOperation>(asyncResult);
+
+			op.ThrowIfInvalidOwner(_storeListener);
+			op.WaitUntilCompleted();
+			op.ThrowIfError();
 		}
-
-#if !NET35
-		/// <inheritdoc/>
-		public Task InitializeAsync()
-		{
-			ThrowIfDisposed();
-
-			if (_storeController == null)
-			{
-				return InitializeInternal().Task;
-			}
-
-			return Task.CompletedTask;
-		}
-#endif
 
 		/// <inheritdoc/>
 		public IStoreOperation Fetch()
 		{
 			ThrowIfDisposed();
+			ThrowIfNotInitialized();
 
-			return FetchInternal();
+			return FetchInternal(null, null);
 		}
 
 		/// <inheritdoc/>
 		public IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfNotInitialized();
 
-			throw new NotImplementedException();
+			return FetchInternal(userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -586,18 +577,12 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			throw new NotImplementedException();
-		}
+			var op = ValidateAsyncResult<FetchOperation>(asyncResult);
 
-#if !NET35
-		/// <inheritdoc/>
-		public Task FetchAsync()
-		{
-			ThrowIfDisposed();
-
-			return FetchInternal().Task;
+			op.ThrowIfInvalidOwner(_storeListener);
+			op.WaitUntilCompleted();
+			op.ThrowIfError();
 		}
-#endif
 
 		/// <inheritdoc/>
 		public IStoreOperation<PurchaseResult> Purchase(string productId)
@@ -606,15 +591,17 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			return PurchaseInternal(productId);
+			return PurchaseInternal(productId, null, null);
 		}
 
 		/// <inheritdoc/>
 		public IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject)
 		{
+			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfBusy();
 
-			throw new NotImplementedException();
+			return PurchaseInternal(productId, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -622,20 +609,14 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			throw new NotImplementedException();
-		}
+			var op = ValidateAsyncResult<PurchaseOperation>(asyncResult);
 
-#if !NET35
-		/// <inheritdoc/>
-		public Task<PurchaseResult> PurchaseAsync(string productId)
-		{
-			ThrowIfInvalidProductId(productId);
-			ThrowIfDisposed();
-			ThrowIfBusy();
+			op.ThrowIfInvalidOwner(_storeListener);
+			op.WaitUntilCompleted();
+			op.ThrowIfError();
 
-			return PurchaseInternal(productId).Task;
+			return op.Result;
 		}
-#endif
 
 		#endregion
 
@@ -718,7 +699,7 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private StoreOperation<object> InitializeInternal()
+		private StoreOperation<object> InitializeInternal(AsyncCallback userCallback, object stateObject)
 		{
 			if (_storeListener.IsInitializePending)
 			{
@@ -726,7 +707,7 @@ namespace UnityFx.Purchasing
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				var result = new InitializeOperation(_storeListener, _purchasingModule, _storeListener);
+				var result = new InitializeOperation(_storeListener, _purchasingModule, _storeListener, userCallback, stateObject);
 
 				try
 				{
@@ -746,19 +727,15 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private StoreOperation<object> FetchInternal()
+		private StoreOperation<object> FetchInternal(AsyncCallback userCallback, object stateObject)
 		{
-			if (_storeController == null)
-			{
-				return InitializeInternal();
-			}
-			else if (_storeListener.IsFetchPending)
+			if (_storeListener.IsFetchPending)
 			{
 				return _storeListener.FetchOp;
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
-				var result = new FetchOperation(_storeListener, _storeListener.OnFetch, _storeListener.OnFetchFailed);
+				var result = new FetchOperation(_storeListener, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
 
 				try
 				{
@@ -778,9 +755,9 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private StoreOperation<PurchaseResult> PurchaseInternal(string productId)
+		private StoreOperation<PurchaseResult> PurchaseInternal(string productId, AsyncCallback userCallback, object stateObject)
 		{
-			var result = new PurchaseOperation(_storeListener, productId, false);
+			var result = new PurchaseOperation(_storeListener, productId, false, userCallback, stateObject);
 
 			try
 			{
@@ -788,7 +765,7 @@ namespace UnityFx.Purchasing
 
 				if (_storeController == null)
 				{
-					fetchOp = InitializeInternal();
+					fetchOp = InitializeInternal(null, null);
 				}
 				else if (_storeListener.IsFetchPending)
 				{
@@ -831,6 +808,23 @@ namespace UnityFx.Purchasing
 			}
 
 			return result;
+		}
+
+		private static T ValidateAsyncResult<T>(IAsyncResult asyncResult) where T : IAsyncResult
+		{
+			if (asyncResult == null)
+			{
+				throw new ArgumentNullException(nameof(asyncResult));
+			}
+
+			if (asyncResult is T result)
+			{
+				return result;
+			}
+			else
+			{
+				throw new ArgumentException("Invalid operation type", nameof(asyncResult));
+			}
 		}
 
 		#endregion

@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Purchasing;
-////using UnityEngine.Purchasing.Security;
 
 namespace UnityFx.Purchasing
 {
@@ -27,8 +26,8 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public PurchaseOperation(StoreOperationContainer parent, string productId, bool restored)
-			: base(parent, TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId)
+		public PurchaseOperation(StoreOperationContainer parent, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, TraceEventId.Purchase, restored ? "auto-restored" : string.Empty, productId, asyncCallback, asyncState)
 		{
 			Debug.Assert(parent != null);
 			Debug.Assert(productId != null);
@@ -40,7 +39,7 @@ namespace UnityFx.Purchasing
 		}
 
 		public PurchaseOperation(StoreOperationContainer parent, Product product, bool restored)
-			: this(parent, product.definition.id, restored)
+			: this(parent, product.definition.id, restored, null, null)
 		{
 			_transaction = new StoreTransaction(product, restored);
 		}
@@ -197,6 +196,24 @@ namespace UnityFx.Purchasing
 			if (TrySetException(new StorePurchaseException(result)))
 			{
 				Store.InvokePurchaseFailed(result);
+			}
+		}
+
+		public void ThrowIfError()
+		{
+			var e = Exception;
+
+			if (e != null)
+			{
+				if (e is StorePurchaseException spe)
+				{
+					// TODO
+					throw new StorePurchaseException(_productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
+				}
+				else
+				{
+					throw new StorePurchaseException(_productId, new PurchaseResult(null), StorePurchaseError.Unknown, e);
+				}
 			}
 		}
 

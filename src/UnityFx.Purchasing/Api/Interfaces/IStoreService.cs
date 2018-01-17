@@ -2,9 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-#if !NET35
-using System.Threading.Tasks;
-#endif
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -203,19 +200,6 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="BeginInitialize(AsyncCallback, object)"/>
 		void EndInitialize(IAsyncResult asyncResult);
 
-#if !NET35
-		/// <summary>
-		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
-		/// </summary>
-		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		/// <seealso cref="Initialize"/>
-		/// <seealso cref="FetchAsync"/>
-		/// <seealso cref="PurchaseAsync(string)"/>
-		Task InitializeAsync();
-#endif
-
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
@@ -250,19 +234,6 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="BeginFetch(AsyncCallback, object)"/>
 		void EndFetch(IAsyncResult asyncResult);
 
-#if !NET35
-		/// <summary>
-		/// Fetches product information from the store.
-		/// </summary>
-		/// <exception cref="StoreFetchException">Thrown if fetching fails.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		/// <seealso cref="Fetch"/>
-		/// <seealso cref="InitializeAsync"/>
-		/// <seealso cref="PurchaseAsync(string)"/>
-		Task FetchAsync();
-#endif
-
 		/// <summary>
 		/// Initiates purchasing the specified product.
 		/// </summary>
@@ -284,7 +255,7 @@ namespace UnityFx.Purchasing
 		IStoreOperation<PurchaseResult> Purchase(string productId);
 
 		/// <summary>
-		/// Begins an asynchronous purchase operation for the specified product.
+		/// Begins an asynchronous purchase operation of the specified product.
 		/// </summary>
 		/// <remarks>
 		/// Please note that the call would fail if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
@@ -314,29 +285,5 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginPurchase(string, AsyncCallback, object)"/>
 		PurchaseResult EndPurchase(IAsyncResult asyncResult);
-
-#if !NET35
-		/// <summary>
-		/// Initiates purchasing the specified product.
-		/// </summary>
-		/// <remarks>
-		/// If <see cref="InitializeAsync"/> or <see cref="FetchAsync"/> is in progress, waits for them to complete before proceed.
-		/// If the store is not initialized yet calls <see cref="InitializeAsync"/> first. Please note that the call would fail
-		/// if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
-		/// </remarks>
-		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
-		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
-		/// <exception cref="StoreFetchException">Thrown if the store initialization/fetch triggered/awaited by the call fails.</exception>
-		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		/// <seealso cref="Purchase(string)"/>
-		/// <seealso cref="InitializeAsync"/>
-		/// <seealso cref="FetchAsync"/>
-		/// <seealso cref="IsBusy"/>
-		Task<PurchaseResult> PurchaseAsync(string productId);
-#endif
 	}
 }

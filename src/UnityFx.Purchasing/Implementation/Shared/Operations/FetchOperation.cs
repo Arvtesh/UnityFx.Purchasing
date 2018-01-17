@@ -21,8 +21,8 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public FetchOperation(StoreOperationContainer parent, Action onComplete, Action<InitializationFailureReason> onFailed)
-			: base(parent, TraceEventId.Fetch)
+		public FetchOperation(StoreOperationContainer parent, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, TraceEventId.Fetch, asyncCallback, asyncState)
 		{
 			_fetchComplete = onComplete;
 			_fetchFailed = onFailed;
