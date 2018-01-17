@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using UnityEngine.Purchasing;
-using UnityEngine.Purchasing.Extension;
 
 namespace UnityFx.Purchasing
 {

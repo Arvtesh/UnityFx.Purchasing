@@ -89,10 +89,10 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
-		/// <param name="onSuccess">Operation completed delegate.</param>
-		/// <param name="onFailure">Delegate called on operation failure.</param>
+		/// <param name="completedDelegate">Operation completed delegate.</param>
+		/// <param name="failedDelegate">Delegate called on operation failure.</param>
 		/// <seealso cref="ValidatePurchase(StoreTransaction, Action{PurchaseValidationResult})"/>
-		protected internal abstract void GetStoreConfig(Action<StoreConfig> onSuccess, Action<Exception> onFailure);
+		protected internal abstract void GetStoreConfig(Action<StoreConfig> completedDelegate, Action<Exception> failedDelegate);
 
 		/// <summary>
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
@@ -534,6 +534,22 @@ namespace UnityFx.Purchasing
 			return FetchOperation.Completed;
 		}
 
+		/// <inheritdoc/>
+		public IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject)
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc/>
+		public void EndInitialize(IAsyncResult asyncResult)
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
 #if !NET35
 		/// <inheritdoc/>
 		public Task InitializeAsync()
@@ -557,6 +573,22 @@ namespace UnityFx.Purchasing
 			return FetchInternal();
 		}
 
+		/// <inheritdoc/>
+		public IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject)
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc/>
+		public void EndFetch(IAsyncResult asyncResult)
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
 #if !NET35
 		/// <inheritdoc/>
 		public Task FetchAsync()
@@ -575,6 +607,22 @@ namespace UnityFx.Purchasing
 			ThrowIfBusy();
 
 			return PurchaseInternal(productId);
+		}
+
+		/// <inheritdoc/>
+		public IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject)
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
+		}
+
+		/// <inheritdoc/>
+		public PurchaseResult EndPurchase(IAsyncResult asyncResult)
+		{
+			ThrowIfDisposed();
+
+			throw new NotImplementedException();
 		}
 
 #if !NET35

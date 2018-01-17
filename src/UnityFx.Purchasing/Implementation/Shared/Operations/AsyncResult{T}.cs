@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// A simple yieldable asynchronous operatino with a result.
 	/// </summary>
 	/// <typeparam name="T">Type of the operation result.</typeparam>
-	/// <seealso cref="IAsyncResult"/>
+	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
 	internal class AsyncResult<T> : IStoreOperation<T>, IEnumerator
 	{
 		#region data
@@ -27,10 +27,18 @@ namespace UnityFx.Purchasing
 
 		private static AsyncResult<T> _completed;
 
+		private readonly AsyncCallback _asyncCallback;
+		private readonly object _asyncState;
+
+		private bool _completedSynchronously;
+		private EventWaitHandle _waitHandle;
 		private Exception _exception;
-		private int _status;
+
 		private Action<IStoreOperation> _continuation;
 		private T _result;
+
+		private volatile int _status;
+
 #if !NET35
 		private TaskCompletionSource<T> _tcs;
 #endif
@@ -76,6 +84,12 @@ namespace UnityFx.Purchasing
 
 		internal AsyncResult()
 		{
+		}
+
+		internal AsyncResult(AsyncCallback asyncCallback, object asyncState)
+		{
+			_asyncCallback = asyncCallback;
+			_asyncState = asyncState;
 		}
 
 		internal AsyncResult(T result)
@@ -158,9 +172,6 @@ namespace UnityFx.Purchasing
 		public bool IsCompletedSuccessfully => _status == _statusCompleted;
 
 		/// <inheritdoc/>
-		public bool IsCompleted => _status > _statusRunning;
-
-		/// <inheritdoc/>
 		public bool IsFaulted => _status > _statusCompleted;
 
 		/// <inheritdoc/>
@@ -185,8 +196,49 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		protected virtual void OnCompleted()
 		{
+			_waitHandle?.Set();
 			_continuation?.Invoke(this);
 		}
+
+		#endregion
+
+		#region IAsyncResult
+
+		/// <inheritdoc/>
+		public WaitHandle AsyncWaitHandle
+		{
+			get
+			{
+				if (_waitHandle == null)
+				{
+					var done = IsCompleted;
+					var mre = new ManualResetEvent(done);
+
+					if (Interlocked.CompareExchange(ref _waitHandle, mre, null) != null)
+					{
+						// Another thread created this object's event; dispose the event we just created.
+						mre.Close();
+					}
+					else if (!done && IsCompleted)
+					{
+						// We published the event as unset, but the operation has subsequently completed;
+						// set the event state properly so that callers do not deadlock.
+						_waitHandle.Set();
+					}
+				}
+
+				return _waitHandle;
+			}
+		}
+
+		/// <inheritdoc/>
+		public object AsyncState => _asyncState;
+
+		/// <inheritdoc/>
+		public bool CompletedSynchronously => _completedSynchronously;
+
+		/// <inheritdoc/>
+		public bool IsCompleted => _status > _statusRunning;
 
 		#endregion
 
@@ -209,8 +261,7 @@ namespace UnityFx.Purchasing
 		{
 			if (_status < _statusCompleted)
 			{
-				_status = newStatus;
-				return true;
+				return Interlocked.CompareExchange(ref _status, newStatus, _statusRunning) == _statusRunning;
 			}
 
 			return false;
