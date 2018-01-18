@@ -4,7 +4,6 @@
 using System;
 #if !NET35
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 #endif
 
 namespace UnityFx.Purchasing

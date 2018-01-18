@@ -3,7 +3,7 @@
 
 using System;
 using System.Diagnostics;
-#if !NET35
+#if UNITYFX_SUPPORT_TAP
 using System.Threading.Tasks;
 #endif
 using UnityEngine;
@@ -46,12 +46,10 @@ namespace UnityFx.Purchasing
 		private readonly IPurchasingModule _purchasingModule;
 
 		private StoreProductCollection _products;
-
 #if !NET35
 		private StoreObservable<PurchaseResult> _purchases;
 		private StoreObservable<FailedPurchaseResult> _failedPurchases;
 #endif
-
 		private IStoreController _storeController;
 		private IExtensionProvider _storeExtensions;
 		private bool _disposed;
@@ -213,7 +211,8 @@ namespace UnityFx.Purchasing
 
 				SetStoreController(null, null);
 
-#if !NET35
+#if UNITYFX_SUPPORT_OBSERVABLES
+
 				try
 				{
 					_purchases?.OnCompleted();
@@ -231,6 +230,7 @@ namespace UnityFx.Purchasing
 				{
 					_console.TraceData(TraceEventType.Error, 0, e);
 				}
+
 #endif
 
 				_console.TraceEvent(TraceEventType.Verbose, 0, "Disposed");
@@ -412,7 +412,8 @@ namespace UnityFx.Purchasing
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 
-#if !NET35
+#if UNITYFX_SUPPORT_OBSERVABLES
+
 			try
 			{
 				_purchases?.OnNext(purchaseResult);
@@ -421,6 +422,7 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
+
 #endif
 		}
 
@@ -435,7 +437,8 @@ namespace UnityFx.Purchasing
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
 
-#if !NET35
+#if UNITYFX_SUPPORT_OBSERVABLES
+
 			try
 			{
 				_failedPurchases?.OnNext(purchaseResult);
@@ -444,6 +447,7 @@ namespace UnityFx.Purchasing
 			{
 				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
 			}
+
 #endif
 		}
 
@@ -532,6 +536,8 @@ namespace UnityFx.Purchasing
 			return CompletedStoreOperation.Instance;
 		}
 
+#if UNITYFX_SUPPORT_APM
+
 		/// <inheritdoc/>
 		public IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject)
 		{
@@ -556,7 +562,10 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#if !NET35
+#endif
+
+#if UNITYFX_SUPPORT_TAP
+
 		/// <inheritdoc/>
 		public Task InitializeAsync()
 		{
@@ -571,6 +580,7 @@ namespace UnityFx.Purchasing
 
 			return Task.CompletedTask;
 		}
+
 #endif
 
 		/// <inheritdoc/>
@@ -581,6 +591,8 @@ namespace UnityFx.Purchasing
 
 			return FetchInternal(null, null);
 		}
+
+#if UNITYFX_SUPPORT_APM
 
 		/// <inheritdoc/>
 		public IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject)
@@ -602,7 +614,10 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#if !NET35
+#endif
+
+#if UNITYFX_SUPPORT_TAP
+
 		/// <inheritdoc/>
 		public Task FetchAsync()
 		{
@@ -613,6 +628,7 @@ namespace UnityFx.Purchasing
 			FetchInternal(FetchCompletionCallback, tcs);
 			return tcs.Task;
 		}
+
 #endif
 
 		/// <inheritdoc/>
@@ -624,6 +640,8 @@ namespace UnityFx.Purchasing
 
 			return PurchaseInternal(productId, null, null);
 		}
+
+#if UNITYFX_SUPPORT_APM
 
 		/// <inheritdoc/>
 		public IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject)
@@ -646,7 +664,10 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#if !NET35
+#endif
+
+#if UNITYFX_SUPPORT_TAP
+
 		/// <inheritdoc/>
 		public Task<PurchaseResult> PurchaseAsync(string productId)
 		{
@@ -658,6 +679,7 @@ namespace UnityFx.Purchasing
 			PurchaseInternal(productId, PurchaseCompletionCallback, tcs);
 			return tcs.Task;
 		}
+
 #endif
 
 		#endregion
@@ -692,7 +714,8 @@ namespace UnityFx.Purchasing
 		/// <inheritdoc/>
 		public event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
-#if !NET35
+#if UNITYFX_SUPPORT_OBSERVABLES
+
 		/// <inheritdoc/>
 		public IObservable<PurchaseResult> Purchases
 		{
@@ -724,6 +747,7 @@ namespace UnityFx.Purchasing
 				return _failedPurchases;
 			}
 		}
+
 #endif
 
 		#endregion
@@ -882,7 +906,8 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#if !NET35
+#if UNITYFX_SUPPORT_TAP
+
 		private static void FetchCompletionCallback(IAsyncResult asyncResult)
 		{
 			var storeOp = asyncResult as IStoreOperation;
@@ -920,6 +945,7 @@ namespace UnityFx.Purchasing
 				tcs.TrySetException(storeOp.Exception);
 			}
 		}
+
 #endif
 
 		#endregion

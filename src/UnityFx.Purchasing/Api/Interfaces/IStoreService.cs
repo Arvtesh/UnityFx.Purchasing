@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-#if !NET35
+#if UNITYFX_SUPPORT_TAP
 using System.Threading.Tasks;
 #endif
 using UnityEngine.Purchasing;
@@ -178,6 +178,8 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Purchase(string)"/>
 		IStoreOperation Initialize();
 
+#if UNITYFX_SUPPORT_APM
+
 		/// <summary>
 		/// Begins an asynchronous initialize operation.
 		/// </summary>
@@ -203,7 +205,10 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="BeginInitialize(AsyncCallback, object)"/>
 		void EndInitialize(IAsyncResult asyncResult);
 
-#if !NET35
+#endif
+
+#if UNITYFX_SUPPORT_TAP
+
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
@@ -214,6 +219,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		Task InitializeAsync();
+
 #endif
 
 		/// <summary>
@@ -225,6 +231,8 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Initialize"/>
 		/// <seealso cref="Purchase(string)"/>
 		IStoreOperation Fetch();
+
+#if UNITYFX_SUPPORT_APM
 
 		/// <summary>
 		/// Begins an asynchronous fetch operation.
@@ -251,7 +259,10 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="BeginFetch(AsyncCallback, object)"/>
 		void EndFetch(IAsyncResult asyncResult);
 
-#if !NET35
+#endif
+
+#if UNITYFX_SUPPORT_TAP
+
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
@@ -263,6 +274,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		Task FetchAsync();
+
 #endif
 
 		/// <summary>
@@ -284,6 +296,8 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Fetch"/>
 		/// <seealso cref="IsBusy"/>
 		IStoreOperation<PurchaseResult> Purchase(string productId);
+
+#if UNITYFX_SUPPORT_APM
 
 		/// <summary>
 		/// Begins an asynchronous purchase operation of the specified product.
@@ -317,7 +331,10 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="BeginPurchase(string, AsyncCallback, object)"/>
 		PurchaseResult EndPurchase(IAsyncResult asyncResult);
 
-#if !NET35
+#endif
+
+#if UNITYFX_SUPPORT_TAP
+
 		/// <summary>
 		/// Initiates purchasing the specified product.
 		/// </summary>
@@ -333,6 +350,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
 		Task<PurchaseResult> PurchaseAsync(string productId);
+
 #endif
 	}
 }
