@@ -526,7 +526,7 @@ namespace UnityFx.Purchasing
 				return InitializeInternal(null, null);
 			}
 
-			return new InitializeOperation(_storeListener, null, null);
+			return CompletedStoreOperation.Instance;
 		}
 
 		/// <inheritdoc/>

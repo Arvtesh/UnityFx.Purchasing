@@ -153,23 +153,15 @@ namespace UnityFx.Purchasing
 
 		#region IAsyncOperation
 
-		/// <inheritdoc/>
 		public Exception Exception => _exception;
-
-		/// <inheritdoc/>
 		public bool IsCompletedSuccessfully => (_status & _statusCompleted) != 0;
-
-		/// <inheritdoc/>
 		public bool IsFaulted => _status >= _statusFaulted;
-
-		/// <inheritdoc/>
 		public bool IsCanceled => (_status & _statusCanceled) != 0;
 
 		#endregion
 
 		#region IAsyncResult
 
-		/// <inheritdoc/>
 		public WaitHandle AsyncWaitHandle
 		{
 			get
@@ -198,26 +190,16 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <inheritdoc/>
 		public object AsyncState => _asyncState;
-
-		/// <inheritdoc/>
 		public bool CompletedSynchronously => (_status & _statusSynchronousFlag) != 0;
-
-		/// <inheritdoc/>
 		public bool IsCompleted => _status > _statusRunning;
 
 		#endregion
 
 		#region IEnumerator
 
-		/// <inheritdoc/>
 		public object Current => null;
-
-		/// <inheritdoc/>
 		public bool MoveNext() => _status == _statusRunning;
-
-		/// <inheritdoc/>
 		public void Reset() => throw new NotSupportedException();
 
 		#endregion
@@ -228,6 +210,11 @@ namespace UnityFx.Purchasing
 		{
 			if ((_status & _statusDisposedFlag) == 0)
 			{
+				if (!IsCompleted)
+				{
+					throw new InvalidOperationException("Cannot dispose non-completed operation.");
+				}
+
 				_status = _statusDisposedFlag;
 				_asyncCallback = null;
 				_asyncState = null;
