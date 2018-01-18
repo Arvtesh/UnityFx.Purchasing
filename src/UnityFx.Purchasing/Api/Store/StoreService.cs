@@ -3,6 +3,9 @@
 
 using System;
 using System.Diagnostics;
+#if !NET35
+using System.Threading.Tasks;
+#endif
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -547,9 +550,28 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			var op = ValidateAsyncResult<InitializeOperation>(asyncResult);
-			op.Join();
+			using (var op = ValidateAsyncResult<InitializeOperation>(asyncResult))
+			{
+				op.Join();
+			}
 		}
+
+#if !NET35
+		/// <inheritdoc/>
+		public Task InitializeAsync()
+		{
+			ThrowIfDisposed();
+
+			if (_storeController == null)
+			{
+				var tcs = new TaskCompletionSource<object>();
+				InitializeInternal(FetchCompletionCallback, tcs);
+				return tcs.Task;
+			}
+
+			return Task.CompletedTask;
+		}
+#endif
 
 		/// <inheritdoc/>
 		public IStoreOperation Fetch()
@@ -574,9 +596,24 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			var op = ValidateAsyncResult<FetchOperation>(asyncResult);
-			op.Join();
+			using (var op = ValidateAsyncResult<FetchOperation>(asyncResult))
+			{
+				op.Join();
+			}
 		}
+
+#if !NET35
+		/// <inheritdoc/>
+		public Task FetchAsync()
+		{
+			ThrowIfDisposed();
+			ThrowIfNotInitialized();
+
+			var tcs = new TaskCompletionSource<object>();
+			FetchInternal(FetchCompletionCallback, tcs);
+			return tcs.Task;
+		}
+#endif
 
 		/// <inheritdoc/>
 		public IStoreOperation<PurchaseResult> Purchase(string productId)
@@ -603,9 +640,25 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			var op = ValidateAsyncResult<PurchaseOperation>(asyncResult);
-			return op.Join();
+			using (var op = ValidateAsyncResult<PurchaseOperation>(asyncResult))
+			{
+				return op.Join();
+			}
 		}
+
+#if !NET35
+		/// <inheritdoc/>
+		public Task<PurchaseResult> PurchaseAsync(string productId)
+		{
+			ThrowIfInvalidProductId(productId);
+			ThrowIfDisposed();
+			ThrowIfBusy();
+
+			var tcs = new TaskCompletionSource<PurchaseResult>();
+			PurchaseInternal(productId, PurchaseCompletionCallback, tcs);
+			return tcs.Task;
+		}
+#endif
 
 		#endregion
 
@@ -820,6 +873,46 @@ namespace UnityFx.Purchasing
 				throw new ArgumentException("Invalid operation type", nameof(asyncResult));
 			}
 		}
+
+#if !NET35
+		private static void FetchCompletionCallback(IAsyncResult asyncResult)
+		{
+			var storeOp = asyncResult as IStoreOperation;
+			var tcs = asyncResult.AsyncState as TaskCompletionSource<object>;
+
+			if (storeOp.IsCompletedSuccessfully)
+			{
+				tcs.TrySetResult(null);
+			}
+			else if (storeOp.IsCanceled)
+			{
+				tcs.TrySetCanceled();
+			}
+			else
+			{
+				tcs.TrySetException(storeOp.Exception);
+			}
+		}
+
+		private static void PurchaseCompletionCallback(IAsyncResult asyncResult)
+		{
+			var storeOp = asyncResult as IStoreOperation<PurchaseResult>;
+			var tcs = asyncResult.AsyncState as TaskCompletionSource<PurchaseResult>;
+
+			if (storeOp.IsCompletedSuccessfully)
+			{
+				tcs.TrySetResult(storeOp.Result);
+			}
+			else if (storeOp.IsCanceled)
+			{
+				tcs.TrySetCanceled();
+			}
+			else
+			{
+				tcs.TrySetException(storeOp.Exception);
+			}
+		}
+#endif
 
 		#endregion
 	}
