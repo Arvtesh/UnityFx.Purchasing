@@ -8,12 +8,12 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Shared functionality of initialize/fetch operations.
 	/// </summary>
-	internal abstract class StoreConfigOperation : StoreOperation<object>
+	internal abstract class StoreConfigOperation : StoreOperation
 	{
 		#region interface
 
-		public StoreConfigOperation(StoreOperationContainer parent, TraceEventId eventId)
-			: base(parent, eventId, null, null)
+		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opId, asyncCallback, asyncState, null, null)
 		{
 		}
 
@@ -32,7 +32,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			Console.TraceError(EventId, reason.ToString());
+			Console.TraceError(Type, reason.ToString());
 
 			if (TrySetException(new StoreFetchException(reason)))
 			{
@@ -42,7 +42,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason, Exception e)
 		{
-			Console.TraceException(EventId, e);
+			Console.TraceException(Type, e);
 
 			if (TrySetException(new StoreFetchException(reason, e)))
 			{
@@ -50,11 +50,11 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void SetFailed(Exception e)
+		public void SetFailed(Exception e, bool completedSynchronously = false)
 		{
-			Console.TraceException(EventId, e);
+			Console.TraceException(Type, e);
 
-			if (TrySetException(e))
+			if (TrySetException(e, completedSynchronously))
 			{
 				InvokeFailed(e is StoreFetchException sfe ? sfe.Reason : StoreFetchError.Unknown, e);
 			}
