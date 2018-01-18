@@ -28,15 +28,15 @@ namespace UnityFx.Purchasing
 
 		public bool IsInitializePending => _initializeOp != null;
 
-		public StoreOperation<object> InitializeOp => _initializeOp;
+		public InitializeOperation InitializeOp => _initializeOp;
 
 		public bool IsFetchPending => _fetchOp != null;
 
-		public StoreOperation<object> FetchOp => _fetchOp;
+		public FetchOperation FetchOp => _fetchOp;
 
 		public bool IsPurchasePending => _purchaseOp != null;
 
-		public StoreOperation<PurchaseResult> PurchaseOp => _purchaseOp;
+		public PurchaseOperation PurchaseOp => _purchaseOp;
 
 		public StoreListener(StoreService storeService)
 		{

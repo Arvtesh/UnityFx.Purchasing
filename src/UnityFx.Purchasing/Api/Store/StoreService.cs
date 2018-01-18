@@ -548,8 +548,6 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 
 			var op = ValidateAsyncResult<InitializeOperation>(asyncResult);
-
-			op.ThrowIfInvalidOwner(_storeListener);
 			op.Join();
 		}
 
@@ -577,8 +575,6 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 
 			var op = ValidateAsyncResult<FetchOperation>(asyncResult);
-
-			op.ThrowIfInvalidOwner(_storeListener);
 			op.Join();
 		}
 
@@ -608,8 +604,6 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 
 			var op = ValidateAsyncResult<PurchaseOperation>(asyncResult);
-
-			op.ThrowIfInvalidOwner(_storeListener);
 			return op.Join();
 		}
 
@@ -694,7 +688,7 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private StoreOperation<object> InitializeInternal(AsyncCallback userCallback, object stateObject)
+		private InitializeOperation InitializeInternal(AsyncCallback userCallback, object stateObject)
 		{
 			if (_storeListener.IsInitializePending)
 			{
@@ -722,7 +716,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private StoreOperation<object> FetchInternal(AsyncCallback userCallback, object stateObject)
+		private FetchOperation FetchInternal(AsyncCallback userCallback, object stateObject)
 		{
 			if (_storeListener.IsFetchPending)
 			{
@@ -750,13 +744,13 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private StoreOperation<PurchaseResult> PurchaseInternal(string productId, AsyncCallback userCallback, object stateObject)
+		private PurchaseOperation PurchaseInternal(string productId, AsyncCallback userCallback, object stateObject)
 		{
 			var result = new PurchaseOperation(_storeListener, productId, false, userCallback, stateObject);
 
 			try
 			{
-				StoreOperation<object> fetchOp = null;
+				StoreOperation fetchOp = null;
 
 				if (_storeController == null)
 				{
@@ -805,7 +799,7 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
-		private static T ValidateAsyncResult<T>(IAsyncResult asyncResult) where T : IAsyncResult
+		private T ValidateAsyncResult<T>(IAsyncResult asyncResult) where T : StoreOperation
 		{
 			if (asyncResult == null)
 			{
@@ -814,6 +808,11 @@ namespace UnityFx.Purchasing
 
 			if (asyncResult is T result)
 			{
+				if (result.Owner != _storeListener)
+				{
+					throw new InvalidOperationException("Invalid operation owner");
+				}
+
 				return result;
 			}
 			else

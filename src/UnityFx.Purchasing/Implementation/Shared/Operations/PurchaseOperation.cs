@@ -13,7 +13,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
-	internal class PurchaseOperation : StoreOperation<PurchaseResult>
+	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>
 	{
 		#region data
 
@@ -202,6 +202,20 @@ namespace UnityFx.Purchasing
 		public bool IsSame(Product product)
 		{
 			return product != null && product.definition.id == _productId;
+		}
+
+		#endregion
+
+		#region IStoreOperation
+
+		/// <inheritdoc/>
+		public PurchaseResult Result
+		{
+			get
+			{
+				ThrowIfDisposed();
+				return (PurchaseResult)GetResult();
+			}
 		}
 
 		#endregion

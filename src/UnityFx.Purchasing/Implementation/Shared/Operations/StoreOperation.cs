@@ -11,9 +11,8 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A yieldable asynchronous store operation with a result.
 	/// </summary>
-	/// <typeparam name="T">Type of the operation result.</typeparam>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal abstract class StoreOperation<T> : IStoreOperation<T>, IEnumerator
+	internal abstract class StoreOperation : IStoreOperation, IEnumerator
 	{
 		#region data
 
@@ -35,7 +34,7 @@ namespace UnityFx.Purchasing
 		private Action<IStoreOperation> _continuation;
 		private EventWaitHandle _waitHandle;
 		private Exception _exception;
-		private T _result;
+		private object _result;
 
 		private volatile int _status;
 
@@ -43,12 +42,12 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		protected StoreOperationContainer Owner => _owner;
+		internal StoreOperationContainer Owner => _owner;
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
 		protected TraceEventId EventId => _traceEvent;
 
-		protected StoreOperation(StoreOperationContainer owner, T result, AsyncCallback asyncCallback, object asyncState)
+		protected StoreOperation(StoreOperationContainer owner, object result, AsyncCallback asyncCallback, object asyncState)
 		{
 			_owner = owner;
 			_asyncCallback = asyncCallback;
@@ -81,14 +80,6 @@ namespace UnityFx.Purchasing
 			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
 		}
 
-		internal void ThrowIfInvalidOwner(object owner)
-		{
-			if (_owner != owner)
-			{
-				throw new InvalidOperationException("Invalid operation owner");
-			}
-		}
-
 		internal void ContinueWith(Action<IStoreOperation> continuation)
 		{
 			Debug.Assert(continuation != null);
@@ -103,7 +94,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		protected bool TrySetResult(T result, bool completedSynchronously = false)
+		protected bool TrySetResult(object result, bool completedSynchronously = false)
 		{
 			if (TrySetStatus(_statusCompleted, completedSynchronously))
 			{
@@ -140,6 +131,16 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
+		protected object GetResult()
+		{
+			if ((_status & _statusCompleted) == 0)
+			{
+				throw new InvalidOperationException("The operation result is not available.", _exception);
+			}
+
+			return _result;
+		}
+
 		protected void ThrowIfDisposed()
 		{
 			if ((_status & _statusDisposedFlag) != 0)
@@ -151,22 +152,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region IAsyncOperation
-
-		/// <inheritdoc/>
-		public T Result
-		{
-			get
-			{
-				ThrowIfDisposed();
-
-				if ((_status & _statusCompleted) == 0)
-				{
-					throw new InvalidOperationException("The operation result is not available.", _exception);
-				}
-
-				return _result;
-			}
-		}
 
 		/// <inheritdoc/>
 		public Exception Exception => _exception;
@@ -248,7 +233,7 @@ namespace UnityFx.Purchasing
 				_asyncState = null;
 				_continuation = null;
 				_exception = null;
-				_result = default(T);
+				_result = null;
 				_waitHandle?.Close();
 				_waitHandle = null;
 			}

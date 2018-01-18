@@ -8,7 +8,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Shared functionality of initialize/fetch operations.
 	/// </summary>
-	internal abstract class StoreConfigOperation : StoreOperation<object>
+	internal abstract class StoreConfigOperation : StoreOperation
 	{
 		#region interface
 
