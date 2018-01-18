@@ -296,7 +296,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		protected void ThrowIfBusy()
 		{
-			if (_storeListener.IsPurchasePending)
+			if (_storeListener.PurchaseOp != null)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy");
 			}
@@ -515,7 +515,7 @@ namespace UnityFx.Purchasing
 			get
 			{
 				ThrowIfDisposed();
-				return _storeListener.IsPurchasePending;
+				return _storeListener.PurchaseOp != null;
 			}
 		}
 
@@ -741,11 +741,14 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private InitializeOperation InitializeInternal(AsyncCallback userCallback, object stateObject)
+		private StoreOperation InitializeInternal(AsyncCallback userCallback, object stateObject)
 		{
-			if (_storeListener.IsInitializePending)
+			var op = _storeListener.InitializeOp;
+
+			if (op != null)
 			{
-				return _storeListener.InitializeOp;
+				// TODO: create a continuation object for with userCallback and stateObejct
+				return op;
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
@@ -769,11 +772,14 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private FetchOperation FetchInternal(AsyncCallback userCallback, object stateObject)
+		private StoreOperation FetchInternal(AsyncCallback userCallback, object stateObject)
 		{
-			if (_storeListener.IsFetchPending)
+			var op = _storeListener.FetchOp;
+
+			if (op != null)
 			{
-				return _storeListener.FetchOp;
+				// TODO: create a continuation object for with userCallback and stateObejct
+				return op;
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
@@ -809,7 +815,7 @@ namespace UnityFx.Purchasing
 				{
 					fetchOp = InitializeInternal(null, null);
 				}
-				else if (_storeListener.IsFetchPending)
+				else
 				{
 					fetchOp = _storeListener.FetchOp;
 				}
@@ -820,7 +826,9 @@ namespace UnityFx.Purchasing
 					{
 						if (!_disposed)
 						{
-							if (asyncResult.IsCompletedSuccessfully)
+							var op = asyncResult as IStoreOperation;
+
+							if (op.IsCompletedSuccessfully)
 							{
 								try
 								{
@@ -833,7 +841,7 @@ namespace UnityFx.Purchasing
 							}
 							else
 							{
-								result.SetFailed(asyncResult.Exception);
+								result.SetFailed(op.Exception);
 							}
 						}
 					});

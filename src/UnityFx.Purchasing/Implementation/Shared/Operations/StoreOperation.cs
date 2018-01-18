@@ -31,7 +31,6 @@ namespace UnityFx.Purchasing
 		private AsyncCallback _asyncCallback;
 		private object _asyncState;
 
-		private Action<IStoreOperation> _continuation;
 		private EventWaitHandle _waitHandle;
 		private Exception _exception;
 		private object _result;
@@ -80,7 +79,7 @@ namespace UnityFx.Purchasing
 			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
 		}
 
-		internal void ContinueWith(Action<IStoreOperation> continuation)
+		internal void ContinueWith(AsyncCallback continuation)
 		{
 			Debug.Assert(continuation != null);
 
@@ -90,7 +89,7 @@ namespace UnityFx.Purchasing
 			}
 			else
 			{
-				_continuation += continuation;
+				_asyncCallback += continuation;
 			}
 		}
 
@@ -218,7 +217,6 @@ namespace UnityFx.Purchasing
 				_status = _statusDisposedFlag;
 				_asyncCallback = null;
 				_asyncState = null;
-				_continuation = null;
 				_exception = null;
 				_result = null;
 				_waitHandle?.Close();
@@ -248,7 +246,6 @@ namespace UnityFx.Purchasing
 				_owner.ReleaseOperation(this);
 				_waitHandle?.Set();
 				_asyncCallback?.Invoke(this);
-				_continuation?.Invoke(this);
 			}
 		}
 

@@ -26,15 +26,9 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public bool IsInitializePending => _initializeOp != null;
-
 		public InitializeOperation InitializeOp => _initializeOp;
 
-		public bool IsFetchPending => _fetchOp != null;
-
 		public FetchOperation FetchOp => _fetchOp;
-
-		public bool IsPurchasePending => _purchaseOp != null;
 
 		public PurchaseOperation PurchaseOp => _purchaseOp;
 
