@@ -9,7 +9,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Enumerates identifiers for <see cref="TraceSource"/> methods.
 	/// </summary>
-	internal enum TraceEventId
+	internal enum StoreOperationId
 	{
 		Default,
 		Initialize,
@@ -22,16 +22,16 @@ namespace UnityFx.Purchasing
 	/// </summary>
 	internal static class StoreUtility
 	{
-		internal static void TraceError(this TraceSource traceSource, TraceEventId eventId, string s)
+		internal static void TraceError(this TraceSource traceSource, StoreOperationId opId, string s)
 		{
-			traceSource.TraceEvent(TraceEventType.Error, (int)eventId, eventId.ToString() + " error: " + s);
+			traceSource.TraceEvent(TraceEventType.Error, (int)opId, opId.ToString() + " error: " + s);
 		}
 
-		internal static void TraceException(this TraceSource traceSource, TraceEventId eventId, Exception e, TraceEventType eventType = TraceEventType.Error)
+		internal static void TraceException(this TraceSource traceSource, StoreOperationId opId, Exception e, TraceEventType eventType = TraceEventType.Error)
 		{
 			if (e != null)
 			{
-				traceSource.TraceData(eventType, (int)eventId, e);
+				traceSource.TraceData(eventType, (int)opId, e);
 			}
 		}
 	}

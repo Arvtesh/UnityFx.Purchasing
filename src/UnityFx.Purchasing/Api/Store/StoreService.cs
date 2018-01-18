@@ -321,7 +321,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, e);
 			}
 		}
 
@@ -333,7 +333,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, e);
 			}
 		}
 
@@ -345,7 +345,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Initialize, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, e);
 			}
 		}
 
@@ -357,7 +357,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, e);
 			}
 		}
 
@@ -369,7 +369,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, e);
 			}
 		}
 
@@ -381,7 +381,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Fetch, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, e);
 			}
 		}
 
@@ -395,7 +395,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
 			}
 		}
 
@@ -409,7 +409,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
 			}
 
 #if UNITYFX_SUPPORT_OBSERVABLES
@@ -420,7 +420,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
 			}
 
 #endif
@@ -434,7 +434,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
 			}
 
 #if UNITYFX_SUPPORT_OBSERVABLES
@@ -445,7 +445,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)TraceEventId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
 			}
 
 #endif
@@ -548,7 +548,7 @@ namespace UnityFx.Purchasing
 				return InitializeInternal(userCallback, stateObject);
 			}
 
-			return new InitializeOperation(_storeListener, userCallback, stateObject);
+			return new CompletedStoreOperation(_storeListener, StoreOperationId.Initialize, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -556,7 +556,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateAsyncResult<InitializeOperation>(asyncResult))
+			using (var op = ValidateOperation(asyncResult, StoreOperationId.Initialize))
 			{
 				op.Join();
 			}
@@ -608,7 +608,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateAsyncResult<FetchOperation>(asyncResult))
+			using (var op = ValidateOperation(asyncResult, StoreOperationId.Fetch))
 			{
 				op.Join();
 			}
@@ -658,7 +658,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateAsyncResult<PurchaseOperation>(asyncResult))
+			using (var op = ValidateOperation<PurchaseResult>(asyncResult, StoreOperationId.Purchase))
 			{
 				return op.Join();
 			}
@@ -771,8 +771,7 @@ namespace UnityFx.Purchasing
 
 			if (op != null)
 			{
-				// TODO: create a continuation object for with userCallback and stateObejct
-				return op;
+				return op.ContinueWith(userCallback, stateObject);
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
@@ -802,8 +801,7 @@ namespace UnityFx.Purchasing
 
 			if (op != null)
 			{
-				// TODO: create a continuation object for with userCallback and stateObejct
-				return op;
+				return op.ContinueWith(userCallback, stateObject);
 			}
 			else if (Application.isMobilePlatform || Application.isEditor)
 			{
@@ -884,15 +882,20 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
-		private T ValidateAsyncResult<T>(IAsyncResult asyncResult) where T : StoreOperation
+		private IStoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationId type)
 		{
 			if (asyncResult == null)
 			{
 				throw new ArgumentNullException(nameof(asyncResult));
 			}
 
-			if (asyncResult is T result)
+			if (asyncResult is IStoreOperationInternal result)
 			{
+				if (result.Type != type)
+				{
+					throw new ArgumentException("Invalid operation type", nameof(asyncResult));
+				}
+
 				if (result.Owner != _storeListener)
 				{
 					throw new InvalidOperationException("Invalid operation owner");
@@ -904,6 +907,11 @@ namespace UnityFx.Purchasing
 			{
 				throw new ArgumentException("Invalid operation type", nameof(asyncResult));
 			}
+		}
+
+		private IStoreOperation<T> ValidateOperation<T>(IAsyncResult asyncResult, StoreOperationId type)
+		{
+			return ValidateOperation(asyncResult, type) as IStoreOperation<T>;
 		}
 
 #if UNITYFX_SUPPORT_TAP

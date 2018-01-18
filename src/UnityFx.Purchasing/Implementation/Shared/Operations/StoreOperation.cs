@@ -12,7 +12,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable asynchronous store operation with a result.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal abstract class StoreOperation : IStoreOperation, IEnumerator
+	internal abstract class StoreOperation : IStoreOperationInternal, IEnumerator
 	{
 		#region data
 
@@ -25,7 +25,7 @@ namespace UnityFx.Purchasing
 		private const int _statusCanceled = 16;
 
 		private readonly StoreOperationContainer _owner;
-		private readonly TraceEventId _traceEvent;
+		private readonly StoreOperationId _type;
 		private readonly string _args;
 
 		private AsyncCallback _asyncCallback;
@@ -41,28 +41,18 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal StoreOperationContainer Owner => _owner;
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
-		protected TraceEventId EventId => _traceEvent;
 
-		protected StoreOperation(StoreOperationContainer owner, object result, AsyncCallback asyncCallback, object asyncState)
+		protected StoreOperation(StoreOperationContainer owner, StoreOperationId opId, string comment, string args, AsyncCallback asyncCallback, object asyncState)
 		{
 			_owner = owner;
-			_asyncCallback = asyncCallback;
-			_asyncState = asyncState;
-			_result = result;
-		}
-
-		protected StoreOperation(StoreOperationContainer owner, TraceEventId eventId, string comment, string args, AsyncCallback asyncCallback, object asyncState)
-		{
-			_owner = owner;
-			_traceEvent = eventId;
+			_type = opId;
 			_args = args;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
 
-			var s = eventId.ToString();
+			var s = opId.ToString();
 
 			if (!string.IsNullOrEmpty(comment))
 			{
@@ -76,7 +66,7 @@ namespace UnityFx.Purchasing
 
 			owner.AddOperation(this);
 
-			Console.TraceEvent(TraceEventType.Start, (int)eventId, s);
+			Console.TraceEvent(TraceEventType.Start, (int)opId, s);
 		}
 
 		internal void ContinueWith(AsyncCallback continuation)
@@ -91,6 +81,12 @@ namespace UnityFx.Purchasing
 			{
 				_asyncCallback += continuation;
 			}
+		}
+
+		internal StoreOperation ContinueWith(AsyncCallback continuation, object asyncState)
+		{
+			// TODO
+			return this;
 		}
 
 		protected bool TrySetResult(object result, bool completedSynchronously = false)
@@ -144,13 +140,20 @@ namespace UnityFx.Purchasing
 		{
 			if ((_status & _statusDisposedFlag) != 0)
 			{
-				throw new ObjectDisposedException(_traceEvent.ToString());
+				throw new ObjectDisposedException(_type.ToString());
 			}
 		}
 
 		#endregion
 
-		#region IAsyncOperation
+		#region IStoreOperationInternal
+
+		public StoreOperationId Type => _type;
+		public object Owner => _owner;
+
+		#endregion
+
+		#region IStoreOperation
 
 		public Exception Exception => _exception;
 		public bool IsCompletedSuccessfully => (_status & _statusCompleted) != 0;
@@ -232,14 +235,14 @@ namespace UnityFx.Purchasing
 		{
 			try
 			{
-				var s = _traceEvent.ToString() + (IsCompletedSuccessfully ? " completed" : " failed");
+				var s = _type.ToString() + (IsCompletedSuccessfully ? " completed" : " failed");
 
 				if (!string.IsNullOrEmpty(_args))
 				{
 					s += ": " + _args;
 				}
 
-				Console.TraceEvent(TraceEventType.Stop, (int)_traceEvent, s);
+				Console.TraceEvent(TraceEventType.Stop, (int)_type, s);
 			}
 			finally
 			{

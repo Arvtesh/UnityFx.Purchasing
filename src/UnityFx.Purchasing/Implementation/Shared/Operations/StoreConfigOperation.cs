@@ -12,13 +12,8 @@ namespace UnityFx.Purchasing
 	{
 		#region interface
 
-		public StoreConfigOperation(StoreOperationContainer parent, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, null, asyncCallback, asyncState)
-		{
-		}
-
-		public StoreConfigOperation(StoreOperationContainer parent, TraceEventId eventId, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, eventId, null, null, asyncCallback, asyncState)
+		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opId, null, null, asyncCallback, asyncState)
 		{
 		}
 
@@ -37,7 +32,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			Console.TraceError(EventId, reason.ToString());
+			Console.TraceError(Type, reason.ToString());
 
 			if (TrySetException(new StoreFetchException(reason)))
 			{
@@ -47,7 +42,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason, Exception e)
 		{
-			Console.TraceException(EventId, e);
+			Console.TraceException(Type, e);
 
 			if (TrySetException(new StoreFetchException(reason, e)))
 			{
@@ -57,7 +52,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(Exception e)
 		{
-			Console.TraceException(EventId, e);
+			Console.TraceException(Type, e);
 
 			if (TrySetException(e))
 			{
