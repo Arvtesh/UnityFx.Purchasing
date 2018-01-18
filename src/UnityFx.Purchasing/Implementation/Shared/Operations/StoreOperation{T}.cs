@@ -5,9 +5,6 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Threading;
-#if !NET35
-using System.Runtime.ExceptionServices;
-#endif
 
 namespace UnityFx.Purchasing
 {
@@ -20,23 +17,24 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private const int _statusSynchronousFlag = 1;
+		private const int _statusDisposedFlag = 1;
+		private const int _statusSynchronousFlag = 2;
+
 		private const int _statusRunning = 0;
-		private const int _statusCompleted = 2;
-		private const int _statusFaulted = 4;
-		private const int _statusCanceled = 8;
+		private const int _statusCompleted = 4;
+		private const int _statusFaulted = 8;
+		private const int _statusCanceled = 16;
 
 		private readonly StoreOperationContainer _owner;
 		private readonly TraceEventId _traceEvent;
 		private readonly string _args;
 
-		private readonly AsyncCallback _asyncCallback;
-		private readonly object _asyncState;
-
-		private EventWaitHandle _waitHandle;
-		private Exception _exception;
+		private AsyncCallback _asyncCallback;
+		private object _asyncState;
 
 		private Action<IStoreOperation> _continuation;
+		private EventWaitHandle _waitHandle;
+		private Exception _exception;
 		private T _result;
 
 		private volatile int _status;
@@ -91,30 +89,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal void Join()
-		{
-			if (_status > _statusRunning)
-			{
-				_waitHandle?.Close();
-			}
-			else
-			{
-				var waitHandle = AsyncWaitHandle;
-
-				waitHandle.WaitOne();
-				waitHandle.Close();
-			}
-
-			if (_exception != null)
-			{
-#if NET35
-				throw _exception;
-#else
-				ExceptionDispatchInfo.Capture(_exception).Throw();
-#endif
-			}
-		}
-
 		internal void ContinueWith(Action<IStoreOperation> continuation)
 		{
 			Debug.Assert(continuation != null);
@@ -166,6 +140,14 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
+		protected void ThrowIfDisposed()
+		{
+			if ((_status & _statusDisposedFlag) != 0)
+			{
+				throw new ObjectDisposedException(_traceEvent.ToString());
+			}
+		}
+
 		#endregion
 
 		#region IAsyncOperation
@@ -175,6 +157,8 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
+				ThrowIfDisposed();
+
 				if ((_status & _statusCompleted) == 0)
 				{
 					throw new InvalidOperationException("The operation result is not available.", _exception);
@@ -205,6 +189,8 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
+				ThrowIfDisposed();
+
 				if (_waitHandle == null)
 				{
 					var done = IsCompleted;
@@ -251,6 +237,25 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IDisposable
+
+		public void Dispose()
+		{
+			if ((_status & _statusDisposedFlag) == 0)
+			{
+				_status = _statusDisposedFlag;
+				_asyncCallback = null;
+				_asyncState = null;
+				_continuation = null;
+				_exception = null;
+				_result = default(T);
+				_waitHandle?.Close();
+				_waitHandle = null;
+			}
+		}
+
+		#endregion
+
 		#region implementation
 
 		private void OnCompleted()
@@ -290,6 +295,6 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-#endregion
+		#endregion
 	}
 }

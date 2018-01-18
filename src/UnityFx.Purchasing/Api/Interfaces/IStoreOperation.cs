@@ -9,7 +9,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable store operation with status information.
 	/// </summary>
 	/// <seealso cref="IStoreOperation{T}"/>
-	public interface IStoreOperation : IAsyncResult
+	public interface IStoreOperation : IAsyncResult, IDisposable
 	{
 		/// <summary>
 		/// Returns an <see cref="System.Exception"/> that caused the operation to end prematurely. If the operation completed successfully

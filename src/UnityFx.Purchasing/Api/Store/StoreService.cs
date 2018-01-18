@@ -610,9 +610,7 @@ namespace UnityFx.Purchasing
 			var op = ValidateAsyncResult<PurchaseOperation>(asyncResult);
 
 			op.ThrowIfInvalidOwner(_storeListener);
-			op.Join();
-
-			return op.Result;
+			return op.Join();
 		}
 
 		#endregion
