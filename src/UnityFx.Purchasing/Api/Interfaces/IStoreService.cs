@@ -316,6 +316,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="EndPurchase(IAsyncResult)"/>
+		/// <seealso cref="IsBusy"/>
 		IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject);
 
 		/// <summary>
@@ -349,6 +350,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
+		/// <seealso cref="IsBusy"/>
 		Task<PurchaseResult> PurchaseAsync(string productId);
 
 #endif

@@ -27,7 +27,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		public PurchaseOperation(StoreOperationContainer parent, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationId.Purchase, restored ? "auto-restored" : string.Empty, productId, asyncCallback, asyncState)
+			: base(parent, StoreOperationId.Purchase, asyncCallback, asyncState, restored ? "auto-restored" : string.Empty, productId)
 		{
 			Debug.Assert(parent != null);
 			Debug.Assert(productId != null);
@@ -144,7 +144,7 @@ namespace UnityFx.Purchasing
 			SetFailed(default(PurchaseValidationResult), reason);
 		}
 
-		public void SetFailed(Exception e)
+		public void SetFailed(Exception e, bool completedSynchronously = false)
 		{
 			Console.TraceException(StoreOperationId.Purchase, e);
 

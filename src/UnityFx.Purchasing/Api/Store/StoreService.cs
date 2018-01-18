@@ -783,7 +783,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					result.SetFailed(e);
+					result.SetFailed(e, true);
 					throw;
 				}
 
@@ -813,7 +813,7 @@ namespace UnityFx.Purchasing
 				}
 				catch (Exception e)
 				{
-					result.SetFailed(e);
+					result.SetFailed(e, true);
 					throw;
 				}
 
@@ -875,7 +875,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				result.SetFailed(e);
+				result.SetFailed(e, true);
 				throw;
 			}
 

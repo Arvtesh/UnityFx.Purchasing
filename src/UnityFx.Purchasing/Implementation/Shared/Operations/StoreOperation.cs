@@ -12,13 +12,12 @@ namespace UnityFx.Purchasing
 	/// A yieldable asynchronous store operation with a result.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal abstract class StoreOperation : IStoreOperationInternal, IEnumerator
+	internal class StoreOperation : IStoreOperationInternal, IEnumerator
 	{
 		#region data
 
 		private const int _statusDisposedFlag = 1;
 		private const int _statusSynchronousFlag = 2;
-
 		private const int _statusRunning = 0;
 		private const int _statusCompleted = 4;
 		private const int _statusFaulted = 8;
@@ -28,9 +27,9 @@ namespace UnityFx.Purchasing
 		private readonly StoreOperationId _type;
 		private readonly string _args;
 
+		private StoreOperation _continuationOp;
 		private AsyncCallback _asyncCallback;
 		private object _asyncState;
-
 		private EventWaitHandle _waitHandle;
 		private Exception _exception;
 		private object _result;
@@ -44,7 +43,18 @@ namespace UnityFx.Purchasing
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
 
-		protected StoreOperation(StoreOperationContainer owner, StoreOperationId opId, string comment, string args, AsyncCallback asyncCallback, object asyncState)
+		private StoreOperation(StoreOperation parentOp, AsyncCallback asyncCallback, object asyncState)
+		{
+			_owner = parentOp._owner;
+			_type = parentOp._type;
+			_exception = parentOp._exception;
+			_result = parentOp._result;
+			_status = parentOp._status;
+			_asyncCallback = asyncCallback;
+			_asyncState = asyncState;
+		}
+
+		protected StoreOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState, string comment, string args)
 		{
 			_owner = owner;
 			_type = opId;
@@ -85,8 +95,25 @@ namespace UnityFx.Purchasing
 
 		internal StoreOperation ContinueWith(AsyncCallback continuation, object asyncState)
 		{
-			// TODO
-			return this;
+			var op = new StoreOperation(this, continuation, asyncState);
+
+			if (op.IsCompleted)
+			{
+				continuation?.Invoke(op);
+			}
+			else
+			{
+				var parentOp = this;
+
+				while (parentOp._continuationOp != null)
+				{
+					parentOp = parentOp._continuationOp;
+				}
+
+				parentOp._continuationOp = op;
+			}
+
+			return op;
 		}
 
 		protected bool TrySetResult(object result, bool completedSynchronously = false)
@@ -247,8 +274,9 @@ namespace UnityFx.Purchasing
 			finally
 			{
 				_owner.ReleaseOperation(this);
-				_waitHandle?.Set();
-				_asyncCallback?.Invoke(this);
+
+				SignalCompletionEvents();
+				UpdateContinuation(this);
 			}
 		}
 
@@ -265,6 +293,27 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
+		}
+
+		private void SignalCompletionEvents()
+		{
+			_waitHandle?.Set();
+			_asyncCallback?.Invoke(this);
+			_asyncCallback = null;
+		}
+
+		private void UpdateContinuation(StoreOperation op)
+		{
+			if (TrySetStatus(op._status, false))
+			{
+				_exception = op._exception;
+				_result = op._result;
+
+				SignalCompletionEvents();
+			}
+
+			_continuationOp?.UpdateContinuation(op);
+			_continuationOp = null;
 		}
 
 		#endregion
