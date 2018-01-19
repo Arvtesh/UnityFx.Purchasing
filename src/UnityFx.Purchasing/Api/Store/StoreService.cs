@@ -564,7 +564,7 @@ namespace UnityFx.Purchasing
 				return InitializeInternal(null, null);
 			}
 
-			return CompletedStoreOperation.Instance;
+			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, null, null);
 		}
 
 #if UNITYFX_SUPPORT_APM
@@ -598,13 +598,13 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task InitializeAsync(object stateObject)
+		public Task InitializeAsync()
 		{
 			ThrowIfDisposed();
 
 			if (_storeController == null)
 			{
-				var tcs = new TaskCompletionSource<object>(stateObject);
+				var tcs = new TaskCompletionSource<object>();
 				InitializeInternal(FetchCompletionCallback, tcs);
 				return tcs.Task;
 			}
@@ -650,12 +650,12 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task FetchAsync(object stateObject)
+		public Task FetchAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
 
-			var tcs = new TaskCompletionSource<object>(stateObject);
+			var tcs = new TaskCompletionSource<object>();
 			FetchInternal(FetchCompletionCallback, tcs);
 			return tcs.Task;
 		}
@@ -700,13 +700,13 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task<PurchaseResult> PurchaseAsync(string productId, object stateObject)
+		public Task<PurchaseResult> PurchaseAsync(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			var tcs = new TaskCompletionSource<PurchaseResult>(stateObject);
+			var tcs = new TaskCompletionSource<PurchaseResult>();
 			PurchaseInternal(productId, PurchaseCompletionCallback, tcs);
 			return tcs.Task;
 		}
@@ -875,7 +875,7 @@ namespace UnityFx.Purchasing
 
 				if (fetchOp != null)
 				{
-					fetchOp.ContinueWith(asyncResult =>
+					fetchOp.AddCompletionHandler(asyncResult =>
 					{
 						if (!_disposed)
 						{

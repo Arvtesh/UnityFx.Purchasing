@@ -12,6 +12,11 @@ namespace UnityFx.Purchasing
 	public interface IStoreOperation : IAsyncResult, IDisposable
 	{
 		/// <summary>
+		/// Schedules a continuation to run after the operation has completed.
+		/// </summary>
+		event AsyncCallback Completed;
+
+		/// <summary>
 		/// Returns an <see cref="System.Exception"/> that caused the operation to end prematurely. If the operation completed successfully
 		/// or has not yet thrown any exceptions, this will return <see langword="null"/>. Read only.
 		/// </summary>

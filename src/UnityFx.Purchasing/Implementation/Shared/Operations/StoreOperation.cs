@@ -103,10 +103,8 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
-		internal void ContinueWith(AsyncCallback continuation)
+		internal void AddCompletionHandler(AsyncCallback continuation)
 		{
-			Debug.Assert(continuation != null);
-
 			if (IsCompleted)
 			{
 				continuation(this);
@@ -198,6 +196,23 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region IStoreOperation
+
+		public event AsyncCallback Completed
+		{
+			add
+			{
+				if (value == null)
+				{
+					throw new ArgumentNullException(nameof(value));
+				}
+
+				AddCompletionHandler(value);
+			}
+			remove
+			{
+				_asyncCallback -= value;
+			}
+		}
 
 		public Exception Exception => _exception;
 		public bool IsCompletedSuccessfully => (_status & _statusCompleted) != 0;

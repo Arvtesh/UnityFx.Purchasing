@@ -170,7 +170,7 @@ namespace UnityFx.Purchasing
 		bool IsBusy { get; }
 
 		/// <summary>
-		/// Initializes the store. Does nothing (returns a completed operation) if already initialized.
+		/// Initiates the store initialization. Does nothing (returns a completed operation) if already initialized.
 		/// </summary>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
@@ -217,19 +217,18 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous operation from others.</param>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
-		/// <seealso cref="FetchAsync(object)"/>
-		/// <seealso cref="PurchaseAsync(string, object)"/>
-		Task InitializeAsync(object stateObject = null);
+		/// <seealso cref="FetchAsync()"/>
+		/// <seealso cref="PurchaseAsync(string)"/>
+		Task InitializeAsync();
 
 #endif
 
 		/// <summary>
-		/// Fetches product information from the store.
+		/// Initiates fetching product information from the store.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
@@ -277,15 +276,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous operation from others.</param>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if fetching fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
-		/// <seealso cref="InitializeAsync(object)"/>
-		/// <seealso cref="PurchaseAsync(string, object)"/>
-		Task FetchAsync(object stateObject = null);
+		/// <seealso cref="InitializeAsync()"/>
+		/// <seealso cref="PurchaseAsync(string)"/>
+		Task FetchAsync();
 
 #endif
 
@@ -365,7 +363,6 @@ namespace UnityFx.Purchasing
 		/// Please see <see cref="Purchase(string)"/> documentation for more information.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous purchase operation from others.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="productId"/> is an empty string.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
@@ -374,10 +371,10 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StoreFetchException">Thrown if the store initialization/fetch triggered/awaited by the call fails.</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
-		/// <seealso cref="InitializeAsync(object)"/>
-		/// <seealso cref="FetchAsync(object)"/>
+		/// <seealso cref="InitializeAsync()"/>
+		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="IsBusy"/>
-		Task<PurchaseResult> PurchaseAsync(string productId, object stateObject = null);
+		Task<PurchaseResult> PurchaseAsync(string productId);
 
 #endif
 	}
