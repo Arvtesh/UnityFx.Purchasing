@@ -79,6 +79,32 @@ namespace UnityFx.Purchasing
 			_storeListener = new StoreListener(this);
 		}
 
+#if UNITYFX_SUPPORT_TAP
+
+		/// <summary>
+		/// Requests the store configuration.
+		/// </summary>
+		/// <remarks>
+		/// Typlical implementation would connect to the app server for information on products available.
+		/// </remarks>
+		/// <seealso cref="ValidatePurchaseAsync(StoreTransaction)"/>
+		protected internal abstract Task<StoreConfig> GetStoreConfigAsync();
+
+		/// <summary>
+		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
+		/// </summary>
+		/// <remarks>
+		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.
+		/// </remarks>
+		/// <param name="transaction">The transaction data to validate.</param>
+		/// <seealso cref="GetStoreConfigAsync()"/>
+		protected internal virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transaction)
+		{
+			return Task.FromResult<PurchaseValidationResult>(null);
+		}
+
+#else
+
 		/// <summary>
 		/// Requests the store configuration.
 		/// </summary>
@@ -105,6 +131,8 @@ namespace UnityFx.Purchasing
 		{
 			return false;
 		}
+
+#endif
 
 		/// <summary>
 		/// Called when the store initialize operation has been initiated.

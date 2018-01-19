@@ -25,6 +25,11 @@ namespace UnityFx.Purchasing
 		StoreDisposed,
 
 		/// <summary>
+		/// The store failed get its configuration.
+		/// </summary>
+		StoreConfigUnavailable,
+
+		/// <summary>
 		/// In-App Purchases disabled in device settings (<see cref="InitializationFailureReason.PurchasingUnavailable"/>).
 		/// </summary>
 		PurchasingUnavailable,
@@ -195,11 +200,15 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Waits for the pending asynchronous initialize operation to complete.
 		/// </summary>
+		/// <remarks>
+		/// The method blocks calling thread until the specified operation is completed. After that it rethrows exceptions
+		/// aggregated by the operation (if any) and disposes it.
+		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginInitialize(AsyncCallback, object)"/> on this class.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="EndInitialize(IAsyncResult)"/> is called multiple times.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if either the store instance or <paramref name="asyncResult"/> is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginInitialize(AsyncCallback, object)"/>
@@ -250,10 +259,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Waits for the pending asynchronous fetch operation to complete.
 		/// </summary>
+		/// <remarks>
+		/// The method blocks calling thread until the specified operation is completed. After that it rethrows exceptions
+		/// aggregated by the operation (if any) and disposes it.
+		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginFetch(AsyncCallback, object)"/> on this class.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if either the store instance or <paramref name="asyncResult"/> is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginFetch(AsyncCallback, object)"/>
@@ -306,7 +319,7 @@ namespace UnityFx.Purchasing
 		/// Please note that the call would fail if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
-		/// <param name="userCallback">The method to be called when the asynchronous purchase operation is completed. The callback is invoked on a thread pool (not the caller thread).</param>
+		/// <param name="userCallback">The method to be called when the asynchronous purchase operation is completed.</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous purchase operation from other operations.</param>
 		/// <returns>An object that references the asynchronous purchase operation.</returns>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
@@ -322,11 +335,15 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Waits for the pending asynchronous purchase operation to complete.
 		/// </summary>
+		/// <remarks>
+		/// The method blocks calling thread until the specified operation is completed. After that it rethrows exceptions
+		/// aggregated by the operation (if any) and disposes it.
+		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginPurchase(string, AsyncCallback, object)"/> on this class.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="EndPurchase(IAsyncResult)"/> is called multiple times.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if either the store instance or <paramref name="asyncResult"/> is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginPurchase(string, AsyncCallback, object)"/>

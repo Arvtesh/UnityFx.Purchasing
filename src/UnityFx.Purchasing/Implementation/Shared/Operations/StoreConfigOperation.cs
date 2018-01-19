@@ -2,6 +2,9 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+#if UNITYFX_SUPPORT_TAP
+using System.Threading.Tasks;
+#endif
 
 namespace UnityFx.Purchasing
 {
@@ -19,7 +22,11 @@ namespace UnityFx.Purchasing
 
 		public void Initiate()
 		{
+#if UNITYFX_SUPPORT_TAP
+			Store.GetStoreConfigAsync().ContinueWith(GetConfigContinuation);
+#else
 			Store.GetStoreConfig(GetConfigCallback, GetConfigErrorCallback);
+#endif
 		}
 
 		public void SetCompleted()
@@ -68,25 +75,49 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
+		private void TryInitiate(StoreConfig storeConfig)
+		{
+			if (storeConfig != null)
+			{
+				try
+				{
+					Initiate(storeConfig);
+				}
+				catch (Exception e)
+				{
+					SetFailed(e);
+				}
+			}
+			else
+			{
+				SetFailed(StoreFetchError.StoreConfigUnavailable, new ArgumentNullException(nameof(storeConfig)));
+			}
+		}
+
+#if UNITYFX_SUPPORT_TAP
+
+		private void GetConfigContinuation(Task<StoreConfig> task)
+		{
+			if (!IsCompleted)
+			{
+				if (task.Status == TaskStatus.RanToCompletion)
+				{
+					TryInitiate(task.Result);
+				}
+				else
+				{
+					SetFailed(StoreFetchError.StoreConfigUnavailable, task.Exception?.InnerException);
+				}
+			}
+		}
+
+#else
+
 		private void GetConfigCallback(StoreConfig storeConfig)
 		{
 			if (!IsCompleted)
 			{
-				if (storeConfig != null)
-				{
-					try
-					{
-						Initiate(storeConfig);
-					}
-					catch (Exception e)
-					{
-						SetFailed(e);
-					}
-				}
-				else
-				{
-					SetFailed(new ArgumentNullException(nameof(storeConfig)));
-				}
+				TryInitiate(storeConfig);
 			}
 		}
 
@@ -94,9 +125,11 @@ namespace UnityFx.Purchasing
 		{
 			if (!IsCompleted)
 			{
-				SetFailed(e);
+				SetFailed(StoreFetchError.StoreConfigUnavailable, e);
 			}
 		}
+
+#endif
 
 		#endregion
 	}

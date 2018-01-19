@@ -3,6 +3,9 @@
 
 using System;
 using System.Diagnostics;
+#if UNITYFX_SUPPORT_TAP
+using System.Threading.Tasks;
+#endif
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -84,6 +87,21 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
+#if UNITYFX_SUPPORT_TAP
+
+					try
+					{
+						Store.ValidatePurchaseAsync(_transaction).ContinueWith(ValidateContinuation);
+					}
+					catch (Exception e)
+					{
+						Console.TraceException(StoreOperationId.Purchase, e);
+						SetFailed(StorePurchaseError.ReceiptValidationFailed);
+						return PurchaseProcessingResult.Complete;
+					}
+
+#else
+
 					var validationImplemented = true;
 
 					try
@@ -109,6 +127,8 @@ namespace UnityFx.Purchasing
 					{
 						SetCompleted(new PurchaseValidationResult(PurchaseValidationStatus.Suppressed));
 					}
+
+#endif
 				}
 			}
 			catch (Exception e)
@@ -139,9 +159,9 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void SetFailed(StorePurchaseError reason)
+		public void SetFailed(StorePurchaseError reason, Exception e = null)
 		{
-			SetFailed(default(PurchaseValidationResult), reason);
+			SetFailed(default(PurchaseValidationResult), reason, e);
 		}
 
 		public void SetFailed(Exception e, bool completedSynchronously = false)
@@ -187,9 +207,9 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError reason)
+		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError reason, Exception e = null)
 		{
-			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, reason, null);
+			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, reason, e);
 
 			Console.TraceError(StoreOperationId.Purchase, reason.ToString());
 
@@ -222,49 +242,77 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
+		private void ProcessValidationResult(PurchaseValidationResult validationResult)
+		{
+			Debug.Assert(_transaction != null);
+
+			try
+			{
+				if (validationResult == null)
+				{
+					validationResult = new PurchaseValidationResult(PurchaseValidationStatus.Suppressed);
+				}
+
+				var status = validationResult.Status;
+				var product = _transaction.Product;
+
+				if (status == PurchaseValidationStatus.NotAvailable)
+				{
+					// Need to re-validate the purchase: do not confirm.
+					SetFailed(validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
+				}
+				else
+				{
+					Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
+					Store.Controller.ConfirmPendingPurchase(product);
+
+					if (status == PurchaseValidationStatus.Failure)
+					{
+						// The purchase validation failed.
+						SetFailed(validationResult, StorePurchaseError.ReceiptValidationFailed);
+					}
+					else
+					{
+						// The purchase validation succeeded.
+						SetCompleted(validationResult);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
+				TrySetException(e);
+			}
+		}
+
+#if UNITYFX_SUPPORT_TAP
+
+		private void ValidateContinuation(Task<PurchaseValidationResult> task)
+		{
+			if (!IsCompleted)
+			{
+				if (task.Status == TaskStatus.RanToCompletion)
+				{
+					ProcessValidationResult(task.Result);
+				}
+				else
+				{
+					SetFailed(StorePurchaseError.ReceiptValidationNotAvailable, task.Exception?.InnerException);
+				}
+			}
+		}
+
+#else
+
 		private void ValidateCallback(PurchaseValidationResult validationResult)
 		{
 			if (!IsCompleted)
 			{
-				try
-				{
-					if (validationResult == null)
-					{
-						validationResult = new PurchaseValidationResult(PurchaseValidationStatus.Suppressed);
-					}
-
-					var status = validationResult.Status;
-					var product = _transaction.Product;
-
-					if (status == PurchaseValidationStatus.NotAvailable)
-					{
-						// Need to re-validate the purchase: do not confirm.
-						SetFailed(validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
-					}
-					else
-					{
-						Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
-						Store.Controller.ConfirmPendingPurchase(product);
-
-						if (status == PurchaseValidationStatus.Failure)
-						{
-							// The purchase validation failed.
-							SetFailed(validationResult, StorePurchaseError.ReceiptValidationFailed);
-						}
-						else
-						{
-							// The purchase validation succeeded.
-							SetCompleted(validationResult);
-						}
-					}
-				}
-				catch (Exception e)
-				{
-					Console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
-					TrySetException(e);
-				}
+				ProcessValidationResult(validationResult);
 			}
 		}
+
+#endif
 
 		#endregion
 	}
