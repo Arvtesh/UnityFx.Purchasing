@@ -12,7 +12,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable asynchronous store operation with a result.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal class StoreOperation : IStoreOperationInternal, IEnumerator
+	internal class StoreOperation : IStoreOperation, IEnumerator
 	{
 		#region data
 
@@ -40,6 +40,8 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
+		internal StoreOperationId Type => _type;
+		internal object Owner => _owner;
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
 
@@ -50,6 +52,16 @@ namespace UnityFx.Purchasing
 			_exception = parentOp._exception;
 			_result = parentOp._result;
 			_status = parentOp._status;
+			_asyncCallback = asyncCallback;
+			_asyncState = asyncState;
+		}
+
+		private StoreOperation(StoreOperationContainer owner, object result, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
+		{
+			_owner = owner;
+			_type = opId;
+			_result = result;
+			_status = _statusCompleted | _statusSynchronousFlag;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
 		}
@@ -77,6 +89,11 @@ namespace UnityFx.Purchasing
 			owner.AddOperation(this);
 
 			Console.TraceEvent(TraceEventType.Start, (int)opId, s);
+		}
+
+		internal static StoreOperation GetCompletedOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
+		{
+			return new StoreOperation(owner, null, opId, asyncCallback, asyncState);
 		}
 
 		internal void ContinueWith(AsyncCallback continuation)
@@ -170,13 +187,6 @@ namespace UnityFx.Purchasing
 				throw new ObjectDisposedException(_type.ToString());
 			}
 		}
-
-		#endregion
-
-		#region IStoreOperationInternal
-
-		public StoreOperationId Type => _type;
-		public object Owner => _owner;
 
 		#endregion
 

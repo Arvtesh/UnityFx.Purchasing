@@ -548,7 +548,7 @@ namespace UnityFx.Purchasing
 				return InitializeInternal(userCallback, stateObject);
 			}
 
-			return new CompletedStoreOperation(_storeListener, StoreOperationId.Initialize, userCallback, stateObject);
+			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -889,7 +889,7 @@ namespace UnityFx.Purchasing
 				throw new ArgumentNullException(nameof(asyncResult));
 			}
 
-			if (asyncResult is IStoreOperationInternal result)
+			if (asyncResult is StoreOperation result)
 			{
 				if (result.Type != type)
 				{

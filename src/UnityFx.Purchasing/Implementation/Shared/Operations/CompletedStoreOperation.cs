@@ -10,16 +10,11 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A completed store operation with a result.
 	/// </summary>
-	internal sealed class CompletedStoreOperation : IStoreOperationInternal, IEnumerator
+	internal sealed class CompletedStoreOperation : IStoreOperation, IEnumerator
 	{
 		#region data
 
 		private static IStoreOperation _instance;
-
-		private readonly object _owner;
-		private readonly StoreOperationId _type;
-		private readonly AsyncCallback _asyncCallback;
-		private readonly object _asyncState;
 
 		private EventWaitHandle _waitHandle;
 
@@ -39,25 +34,6 @@ namespace UnityFx.Purchasing
 				return _instance;
 			}
 		}
-
-		public CompletedStoreOperation()
-		{
-		}
-
-		public CompletedStoreOperation(object owner, StoreOperationId opId, AsyncCallback userCallback, object asyncState)
-		{
-			_owner = owner;
-			_type = opId;
-			_asyncCallback = userCallback;
-			_asyncState = asyncState;
-		}
-
-		#endregion
-
-		#region IStoreOperationInternal
-
-		public StoreOperationId Type => _type;
-		public object Owner => _owner;
 
 		#endregion
 
@@ -91,7 +67,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public object AsyncState => _asyncState;
+		public object AsyncState => null;
 		public bool CompletedSynchronously => true;
 		public bool IsCompleted => true;
 
