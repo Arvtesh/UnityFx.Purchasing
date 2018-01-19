@@ -110,7 +110,7 @@ namespace UnityFx.Purchasing
 				{
 					s += " TransactionID: " + transactionInfo.TransactionId;
 
-					if (transactionInfo.IsRestored)
+					if (Result.IsRestored)
 					{
 						s += ", auto-restored.";
 					}

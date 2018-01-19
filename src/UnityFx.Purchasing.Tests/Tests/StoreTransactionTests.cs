@@ -20,7 +20,7 @@ namespace UnityFx.Purchasing.Tests
 			var transactionId = "123456";
 			var storeId = "test_store";
 			var receipt = "test receipt";
-			var transaction = new StoreTransaction(null, transactionId, storeId, receipt, true);
+			var transaction = new StoreTransaction(null, transactionId, storeId, receipt);
 
 			using (var s = new MemoryStream())
 			{
@@ -33,7 +33,6 @@ namespace UnityFx.Purchasing.Tests
 			Assert.Equal(transactionId, transaction.TransactionId);
 			Assert.Equal(storeId, transaction.StoreId);
 			Assert.Equal(receipt, transaction.Receipt);
-			Assert.True(transaction.IsRestored);
 		}
 	}
 }

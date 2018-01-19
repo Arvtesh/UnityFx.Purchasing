@@ -38,13 +38,13 @@ namespace UnityFx.Purchasing
 			_productId = productId;
 			_restored = restored;
 
-			Store.InvokePurchaseInitiated(productId, restored);
+			Store.InvokePurchaseInitiated(this, productId, restored);
 		}
 
 		public PurchaseOperation(StoreOperationContainer parent, Product product, bool restored)
 			: this(parent, product.definition.id, restored, null, null)
 		{
-			_transaction = new StoreTransaction(product, restored);
+			_transaction = new StoreTransaction(product);
 		}
 
 		public void Initiate()
@@ -68,7 +68,7 @@ namespace UnityFx.Purchasing
 			// otherwise identifier of the product purchased should match the one specified in _purchaseOp.
 			if (_restored || IsSame(product))
 			{
-				_transaction = new StoreTransaction(product, _restored);
+				_transaction = new StoreTransaction(product);
 				return true;
 			}
 
@@ -141,21 +141,21 @@ namespace UnityFx.Purchasing
 
 		public FailedPurchaseResult GetFailedResult(Product product, StorePurchaseError reason, Exception e)
 		{
-			return new FailedPurchaseResult(_productId, product, reason, e);
+			return new FailedPurchaseResult(_productId, product, reason, e, _restored);
 		}
 
 		public FailedPurchaseResult GetFailedResult(StorePurchaseError reason, Exception e)
 		{
-			return new FailedPurchaseResult(_productId, _transaction, null, reason, e);
+			return new FailedPurchaseResult(_productId, _transaction, null, reason, e, _restored);
 		}
 
 		public void SetCompleted(PurchaseValidationResult validationResult)
 		{
-			var result = new PurchaseResult(_transaction, validationResult);
+			var result = new PurchaseResult(_transaction, validationResult, _restored);
 
 			if (TrySetResult(result))
 			{
-				Store.InvokePurchaseCompleted(_productId, result);
+				Store.InvokePurchaseCompleted(this, _productId, result);
 			}
 		}
 
@@ -172,22 +172,22 @@ namespace UnityFx.Purchasing
 			{
 				if (e is StorePurchaseException spe)
 				{
-					Store.InvokePurchaseFailed(new FailedPurchaseResult(spe));
+					Store.InvokePurchaseFailed(this, new FailedPurchaseResult(spe));
 				}
 				else if (e is StoreFetchException sfe)
 				{
-					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
+					Store.InvokePurchaseFailed(this, GetFailedResult(StorePurchaseError.StoreNotInitialized, e));
 				}
 				else
 				{
-					Store.InvokePurchaseFailed(GetFailedResult(StorePurchaseError.Unknown, e));
+					Store.InvokePurchaseFailed(this, GetFailedResult(StorePurchaseError.Unknown, e));
 				}
 			}
 		}
 
 		public void SetFailed(Product product, StorePurchaseError reason, Exception e = null)
 		{
-			var result = new FailedPurchaseResult(_productId, product, reason, e);
+			var result = new FailedPurchaseResult(_productId, product, reason, e, _restored);
 
 			Console.TraceError(StoreOperationId.Purchase, reason.ToString());
 
@@ -195,27 +195,27 @@ namespace UnityFx.Purchasing
 			{
 				if (TrySetCanceled())
 				{
-					Store.InvokePurchaseFailed(result);
+					Store.InvokePurchaseFailed(this, result);
 				}
 			}
 			else
 			{
 				if (TrySetException(new StorePurchaseException(result)))
 				{
-					Store.InvokePurchaseFailed(result);
+					Store.InvokePurchaseFailed(this, result);
 				}
 			}
 		}
 
 		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError reason, Exception e = null)
 		{
-			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, reason, e);
+			var result = new FailedPurchaseResult(_productId, _transaction, validationResult, reason, e, _restored);
 
 			Console.TraceError(StoreOperationId.Purchase, reason.ToString());
 
 			if (TrySetException(new StorePurchaseException(result)))
 			{
-				Store.InvokePurchaseFailed(result);
+				Store.InvokePurchaseFailed(this, result);
 			}
 		}
 

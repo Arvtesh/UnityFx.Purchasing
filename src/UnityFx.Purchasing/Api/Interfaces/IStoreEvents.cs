@@ -14,44 +14,38 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Triggered when the store initialization has been initiated.
 		/// </summary>
-		/// <seealso cref="StoreFetchCompleted"/>
-		/// <seealso cref="StoreFetchFailed"/>
-		event EventHandler<StoreFetchEventArgs> StoreFetchInitiated;
+		/// <seealso cref="InitializeCompleted"/>
+		event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
 
 		/// <summary>
 		/// Triggered when the store has been initialized.
 		/// </summary>
-		/// <seealso cref="StoreFetchFailed"/>
-		/// <seealso cref="StoreFetchInitiated"/>
-		event EventHandler<StoreFetchEventArgs> StoreFetchCompleted;
+		/// <seealso cref="InitializeInitiated"/>
+		event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
 
 		/// <summary>
-		/// Triggered when the store initialization has failed.
+		/// Triggered when the store initialization has been initiated.
 		/// </summary>
-		/// <seealso cref="StoreFetchCompleted"/>
-		/// <seealso cref="StoreFetchInitiated"/>
-		event EventHandler<StoreFetchFailedEventArgs> StoreFetchFailed;
+		/// <seealso cref="FetchCompleted"/>
+		event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
+
+		/// <summary>
+		/// Triggered when the store has been initialized.
+		/// </summary>
+		/// <seealso cref="FetchInitiated"/>
+		event EventHandler<FetchCompletedEventArgs> FetchCompleted;
 
 		/// <summary>
 		/// Triggered when a new purchase is initiated.
 		/// </summary>
 		/// <seealso cref="PurchaseCompleted"/>
-		/// <seealso cref="PurchaseFailed"/>
 		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
 
 		/// <summary>
 		/// Triggered when a purchase has completed successfully.
 		/// </summary>
-		/// <seealso cref="PurchaseFailed"/>
 		/// <seealso cref="PurchaseInitiated"/>
 		event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
-
-		/// <summary>
-		/// Triggered when a purchase has failed.
-		/// </summary>
-		/// <seealso cref="PurchaseCompleted"/>
-		/// <seealso cref="PurchaseInitiated"/>
-		event EventHandler<PurchaseFailedEventArgs> PurchaseFailed;
 
 #if UNITYFX_SUPPORT_OBSERVABLES
 

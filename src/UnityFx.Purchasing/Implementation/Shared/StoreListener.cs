@@ -176,7 +176,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
+		public PurchaseProcessingResult ProcessPurchase(UnityEngine.Purchasing.PurchaseEventArgs args)
 		{
 			Debug.Assert(args != null);
 			Debug.Assert(args.purchasedProduct != null);

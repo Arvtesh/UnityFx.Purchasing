@@ -16,9 +16,9 @@ namespace UnityFx.Purchasing.Tests
 		[Fact]
 		public void SerializationTest()
 		{
-			var transaction = new StoreTransaction(null, "a", "b", "c", true);
+			var transaction = new StoreTransaction(null, "a", "b", "c");
 			var validationResult = new PurchaseValidationResult(PurchaseValidationStatus.NotAvailable);
-			var purchaseResult = new PurchaseResult(transaction, validationResult);
+			var purchaseResult = new PurchaseResult(transaction, validationResult, true);
 
 			using (var s = new MemoryStream())
 			{
@@ -34,7 +34,6 @@ namespace UnityFx.Purchasing.Tests
 			Assert.Equal(transaction.TransactionId, purchaseResult.TransactionInfo.TransactionId);
 			Assert.Equal(transaction.StoreId, purchaseResult.TransactionInfo.StoreId);
 			Assert.Equal(transaction.Receipt, purchaseResult.TransactionInfo.Receipt);
-			Assert.Equal(transaction.IsRestored, purchaseResult.TransactionInfo.IsRestored);
 			Assert.Equal(validationResult.Status, purchaseResult.ValidationResult.Status);
 		}
 	}

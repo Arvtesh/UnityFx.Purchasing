@@ -21,7 +21,6 @@ namespace UnityFx.Purchasing
 		private string _transactionId;
 		private string _storeId;
 		private string _receipt;
-		private bool _restored;
 
 		#endregion
 
@@ -31,6 +30,11 @@ namespace UnityFx.Purchasing
 		/// Returns the Unity product selected for purchase. Read only.
 		/// </summary>
 		public Product Product => _product;
+
+		/// <summary>
+		/// Returns the product identifier. Read only.
+		/// </summary>
+		public string ProductId => _product.definition.id;
 
 		/// <summary>
 		/// Returns identifier of the transaction. Read only.
@@ -48,14 +52,9 @@ namespace UnityFx.Purchasing
 		public string Receipt => _receipt;
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
-		/// </summary>
-		public bool IsRestored => _restored;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
 		/// </summary>
-		public StoreTransaction(Product product, bool isRestored)
+		public StoreTransaction(Product product)
 		{
 			_product = product;
 			_transactionId = product.transactionID;
@@ -66,13 +65,12 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreTransaction"/> class.
 		/// </summary>
-		public StoreTransaction(Product product, string transactionId, string storeId, string receipt, bool isRestored)
+		public StoreTransaction(Product product, string transactionId, string storeId, string receipt)
 		{
 			_product = product;
 			_transactionId = transactionId;
 			_storeId = storeId;
 			_receipt = receipt;
-			_restored = isRestored;
 		}
 
 		#endregion

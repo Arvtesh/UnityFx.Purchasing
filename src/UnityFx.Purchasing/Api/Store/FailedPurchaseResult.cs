@@ -14,18 +14,12 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private string _productId;
 		private StorePurchaseError _error;
 		private Exception _exception;
 
 		#endregion
 
 		#region interface
-
-		/// <summary>
-		/// Returns the product identifier. Read only.
-		/// </summary>
-		public string ProductId => _productId;
 
 		/// <summary>
 		/// Returns an error that caused the purchase to fail. Read only.
@@ -45,10 +39,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>
-		public FailedPurchaseResult(string productId, Product product, StorePurchaseError error, Exception e)
-			: base(product)
+		public FailedPurchaseResult(string productId, Product product, StorePurchaseError error, Exception e, bool restored)
+			: base(productId, product, restored)
 		{
-			_productId = productId;
 			_error = error;
 			_exception = e;
 		}
@@ -56,10 +49,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>
-		public FailedPurchaseResult(string productId, PurchaseResult purchaseResult, StorePurchaseError error, Exception e)
-			: base(purchaseResult.TransactionInfo, purchaseResult.ValidationResult)
+		public FailedPurchaseResult(string productId, PurchaseResult purchaseResult, StorePurchaseError error, Exception e, bool restored)
+			: base(productId, purchaseResult.TransactionInfo, purchaseResult.ValidationResult, restored)
 		{
-			_productId = productId;
 			_error = error;
 			_exception = e;
 		}
@@ -67,10 +59,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>
-		public FailedPurchaseResult(string productId, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError error, Exception e)
-			: base(transactionInfo, validationResult)
+		public FailedPurchaseResult(string productId, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError error, Exception e, bool restored)
+			: base(productId, transactionInfo, validationResult, restored)
 		{
-			_productId = productId;
 			_error = error;
 			_exception = e;
 		}
@@ -79,9 +70,8 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
 		/// </summary>
 		public FailedPurchaseResult(StorePurchaseException e)
-			: base(e.Result.TransactionInfo, e.Result.ValidationResult)
+			: base(e.ProductId, e.Result.TransactionInfo, e.Result.ValidationResult, e.Result.IsRestored)
 		{
-			_productId = e.ProductId;
 			_error = e.Reason;
 			_exception = e;
 		}
