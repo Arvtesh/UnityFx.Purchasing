@@ -93,7 +93,14 @@ namespace UnityFx.Purchasing
 
 		internal static StoreOperation GetCompletedOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
 		{
-			return new StoreOperation(owner, null, opId, asyncCallback, asyncState);
+			var result = new StoreOperation(owner, null, opId, null, asyncState);
+
+			if (result.IsCompleted)
+			{
+				asyncCallback?.Invoke(result);
+			}
+
+			return result;
 		}
 
 		internal void ContinueWith(AsyncCallback continuation)

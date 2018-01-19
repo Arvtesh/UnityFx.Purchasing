@@ -106,11 +106,6 @@ namespace UnityFx.Purchasing
 		ReceiptNullOrEmpty,
 
 		/// <summary>
-		/// Store local validation of purchase receipt failed.
-		/// </summary>
-		ReceiptLocalValidationFailed,
-
-		/// <summary>
 		/// Store validation (either local or not) of purchase receipt failed.
 		/// </summary>
 		ReceiptValidationFailed,
@@ -201,8 +196,9 @@ namespace UnityFx.Purchasing
 		/// Waits for the pending asynchronous initialize operation to complete.
 		/// </summary>
 		/// <remarks>
-		/// The method blocks calling thread until the specified operation is completed. After that it rethrows exceptions
-		/// aggregated by the operation (if any) and disposes it.
+		/// The method will block until the operation has completed. <see cref="EndInitialize(IAsyncResult)"/> must be called
+		/// exactly for every call to <see cref="BeginInitialize(AsyncCallback, object)"/>. <paramref name="asyncResult"/>
+		/// should not be used after the call.
 		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
@@ -221,13 +217,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
 		/// </summary>
+		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous operation from others.</param>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
-		/// <seealso cref="FetchAsync()"/>
-		/// <seealso cref="PurchaseAsync(string)"/>
-		Task InitializeAsync();
+		/// <seealso cref="FetchAsync(object)"/>
+		/// <seealso cref="PurchaseAsync(string, object)"/>
+		Task InitializeAsync(object stateObject = null);
 
 #endif
 
@@ -260,8 +257,9 @@ namespace UnityFx.Purchasing
 		/// Waits for the pending asynchronous fetch operation to complete.
 		/// </summary>
 		/// <remarks>
-		/// The method blocks calling thread until the specified operation is completed. After that it rethrows exceptions
-		/// aggregated by the operation (if any) and disposes it.
+		/// The method will block until the operation has completed. <see cref="EndFetch(IAsyncResult)"/> must be called
+		/// exactly for every call to <see cref="BeginFetch(AsyncCallback, object)"/>. <paramref name="asyncResult"/>
+		/// should not be used after the call.
 		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
@@ -279,24 +277,30 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
+		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous operation from others.</param>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if fetching fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
-		/// <seealso cref="InitializeAsync()"/>
-		/// <seealso cref="PurchaseAsync(string)"/>
-		Task FetchAsync();
+		/// <seealso cref="InitializeAsync(object)"/>
+		/// <seealso cref="PurchaseAsync(string, object)"/>
+		Task FetchAsync(object stateObject = null);
 
 #endif
 
 		/// <summary>
-		/// Initiates purchasing the specified product.
+		/// Initiates purchase of the specified product.
 		/// </summary>
 		/// <remarks>
-		/// If <see cref="Initialize"/> or <see cref="Fetch"/> is in progress, waits for them to complete before proceed.
-		/// If the store is not initialized yet calls <see cref="Initialize"/> first. Please note that the call would fail
-		/// if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
+		/// Internally method does the following:
+		/// <list type="number">
+		/// <item>If <see cref="Initialize"/> or <see cref="Fetch"/> operation is pending, waits for its completion.</item>
+		/// <item>Initiates purchase of the specified product.</item>
+		/// <item>If the purchase succeeds initiates its verification.</item>
+		/// <item>If all of the former steps succeed, the operation succeeds; otherwise the transaction is treated as failed.</item>
+		/// </list>
+		/// Please note that the call would fail if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
@@ -316,7 +320,7 @@ namespace UnityFx.Purchasing
 		/// Begins an asynchronous purchase operation of the specified product.
 		/// </summary>
 		/// <remarks>
-		/// Please note that the call would fail if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
+		/// Please see <see cref="Purchase(string)"/> documentation for more information.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
 		/// <param name="userCallback">The method to be called when the asynchronous purchase operation is completed.</param>
@@ -336,8 +340,9 @@ namespace UnityFx.Purchasing
 		/// Waits for the pending asynchronous purchase operation to complete.
 		/// </summary>
 		/// <remarks>
-		/// The method blocks calling thread until the specified operation is completed. After that it rethrows exceptions
-		/// aggregated by the operation (if any) and disposes it.
+		/// The method will block until the operation has completed. <see cref="EndPurchase(IAsyncResult)"/> must be called
+		/// exactly for every call to <see cref="BeginPurchase(string, AsyncCallback, object)"/>. <paramref name="asyncResult"/>
+		/// should not be used after the call.
 		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
@@ -354,9 +359,13 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <summary>
-		/// Initiates purchasing the specified product.
+		/// Initiates purchase of the specified product.
 		/// </summary>
+		/// <remarks>
+		/// Please see <see cref="Purchase(string)"/> documentation for more information.
+		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
+		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous purchase operation from others.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="productId"/> is an empty string.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
@@ -365,10 +374,10 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StoreFetchException">Thrown if the store initialization/fetch triggered/awaited by the call fails.</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
-		/// <seealso cref="InitializeAsync()"/>
-		/// <seealso cref="FetchAsync()"/>
+		/// <seealso cref="InitializeAsync(object)"/>
+		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="IsBusy"/>
-		Task<PurchaseResult> PurchaseAsync(string productId);
+		Task<PurchaseResult> PurchaseAsync(string productId, object stateObject = null);
 
 #endif
 	}

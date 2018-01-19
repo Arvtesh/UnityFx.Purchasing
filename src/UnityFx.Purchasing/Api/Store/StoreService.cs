@@ -94,7 +94,10 @@ namespace UnityFx.Purchasing
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
 		/// </summary>
 		/// <remarks>
-		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.
+		/// <para>Typical implementation would first do client validation of the purchase and (if that passes)
+		/// initiate server-side validation.</para>
+		/// <para>Throwing an exception from this method or returning a faulted/canceled task results in
+		/// failed transaction validation.</para>
 		/// </remarks>
 		/// <param name="transaction">The transaction data to validate.</param>
 		/// <seealso cref="GetStoreConfigAsync()"/>
@@ -595,13 +598,13 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task InitializeAsync()
+		public Task InitializeAsync(object stateObject)
 		{
 			ThrowIfDisposed();
 
 			if (_storeController == null)
 			{
-				var tcs = new TaskCompletionSource<object>();
+				var tcs = new TaskCompletionSource<object>(stateObject);
 				InitializeInternal(FetchCompletionCallback, tcs);
 				return tcs.Task;
 			}
@@ -647,12 +650,12 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task FetchAsync()
+		public Task FetchAsync(object stateObject)
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
 
-			var tcs = new TaskCompletionSource<object>();
+			var tcs = new TaskCompletionSource<object>(stateObject);
 			FetchInternal(FetchCompletionCallback, tcs);
 			return tcs.Task;
 		}
@@ -697,13 +700,13 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task<PurchaseResult> PurchaseAsync(string productId)
+		public Task<PurchaseResult> PurchaseAsync(string productId, object stateObject)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			var tcs = new TaskCompletionSource<PurchaseResult>();
+			var tcs = new TaskCompletionSource<PurchaseResult>(stateObject);
 			PurchaseInternal(productId, PurchaseCompletionCallback, tcs);
 			return tcs.Task;
 		}
