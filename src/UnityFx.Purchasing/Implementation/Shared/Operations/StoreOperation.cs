@@ -23,9 +23,12 @@ namespace UnityFx.Purchasing
 		private const int _statusFaulted = 8;
 		private const int _statusCanceled = 16;
 
+		private readonly int _id;
 		private readonly StoreOperationContainer _owner;
 		private readonly StoreOperationId _type;
 		private readonly string _args;
+
+		private static int _lastId;
 
 		private StoreOperation _continuationOp;
 		private AsyncCallback _asyncCallback;
@@ -47,6 +50,7 @@ namespace UnityFx.Purchasing
 
 		private StoreOperation(StoreOperation parentOp, AsyncCallback asyncCallback, object asyncState)
 		{
+			_id = ++_lastId;
 			_owner = parentOp._owner;
 			_type = parentOp._type;
 			_exception = parentOp._exception;
@@ -58,6 +62,7 @@ namespace UnityFx.Purchasing
 
 		private StoreOperation(StoreOperationContainer owner, object result, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
 		{
+			_id = ++_lastId;
 			_owner = owner;
 			_type = opId;
 			_result = result;
@@ -68,6 +73,7 @@ namespace UnityFx.Purchasing
 
 		protected StoreOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState, string comment, string args)
 		{
+			_id = ++_lastId;
 			_owner = owner;
 			_type = opId;
 			_args = args;
@@ -214,6 +220,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		public int Id => _id;
 		public Exception Exception => _exception;
 		public bool IsCompletedSuccessfully => (_status & _statusCompleted) != 0;
 		public bool IsFaulted => _status >= _statusFaulted;

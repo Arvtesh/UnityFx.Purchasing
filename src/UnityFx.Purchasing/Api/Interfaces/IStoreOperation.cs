@@ -17,6 +17,11 @@ namespace UnityFx.Purchasing
 		event AsyncCallback Completed;
 
 		/// <summary>
+		/// Returns an operation identifier. Read only.
+		/// </summary>
+		int Id { get; }
+
+		/// <summary>
 		/// Returns an <see cref="System.Exception"/> that caused the operation to end prematurely. If the operation completed successfully
 		/// or has not yet thrown any exceptions, this will return <see langword="null"/>. Read only.
 		/// </summary>
