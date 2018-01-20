@@ -35,6 +35,7 @@ namespace UnityFx.Purchasing
 	/// }
 	/// </code>
 	/// </example>
+	/// <threadsafety static="true" instance="false"/>
 	/// <seealso cref="IStoreService"/>
 	public abstract class StoreService : IStoreService, IStoreServiceSettings
 	{
@@ -487,6 +488,60 @@ namespace UnityFx.Purchasing
 		#region IStoreService
 
 		/// <inheritdoc/>
+		public event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler<FetchCompletedEventArgs> FetchCompleted;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
+
+		/// <inheritdoc/>
+		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
+
+#if UNITYFX_SUPPORT_OBSERVABLES
+
+		/// <inheritdoc/>
+		public IObservable<PurchaseResult> Purchases
+		{
+			get
+			{
+				ThrowIfDisposed();
+
+				if (_purchases == null)
+				{
+					_purchases = new StoreObservable<PurchaseResult>();
+				}
+
+				return _purchases;
+			}
+		}
+
+		/// <inheritdoc/>
+		public IObservable<FailedPurchaseResult> FailedPurchases
+		{
+			get
+			{
+				ThrowIfDisposed();
+
+				if (_failedPurchases == null)
+				{
+					_failedPurchases = new StoreObservable<FailedPurchaseResult>();
+				}
+
+				return _failedPurchases;
+			}
+		}
+
+#endif
+
+		/// <inheritdoc/>
 		public IStoreServiceSettings Settings
 		{
 			get
@@ -722,64 +777,6 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		public TraceListenerCollection TraceListeners => _console.Listeners;
-
-		#endregion
-
-		#region IStoreEvents
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchCompletedEventArgs> FetchCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
-
-#if UNITYFX_SUPPORT_OBSERVABLES
-
-		/// <inheritdoc/>
-		public IObservable<PurchaseResult> Purchases
-		{
-			get
-			{
-				ThrowIfDisposed();
-
-				if (_purchases == null)
-				{
-					_purchases = new StoreObservable<PurchaseResult>();
-				}
-
-				return _purchases;
-			}
-		}
-
-		/// <inheritdoc/>
-		public IObservable<FailedPurchaseResult> FailedPurchases
-		{
-			get
-			{
-				ThrowIfDisposed();
-
-				if (_failedPurchases == null)
-				{
-					_failedPurchases = new StoreObservable<FailedPurchaseResult>();
-				}
-
-				return _failedPurchases;
-			}
-		}
-
-#endif
 
 		#endregion
 
