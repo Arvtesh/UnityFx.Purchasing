@@ -172,21 +172,23 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initiates the store initialization. Does nothing (returns a completed operation) if already initialized.
 		/// </summary>
+		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		/// <seealso cref="FetchAsync"/>
-		/// <seealso cref="PurchaseAsync(string)"/>
-		IStoreOperation InitializeAsync();
+		/// <seealso cref="FetchAsync(object)"/>
+		/// <seealso cref="PurchaseAsync(string, object)"/>
+		IStoreOperation InitializeAsync(object stateObject);
 
 		/// <summary>
 		/// Initiates fetching product information from the store.
 		/// </summary>
+		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		/// <seealso cref="InitializeAsync"/>
-		/// <seealso cref="PurchaseAsync(string)"/>
-		IStoreOperation FetchAsync();
+		/// <seealso cref="InitializeAsync(object)"/>
+		/// <seealso cref="PurchaseAsync(string, object)"/>
+		IStoreOperation FetchAsync(object stateObject);
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -202,16 +204,17 @@ namespace UnityFx.Purchasing
 		/// Please note that the call would fail if another purchase operation is pending. Use <see cref="IsBusy"/> to determine if that is the case.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
+		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example another purchase operation is pending).</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
-		/// <seealso cref="InitializeAsync"/>
-		/// <seealso cref="FetchAsync"/>
+		/// <seealso cref="InitializeAsync(object)"/>
+		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="IsBusy"/>
-		IStoreOperation<PurchaseResult> PurchaseAsync(string productId);
+		IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject);
 
 #if UNITYFX_SUPPORT_APM
 

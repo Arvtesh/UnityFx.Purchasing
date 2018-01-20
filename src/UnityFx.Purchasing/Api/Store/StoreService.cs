@@ -555,16 +555,16 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreOperation InitializeAsync()
+		public IStoreOperation InitializeAsync(object stateObject)
 		{
 			ThrowIfDisposed();
 
 			if (_storeController == null)
 			{
-				return InitializeInternal(null, null);
+				return InitializeInternal(null, stateObject);
 			}
 
-			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, null, null);
+			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, null, stateObject);
 		}
 
 #if UNITYFX_SUPPORT_APM
@@ -615,12 +615,12 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IStoreOperation FetchAsync()
+		public IStoreOperation FetchAsync(object stateObject)
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
 
-			return FetchInternal(null, null);
+			return FetchInternal(null, stateObject);
 		}
 
 #if UNITYFX_SUPPORT_APM
@@ -663,13 +663,13 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId)
+		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			return PurchaseInternal(productId, null, null);
+			return PurchaseInternal(productId, null, stateObject);
 		}
 
 #if UNITYFX_SUPPORT_APM
