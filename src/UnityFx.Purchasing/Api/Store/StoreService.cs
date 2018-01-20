@@ -555,7 +555,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreOperation Initialize()
+		public IStoreOperation InitializeAsync()
 		{
 			ThrowIfDisposed();
 
@@ -598,7 +598,7 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task InitializeAsync()
+		public Task InitializeTaskAsync()
 		{
 			ThrowIfDisposed();
 
@@ -615,7 +615,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IStoreOperation Fetch()
+		public IStoreOperation FetchAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
@@ -650,7 +650,7 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task FetchAsync()
+		public Task FetchTaskAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
@@ -663,7 +663,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IStoreOperation<PurchaseResult> Purchase(string productId)
+		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
@@ -700,7 +700,7 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <inheritdoc/>
-		public Task<PurchaseResult> PurchaseAsync(string productId)
+		public Task<PurchaseResult> PurchaseTaskAsync(string productId)
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
