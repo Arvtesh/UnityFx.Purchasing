@@ -8,25 +8,29 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Event arguments for store events.
 	/// </summary>
-	public class StoreOperationEventArgs : EventArgs
+	public class StoreOperationEventArgs : EventArgs, IStoreOperationInfo
 	{
-		/// <summary>
-		/// Returns identifier of the corresponding operation. Read only.
-		/// </summary>
+		#region IStoreOperationInfo
+
+		/// <inheritdoc/>
 		public int OperationId { get; }
 
-		/// <summary>
-		/// Returns user-defined data assosiated with the corresponding operation (if any). Read only.
-		/// </summary>
-		public object UserData { get; }
+		/// <inheritdoc/>
+		public object UserState { get; }
+
+		#endregion
+
+		#region interface
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreOperationEventArgs"/> class.
 		/// </summary>
-		public StoreOperationEventArgs(IStoreOperation op)
+		public StoreOperationEventArgs(IStoreOperationInfo op)
 		{
-			OperationId = op.Id;
-			UserData = op.AsyncState;
+			OperationId = op.OperationId;
+			UserState = op.UserState;
 		}
+
+		#endregion
 	}
 }

@@ -7,93 +7,54 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A store purchase result.
+	/// Result of a store purchase.
 	/// </summary>
-	[Serializable]
-	public class PurchaseResult
+	public struct PurchaseResult : IPurchaseResult
 	{
 		#region data
 
-		[NonSerialized]
-		private Product _product;
-
-		private StoreTransaction _transaction;
-		private PurchaseValidationResult _validationResult;
-		private string _productId;
-		private bool _restored;
+		private readonly IPurchaseResult _result;
 
 		#endregion
 
 		#region interface
 
 		/// <summary>
-		/// Returns the purchased product (or <see langword="null"/>). Read only.
+		/// Initializes a new instance of the <see cref="PurchaseResult"/> struct.
 		/// </summary>
-		public Product Product => _product;
-
-		/// <summary>
-		/// Returns the transaction info. Read only.
-		/// </summary>
-		public StoreTransaction TransactionInfo => _transaction;
-
-		/// <summary>
-		/// Returns product validation result (<see langword="null"/> if not available). Read only.
-		/// </summary>
-		public PurchaseValidationResult ValidationResult => _validationResult;
-
-		/// <summary>
-		/// Returns the product identifier. Read only.
-		/// </summary>
-		public string ProductId => _productId;
-
-		/// <summary>
-		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
-		/// </summary>
-		public bool IsRestored => _restored;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
-		/// </summary>
-		public PurchaseResult(Product product, bool restored)
+		internal PurchaseResult(IPurchaseResult result)
 		{
-			_product = product;
-			_productId = product.definition.id;
-			_restored = restored;
+			_result = result;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
-		/// </summary>
-		protected PurchaseResult(string productId, Product product, bool restored)
-		{
-			_product = product;
-			_productId = productId;
-			_restored = restored;
-		}
+		#endregion
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
-		/// </summary>
-		public PurchaseResult(StoreTransaction transactionInfo, PurchaseValidationResult validationResult, bool restored)
-		{
-			_product = transactionInfo.Product;
-			_productId = transactionInfo.ProductId;
-			_transaction = transactionInfo;
-			_validationResult = validationResult;
-			_restored = restored;
-		}
+		#region IPurchaseResult
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PurchaseResult"/> class.
-		/// </summary>
-		protected PurchaseResult(string productId, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, bool restored)
-		{
-			_product = transactionInfo.Product;
-			_productId = productId;
-			_transaction = transactionInfo;
-			_validationResult = validationResult;
-			_restored = restored;
-		}
+		/// <inheritdoc/>
+		public string ProductId => _result.ProductId;
+
+		/// <inheritdoc/>
+		public Product Product => _result.Product;
+
+		/// <inheritdoc/>
+		public StoreTransaction Transaction => _result.Transaction;
+
+		/// <inheritdoc/>
+		public PurchaseValidationResult ValidationResult => _result.ValidationResult;
+
+		/// <inheritdoc/>
+		public bool Restored => _result.Restored;
+
+		#endregion
+
+		#region IStoreOperationInfo
+
+		/// <inheritdoc/>
+		public int OperationId => _result.OperationId;
+
+		/// <inheritdoc/>
+		public object UserState => _result.UserState;
 
 		#endregion
 	}

@@ -4,15 +4,18 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+#if !NET35
+using System.Runtime.ExceptionServices;
+#endif
 using System.Threading;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A yieldable asynchronous store operation with a result.
+	/// A yieldable asynchronous store operation.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal class StoreOperation : IStoreOperation, IEnumerator
+	internal class StoreOperation : IStoreOperation, IStoreOperationInfo, IAsyncResult, IEnumerator
 	{
 		#region data
 
@@ -35,7 +38,6 @@ namespace UnityFx.Purchasing
 		private object _asyncState;
 		private EventWaitHandle _waitHandle;
 		private Exception _exception;
-		private object _result;
 
 		private volatile int _status;
 
@@ -54,7 +56,6 @@ namespace UnityFx.Purchasing
 			_owner = parentOp._owner;
 			_type = parentOp._type;
 			_exception = parentOp._exception;
-			_result = parentOp._result;
 			_status = parentOp._status;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
@@ -65,7 +66,6 @@ namespace UnityFx.Purchasing
 			_id = ++_lastId;
 			_owner = owner;
 			_type = opId;
-			_result = result;
 			_status = _statusCompleted | _statusSynchronousFlag;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
@@ -144,11 +144,27 @@ namespace UnityFx.Purchasing
 			return op;
 		}
 
-		protected bool TrySetResult(object result, bool completedSynchronously = false)
+		internal void Join()
+		{
+			if (!IsCompleted)
+			{
+				AsyncWaitHandle.WaitOne();
+			}
+
+			if (_exception != null)
+			{
+#if NET35
+				throw _exception;
+#else
+				ExceptionDispatchInfo.Capture(_exception).Throw();
+#endif
+			}
+		}
+
+		protected bool TrySetCompleted(bool completedSynchronously = false)
 		{
 			if (TrySetStatus(_statusCompleted, completedSynchronously))
 			{
-				_result = result;
 				OnCompleted();
 				return true;
 			}
@@ -181,14 +197,12 @@ namespace UnityFx.Purchasing
 			return false;
 		}
 
-		protected object GetResult()
+		protected void ThrowIfNotCompletedSuccessfully()
 		{
 			if ((_status & _statusCompleted) == 0)
 			{
 				throw new InvalidOperationException("The operation result is not available.", _exception);
 			}
-
-			return _result;
 		}
 
 		protected void ThrowIfDisposed()
@@ -201,24 +215,14 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IStoreOperationInfo
+
+		public int OperationId => _id;
+		public object UserState => _asyncState;
+
+		#endregion
+
 		#region IStoreOperation
-
-		public event AsyncCallback Completed
-		{
-			add
-			{
-				if (value == null)
-				{
-					throw new ArgumentNullException(nameof(value));
-				}
-
-				AddCompletionHandler(value);
-			}
-			remove
-			{
-				_asyncCallback -= value;
-			}
-		}
 
 		public int Id => _id;
 		public Exception Exception => _exception;
@@ -283,11 +287,10 @@ namespace UnityFx.Purchasing
 					throw new InvalidOperationException("Cannot dispose non-completed operation.");
 				}
 
-				_status = _statusDisposedFlag;
+				_status |= _statusDisposedFlag;
 				_asyncCallback = null;
 				_asyncState = null;
 				_exception = null;
-				_result = null;
 				_waitHandle?.Close();
 				_waitHandle = null;
 			}
@@ -346,7 +349,6 @@ namespace UnityFx.Purchasing
 			if (TrySetStatus(op._status, false))
 			{
 				_exception = op._exception;
-				_result = op._result;
 
 				SignalCompletionEvents();
 			}

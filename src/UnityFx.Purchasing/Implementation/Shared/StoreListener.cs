@@ -176,7 +176,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public PurchaseProcessingResult ProcessPurchase(UnityEngine.Purchasing.PurchaseEventArgs args)
+		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 		{
 			Debug.Assert(args != null);
 			Debug.Assert(args.purchasedProduct != null);
@@ -195,12 +195,12 @@ namespace UnityFx.Purchasing
 					{
 						// A restored transactions when the _purchaseOp is null.
 						var op = new PurchaseOperation(this, product, true);
-						return op.Validate(product);
+						return op.Validate();
 					}
 					else if (_purchaseOp.ProcessPurchase(product))
 					{
 						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-						return _purchaseOp.Validate(product);
+						return _purchaseOp.Validate();
 					}
 					else
 					{

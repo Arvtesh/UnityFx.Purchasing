@@ -2,52 +2,55 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for <see cref="IStoreEvents.FetchCompleted"/>.
+	/// Event arguments for <see cref="IStoreService.FetchCompleted"/> and <see cref="IStoreService.InitializeCompleted"/>.
 	/// </summary>
-	public class FetchCompletedEventArgs : StoreOperationEventArgs
+	public class FetchCompletedEventArgs : AsyncCompletedEventArgs, IStoreOperationInfo
 	{
-		/// <summary>
-		/// Returns initialization failure reason. Read only.
-		/// </summary>
-		public StoreFetchError Reason { get; }
+		#region data
+
+		private readonly IStoreOperationInfo _result;
+		private readonly StoreFetchError _reason;
+
+		#endregion
+
+		#region interface
 
 		/// <summary>
-		/// Returns exception that caused the failure (if any). Read only.
+		/// Returns fetch failure reason. Read only.
 		/// </summary>
-		public Exception Exception { get; }
-
-		/// <summary>
-		/// Returns <see langword="true"/> if the corresponding operation has completed successfully; <see langword="false"/> otherwise. Read only.
-		/// </summary>
-		public bool IsSucceeded { get; }
-
-		/// <summary>
-		/// Returns <see langword="true"/> if the corresponding operation has failed; <see langword="false"/> otherwise. Read only.
-		/// </summary>
-		public bool IsFaulted { get; }
+		public StoreFetchError ErrorId => _reason;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
 		/// </summary>
-		public FetchCompletedEventArgs(IStoreOperation op)
-			: base(op)
+		public FetchCompletedEventArgs(IStoreOperationInfo op)
+			: base(null, false, op.UserState)
 		{
-			IsSucceeded = true;
+			_result = op;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
 		/// </summary>
-		public FetchCompletedEventArgs(IStoreOperation op, StoreFetchError reason, Exception e)
-			: base(op)
+		public FetchCompletedEventArgs(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
+			: base(e, false, op.UserState)
 		{
-			Reason = reason;
-			Exception = e;
-			IsFaulted = true;
+			_result = op;
+			_reason = failReason;
 		}
+
+		#endregion
+
+		#region IStoreOperationInfo
+
+		/// <inheritdoc/>
+		public int OperationId => _result.OperationId;
+
+		#endregion
 	}
 }

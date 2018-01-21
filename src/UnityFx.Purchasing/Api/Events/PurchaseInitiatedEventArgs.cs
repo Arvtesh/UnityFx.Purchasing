@@ -6,16 +6,28 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for <see cref="IStoreEvents.PurchaseInitiated"/>.
+	/// Event arguments for <see cref="IStoreService.PurchaseInitiated"/>.
 	/// </summary>
-	public class PurchaseInitiatedEventArgs : PurchaseEventArgs
+	public class PurchaseInitiatedEventArgs : StoreOperationEventArgs
 	{
+		/// <summary>
+		/// Returns the product identifier. Read only.
+		/// </summary>
+		public string ProductId { get; }
+
+		/// <summary>
+		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
+		/// </summary>
+		public bool Restored { get; }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseInitiatedEventArgs"/> class.
 		/// </summary>
-		public PurchaseInitiatedEventArgs(IStoreOperation op, string productId, bool restored)
-			: base(op, productId, restored)
+		public PurchaseInitiatedEventArgs(IStoreOperationInfo op, string productId, bool restored)
+			: base(op)
 		{
+			ProductId = productId;
+			Restored = restored;
 		}
 	}
 }

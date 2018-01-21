@@ -141,9 +141,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store initialize operation has been initiated.
 		/// </summary>
-		/// <seealso cref="OnInitializeCompleted(IStoreOperation)"/>
-		/// <seealso cref="OnInitializeFailed(IStoreOperation, StoreFetchError, Exception)"/>
-		protected virtual void OnInitializeInitiated(IStoreOperation op)
+		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
+		protected virtual void OnInitializeInitiated(IStoreOperationInfo op)
 		{
 			InitializeInitiated?.Invoke(this, new FetchInitiatedEventArgs(op));
 		}
@@ -151,29 +150,17 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store initialization has succeeded.
 		/// </summary>
-		/// <seealso cref="OnInitializeFailed(IStoreOperation, StoreFetchError, Exception)"/>
-		/// <seealso cref="OnInitializeInitiated"/>
-		protected virtual void OnInitializeCompleted(IStoreOperation op)
+		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
+		protected virtual void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
 		{
-			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op));
-		}
-
-		/// <summary>
-		/// Called when the store initialization has failed.
-		/// </summary>
-		/// <seealso cref="OnInitializeCompleted(IStoreOperation)"/>
-		/// <seealso cref="OnInitializeInitiated(IStoreOperation)"/>
-		protected virtual void OnInitializeFailed(IStoreOperation op, StoreFetchError reason, Exception e)
-		{
-			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op, reason, e));
+			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReason, e));
 		}
 
 		/// <summary>
 		/// Called when the store fetch operation has been initiated.
 		/// </summary>
-		/// <seealso cref="OnFetchCompleted(IStoreOperation)"/>
-		/// <seealso cref="OnFetchFailed(IStoreOperation, StoreFetchError, Exception)"/>
-		protected virtual void OnFetchInitiated(IStoreOperation op)
+		/// <seealso cref="OnFetchCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
+		protected virtual void OnFetchInitiated(IStoreOperationInfo op)
 		{
 			FetchInitiated?.Invoke(this, new FetchInitiatedEventArgs(op));
 		}
@@ -181,51 +168,28 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store fetch has succeeded.
 		/// </summary>
-		/// <seealso cref="OnFetchFailed(IStoreOperation, StoreFetchError, Exception)"/>
-		/// <seealso cref="OnFetchInitiated(IStoreOperation)"/>
-		protected virtual void OnFetchCompleted(IStoreOperation op)
+		/// <seealso cref="OnFetchInitiated(IStoreOperationInfo)"/>
+		protected virtual void OnFetchCompleted(IStoreOperationInfo op, StoreFetchError failReson, Exception e)
 		{
-			FetchCompleted?.Invoke(this, new FetchCompletedEventArgs(op));
-		}
-
-		/// <summary>
-		/// Called when the store fetch has failed.
-		/// </summary>
-		/// <seealso cref="OnFetchCompleted(IStoreOperation)"/>
-		/// <seealso cref="OnFetchInitiated(IStoreOperation)"/>
-		protected virtual void OnFetchFailed(IStoreOperation op, StoreFetchError reason, Exception e)
-		{
-			FetchCompleted?.Invoke(this, new FetchCompletedEventArgs(op, reason, e));
+			FetchCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReson, e));
 		}
 
 		/// <summary>
 		/// Called when the store purchase operation has been initiated.
 		/// </summary>
-		/// <seealso cref="OnPurchaseCompleted(IStoreOperation, PurchaseResult)"/>
-		/// <seealso cref="OnPurchaseFailed(IStoreOperation, FailedPurchaseResult)"/>
-		protected virtual void OnPurchaseInitiated(IStoreOperation op, string productId, bool isRestored)
+		/// <seealso cref="OnPurchaseCompleted(IPurchaseResult, StorePurchaseError, Exception)"/>
+		protected virtual void OnPurchaseInitiated(IStoreOperationInfo op, string productId, bool restored)
 		{
-			PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(op, productId, isRestored));
+			PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(op, productId, restored));
 		}
 
 		/// <summary>
 		/// Called when the store purchase operation succeded.
 		/// </summary>
-		/// <seealso cref="OnPurchaseFailed(IStoreOperation, FailedPurchaseResult)"/>
-		/// <seealso cref="OnPurchaseInitiated(IStoreOperation, string, bool)"/>
-		protected virtual void OnPurchaseCompleted(IStoreOperation op, PurchaseResult result)
+		/// <seealso cref="OnPurchaseInitiated(IStoreOperationInfo, string, bool)"/>
+		protected virtual void OnPurchaseCompleted(IPurchaseResult result, StorePurchaseError failReson, Exception e)
 		{
-			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(op, result));
-		}
-
-		/// <summary>
-		/// Called when the store purchase operation has failed.
-		/// </summary>
-		/// <seealso cref="OnPurchaseCompleted(IStoreOperation, PurchaseResult)"/>
-		/// <seealso cref="OnPurchaseInitiated(IStoreOperation, string, bool)"/>
-		protected virtual void OnPurchaseFailed(IStoreOperation op, FailedPurchaseResult result)
-		{
-			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(op, result));
+			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(result, failReson, e));
 		}
 
 		/// <summary>
@@ -345,7 +309,7 @@ namespace UnityFx.Purchasing
 			_products?.SetController(controller);
 		}
 
-		internal void InvokeInitializeInitiated(IStoreOperation op)
+		internal void InvokeInitializeInitiated(IStoreOperationInfo op)
 		{
 			try
 			{
@@ -357,31 +321,19 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal void InvokeInitializeCompleted(IStoreOperation op)
+		internal void InvokeInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
 		{
 			try
 			{
-				OnInitializeCompleted(op);
+				OnInitializeCompleted(op, failReason, e);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, ex);
 			}
 		}
 
-		internal void InvokeInitializeFailed(IStoreOperation op, StoreFetchError reason, Exception ex)
-		{
-			try
-			{
-				OnInitializeFailed(op, reason, ex);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, e);
-			}
-		}
-
-		internal void InvokeFetchInitiated(IStoreOperation op)
+		internal void InvokeFetchInitiated(IStoreOperationInfo op)
 		{
 			try
 			{
@@ -393,31 +345,19 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal void InvokeFetchCompleted(IStoreOperation op)
+		internal void InvokeFetchCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
 		{
 			try
 			{
-				OnInitializeCompleted(op);
+				OnFetchCompleted(op, failReason, e);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, ex);
 			}
 		}
 
-		internal void InvokeFetchFailed(IStoreOperation op, StoreFetchError reason, Exception ex)
-		{
-			try
-			{
-				OnInitializeFailed(op, reason, ex);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, e);
-			}
-		}
-
-		internal void InvokePurchaseInitiated(IStoreOperation op, string productId, bool restored)
+		internal void InvokePurchaseInitiated(IStoreOperationInfo op, string productId, bool restored)
 		{
 			Debug.Assert(!string.IsNullOrEmpty(productId));
 
@@ -431,53 +371,35 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal void InvokePurchaseCompleted(IStoreOperation op, string productId, PurchaseResult purchaseResult)
+		internal void InvokePurchaseCompleted(IPurchaseResult result, StorePurchaseError failReason, Exception e)
 		{
-			Debug.Assert(purchaseResult != null);
+			Debug.Assert(result != null);
 
 			try
 			{
-				OnPurchaseCompleted(op, purchaseResult);
+				OnPurchaseCompleted(result, failReason, e);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, ex);
 			}
 
 #if UNITYFX_SUPPORT_OBSERVABLES
 
 			try
 			{
-				_purchases?.OnNext(purchaseResult);
+				if (failReason == StorePurchaseError.None)
+				{
+					_purchases?.OnNext(new PurchaseResult(result));
+				}
+				else
+				{
+					_failedPurchases?.OnNext(new FailedPurchaseResult(result, failReason, e));
+				}
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
-			}
-
-#endif
-		}
-
-		internal void InvokePurchaseFailed(IStoreOperation op, FailedPurchaseResult purchaseResult)
-		{
-			try
-			{
-				OnPurchaseFailed(op, purchaseResult);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
-			}
-
-#if UNITYFX_SUPPORT_OBSERVABLES
-
-			try
-			{
-				_failedPurchases?.OnNext(purchaseResult);
-			}
-			catch (Exception e)
-			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, ex);
 			}
 
 #endif
@@ -622,6 +544,25 @@ namespace UnityFx.Purchasing
 			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, null, stateObject);
 		}
 
+		/// <inheritdoc/>
+		public IStoreOperation FetchAsync(object stateObject)
+		{
+			ThrowIfDisposed();
+			ThrowIfNotInitialized();
+
+			return FetchInternal(null, stateObject);
+		}
+
+		/// <inheritdoc/>
+		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
+		{
+			ThrowIfInvalidProductId(productId);
+			ThrowIfDisposed();
+			ThrowIfBusy();
+
+			return PurchaseInternal(productId, null, stateObject);
+		}
+
 #if UNITYFX_SUPPORT_APM
 
 		/// <inheritdoc/>
@@ -648,38 +589,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#endif
-
-#if UNITYFX_SUPPORT_TAP
-
-		/// <inheritdoc/>
-		public Task InitializeTaskAsync()
-		{
-			ThrowIfDisposed();
-
-			if (_storeController == null)
-			{
-				var tcs = new TaskCompletionSource<object>();
-				InitializeInternal(FetchCompletionCallback, tcs);
-				return tcs.Task;
-			}
-
-			return Task.CompletedTask;
-		}
-
-#endif
-
-		/// <inheritdoc/>
-		public IStoreOperation FetchAsync(object stateObject)
-		{
-			ThrowIfDisposed();
-			ThrowIfNotInitialized();
-
-			return FetchInternal(null, stateObject);
-		}
-
-#if UNITYFX_SUPPORT_APM
-
 		/// <inheritdoc/>
 		public IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject)
 		{
@@ -700,35 +609,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#endif
-
-#if UNITYFX_SUPPORT_TAP
-
-		/// <inheritdoc/>
-		public Task FetchTaskAsync()
-		{
-			ThrowIfDisposed();
-			ThrowIfNotInitialized();
-
-			var tcs = new TaskCompletionSource<object>();
-			FetchInternal(FetchCompletionCallback, tcs);
-			return tcs.Task;
-		}
-
-#endif
-
-		/// <inheritdoc/>
-		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
-		{
-			ThrowIfInvalidProductId(productId);
-			ThrowIfDisposed();
-			ThrowIfBusy();
-
-			return PurchaseInternal(productId, null, stateObject);
-		}
-
-#if UNITYFX_SUPPORT_APM
-
 		/// <inheritdoc/>
 		public IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject)
 		{
@@ -744,15 +624,42 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation<PurchaseResult>(asyncResult, StoreOperationId.Purchase))
+			using (var op = ValidateOperation(asyncResult, StoreOperationId.Purchase))
 			{
-				return op.Join();
+				op.Join();
+				return (op as PurchaseOperation).ResultUnsafe;
 			}
 		}
 
 #endif
 
 #if UNITYFX_SUPPORT_TAP
+
+		/// <inheritdoc/>
+		public Task InitializeTaskAsync()
+		{
+			ThrowIfDisposed();
+
+			if (_storeController == null)
+			{
+				var tcs = new TaskCompletionSource<object>();
+				InitializeInternal(FetchCompletionCallback, tcs);
+				return tcs.Task;
+			}
+
+			return Task.CompletedTask;
+		}
+
+		/// <inheritdoc/>
+		public Task FetchTaskAsync()
+		{
+			ThrowIfDisposed();
+			ThrowIfNotInitialized();
+
+			var tcs = new TaskCompletionSource<object>();
+			FetchInternal(FetchCompletionCallback, tcs);
+			return tcs.Task;
+		}
 
 		/// <inheritdoc/>
 		public Task<PurchaseResult> PurchaseTaskAsync(string productId)
@@ -910,7 +817,7 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
-		private IStoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationId type)
+		private StoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationId type)
 		{
 			if (asyncResult == null)
 			{
@@ -935,11 +842,6 @@ namespace UnityFx.Purchasing
 			{
 				throw new ArgumentException("Invalid operation type", nameof(asyncResult));
 			}
-		}
-
-		private IStoreOperation<T> ValidateOperation<T>(IAsyncResult asyncResult, StoreOperationId type)
-		{
-			return ValidateOperation(asyncResult, type) as IStoreOperation<T>;
 		}
 
 #if UNITYFX_SUPPORT_TAP

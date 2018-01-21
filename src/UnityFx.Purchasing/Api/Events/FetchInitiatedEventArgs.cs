@@ -6,14 +6,14 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for initialize/fetch events.
+	/// Event arguments for <see cref="IStoreService.FetchInitiated"/> and <see cref="IStoreService.InitializeInitiated"/>.
 	/// </summary>
 	public class FetchInitiatedEventArgs : StoreOperationEventArgs
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchInitiatedEventArgs"/> class.
 		/// </summary>
-		public FetchInitiatedEventArgs(IStoreOperation op)
+		public FetchInitiatedEventArgs(IStoreOperationInfo op)
 			: base(op)
 		{
 		}

@@ -31,7 +31,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the purchase result. Read only.
 		/// </summary>
-		public PurchaseResult Result { get; }
+		public IPurchaseResult Result { get; }
 
 		/// <summary>
 		/// Returns the purchase error identifier. Read only.
@@ -64,21 +64,10 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(FailedPurchaseResult result)
-			: base(GetMessage(result.ProductId, result.Reason), result.Exception)
+		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason)
+			: base(GetMessage(result.ProductId, reason))
 		{
 			ProductId = result.ProductId;
-			Result = result;
-			Reason = result.Reason;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
-		/// </summary>
-		public StorePurchaseException(string productId, PurchaseResult result, StorePurchaseError reason)
-			: base(GetMessage(productId, reason))
-		{
-			ProductId = productId;
 			Result = result;
 			Reason = reason;
 		}
@@ -86,10 +75,10 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(string productId, PurchaseResult result, StorePurchaseError reason, Exception innerException)
-			: base(GetMessage(productId, reason), innerException)
+		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason, Exception innerException)
+			: base(GetMessage(result.ProductId, reason), innerException)
 		{
-			ProductId = productId;
+			ProductId = result.ProductId;
 			Result = result;
 			Reason = reason;
 		}
@@ -104,13 +93,13 @@ namespace UnityFx.Purchasing
 			get
 			{
 				var s = base.Message;
-				var transactionInfo = Result.TransactionInfo;
+				var transactionInfo = Result.Transaction;
 
 				if (transactionInfo != null)
 				{
 					s += " TransactionID: " + transactionInfo.TransactionId;
 
-					if (Result.IsRestored)
+					if (Result.Restored)
 					{
 						s += ", auto-restored.";
 					}
@@ -135,7 +124,6 @@ namespace UnityFx.Purchasing
 			: base(info, context)
 		{
 			ProductId = info.GetString(_productIdSerializationName);
-			Result = info.GetValue(_resultSerializationName, typeof(PurchaseResult)) as PurchaseResult;
 			Reason = (StorePurchaseError)info.GetValue(_reasonSerializationName, typeof(StorePurchaseError));
 		}
 
@@ -146,7 +134,6 @@ namespace UnityFx.Purchasing
 			base.GetObjectData(info, context);
 
 			info.AddValue(_productIdSerializationName, ProductId);
-			info.AddValue(_resultSerializationName, Result, typeof(PurchaseResult));
 			info.AddValue(_reasonSerializationName, Reason.ToString());
 		}
 

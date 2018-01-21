@@ -15,6 +15,11 @@ namespace UnityFx.Purchasing
 	public enum StoreFetchError
 	{
 		/// <summary>
+		/// No errors.
+		/// </summary>
+		None,
+
+		/// <summary>
 		/// A catch-all for unrecognized fetch/initialize problems.
 		/// </summary>
 		Unknown,
@@ -50,6 +55,11 @@ namespace UnityFx.Purchasing
 	/// </summary>
 	public enum StorePurchaseError
 	{
+		/// <summary>
+		/// No errors.
+		/// </summary>
+		None,
+
 		/// <summary>
 		/// A catch-all for unrecognized purchase problems (<see cref="PurchaseFailureReason.Unknown"/>).
 		/// </summary>
@@ -129,14 +139,14 @@ namespace UnityFx.Purchasing
 	public interface IStoreService : IDisposable
 	{
 		/// <summary>
-		/// Triggered when the store initialization has been initiated.
+		/// Raised when the store initialization has been initiated.
 		/// </summary>
 		/// <seealso cref="InitializeAsync(object)"/>
 		/// <seealso cref="InitializeCompleted"/>
 		event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
 
 		/// <summary>
-		/// Triggered when the store has been initialized.
+		/// Raised when the store has been initialized.
 		/// </summary>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="InitializeAsync(object)"/>
@@ -144,14 +154,14 @@ namespace UnityFx.Purchasing
 		event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
 
 		/// <summary>
-		/// Triggered when the store initialization has been initiated.
+		/// Raised when the store initialization has been initiated.
 		/// </summary>
 		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="FetchCompleted"/>
 		event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
 
 		/// <summary>
-		/// Triggered when the store has been initialized.
+		/// Raised when the store has been initialized.
 		/// </summary>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="FetchAsync(object)"/>
@@ -159,14 +169,14 @@ namespace UnityFx.Purchasing
 		event EventHandler<FetchCompletedEventArgs> FetchCompleted;
 
 		/// <summary>
-		/// Triggered when a new purchase is initiated.
+		/// Raised when a new purchase is initiated.
 		/// </summary>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="PurchaseCompleted"/>
 		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
 
 		/// <summary>
-		/// Triggered when a purchase has completed successfully.
+		/// Raised when a purchase has completed successfully.
 		/// </summary>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
@@ -357,7 +367,7 @@ namespace UnityFx.Purchasing
 		/// Begins an asynchronous purchase operation of the specified product.
 		/// </summary>
 		/// <remarks>
-		/// Please see <see cref="PurchaseAsync(string)"/> documentation for more information.
+		/// Please see <see cref="PurchaseAsync(string, object)"/> documentation for more information.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
 		/// <param name="userCallback">The method to be called when the asynchronous purchase operation is completed.</param>
@@ -422,7 +432,7 @@ namespace UnityFx.Purchasing
 		/// Initiates purchase of the specified product.
 		/// </summary>
 		/// <remarks>
-		/// Please see <see cref="PurchaseAsync(string)"/> documentation for more information.
+		/// Please see <see cref="PurchaseAsync(string, object)"/> documentation for more information.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>

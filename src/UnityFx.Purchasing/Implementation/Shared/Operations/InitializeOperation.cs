@@ -44,12 +44,12 @@ namespace UnityFx.Purchasing
 
 		protected override void InvokeCompleted()
 		{
-			Store.InvokeInitializeCompleted(this);
+			Store.InvokeInitializeCompleted(this, StoreFetchError.None, null);
 		}
 
 		protected override void InvokeFailed(StoreFetchError reason, Exception e)
 		{
-			Store.InvokeInitializeFailed(this, reason, e);
+			Store.InvokeInitializeCompleted(this, reason, e);
 		}
 
 		#endregion

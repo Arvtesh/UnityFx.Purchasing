@@ -42,12 +42,12 @@ namespace UnityFx.Purchasing
 
 		protected override void InvokeCompleted()
 		{
-			Store.InvokeFetchCompleted(this);
+			Store.InvokeFetchCompleted(this, StoreFetchError.None, null);
 		}
 
 		protected override void InvokeFailed(StoreFetchError reason, Exception e)
 		{
-			Store.InvokeFetchFailed(this, reason, e);
+			Store.InvokeFetchCompleted(this, reason, e);
 		}
 
 		#endregion

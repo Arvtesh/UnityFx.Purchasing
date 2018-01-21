@@ -31,7 +31,7 @@ namespace UnityFx.Purchasing
 
 		public void SetCompleted()
 		{
-			if (TrySetResult(null))
+			if (TrySetCompleted())
 			{
 				InvokeCompleted();
 			}

@@ -32,11 +32,6 @@ namespace UnityFx.Purchasing
 		public Product Product => _product;
 
 		/// <summary>
-		/// Returns the product identifier. Read only.
-		/// </summary>
-		public string ProductId => _product?.definition.id;
-
-		/// <summary>
 		/// Returns identifier of the transaction. Read only.
 		/// </summary>
 		public string TransactionId => _transactionId;
