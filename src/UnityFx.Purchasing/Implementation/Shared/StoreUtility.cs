@@ -6,20 +6,20 @@ using System.Diagnostics;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// Enumerates identifiers for <see cref="TraceSource"/> methods.
-	/// </summary>
-	internal enum StoreOperationId
+	internal enum AsyncPatternId
 	{
-		Default,
-		Initialize,
-		Fetch,
-		Purchase
+		Eap,
+		Apm,
+		Tap
 	}
 
-	/// <summary>
-	/// Helpers.
-	/// </summary>
+	internal enum StoreOperationId
+	{
+		Initialize = 1,
+		Fetch = 2,
+		Purchase = 3
+	}
+
 	internal static class StoreUtility
 	{
 		internal static void TraceError(this TraceSource traceSource, StoreOperationId opId, string s)

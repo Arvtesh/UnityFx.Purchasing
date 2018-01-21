@@ -61,16 +61,6 @@ namespace UnityFx.Purchasing
 			_asyncState = asyncState;
 		}
 
-		private StoreOperation(StoreOperationContainer owner, object result, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
-		{
-			_id = ++_lastId;
-			_owner = owner;
-			_type = opId;
-			_status = _statusCompleted | _statusSynchronousFlag;
-			_asyncCallback = asyncCallback;
-			_asyncState = asyncState;
-		}
-
 		protected StoreOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState, string comment, string args)
 		{
 			_id = ++_lastId;
@@ -95,18 +85,6 @@ namespace UnityFx.Purchasing
 			owner.AddOperation(this);
 
 			Console.TraceEvent(TraceEventType.Start, (int)opId, s);
-		}
-
-		internal static StoreOperation GetCompletedOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
-		{
-			var result = new StoreOperation(owner, null, opId, null, asyncState);
-
-			if (result.IsCompleted)
-			{
-				asyncCallback?.Invoke(result);
-			}
-
-			return result;
 		}
 
 		internal void AddCompletionHandler(AsyncCallback continuation)
