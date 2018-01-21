@@ -2,16 +2,56 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-#if !NET35
-using System.Runtime.ExceptionServices;
-#endif
+using UnityEngine;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Extensions for <see cref="IStoreService"/>.
+	/// Purchasing-related extensions.
 	/// </summary>
 	public static class StoreExtensions
 	{
+		[Serializable]
+		private struct UnityReceiptData
+		{
+			public string Store;
+			public string Payload;
+
+			public UnityReceiptData(string store, string payload)
+			{
+				Store = store;
+				Payload = payload;
+			}
+		}
+
+		/// <summary>
+		/// Extracts native platfrom purchase receipt from Unity product.
+		/// </summary>
+		public static string GetNativeReceipt(this Product product)
+		{
+			if (string.IsNullOrEmpty(product.receipt))
+			{
+				return product.receipt;
+			}
+
+			return JsonUtility.FromJson<UnityReceiptData>(product.receipt).Payload;
+		}
+
+		/// <summary>
+		/// Extracts native platfrom purchase receipt from Unity receipt.
+		/// </summary>
+		public static string GetNativeReceipt(this Product product, out string storeId)
+		{
+			if (product.hasReceipt && !string.IsNullOrEmpty(product.receipt))
+			{
+				var receiptData = JsonUtility.FromJson<UnityReceiptData>(product.receipt);
+				storeId = receiptData.Store;
+				return receiptData.Payload;
+			}
+
+			storeId = null;
+			return product.receipt;
+		}
 	}
 }

@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
-	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IPurchaseResult
+	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IPurchaseResult, IStoreTransaction
 	{
 		#region data
 
@@ -24,7 +24,7 @@ namespace UnityFx.Purchasing
 		private readonly bool _restored;
 
 		private Product _product;
-		private StoreTransaction _transaction;
+		private string _receipt;
 		private PurchaseValidationResult _validationResult;
 
 		#endregion
@@ -49,7 +49,7 @@ namespace UnityFx.Purchasing
 			: this(parent, product.definition.id, restored, null, null)
 		{
 			_product = product;
-			_transaction = new StoreTransaction(product);
+			_receipt = product.GetNativeReceipt();
 		}
 
 		public void Initiate()
@@ -74,7 +74,7 @@ namespace UnityFx.Purchasing
 			if (_restored || IsSame(product))
 			{
 				_product = product;
-				_transaction = new StoreTransaction(product);
+				_receipt = product.GetNativeReceipt();
 				return true;
 			}
 
@@ -89,7 +89,7 @@ namespace UnityFx.Purchasing
 			{
 				Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, $"ValidatePurchase: {_productId}, transactionId = {_product.transactionID}");
 
-				if (string.IsNullOrEmpty(_transaction.Receipt))
+				if (string.IsNullOrEmpty(_receipt))
 				{
 					SetFailed(StorePurchaseError.ReceiptNullOrEmpty);
 				}
@@ -99,7 +99,7 @@ namespace UnityFx.Purchasing
 
 					try
 					{
-						Store.ValidatePurchaseAsync(_transaction).ContinueWith(ValidateContinuation);
+						Store.ValidatePurchaseAsync(this).ContinueWith(ValidateContinuation);
 					}
 					catch (Exception e)
 					{
@@ -114,7 +114,7 @@ namespace UnityFx.Purchasing
 
 					try
 					{
-						validationImplemented = Store.ValidatePurchase(_transaction, ValidateCallback);
+						validationImplemented = Store.ValidatePurchase(this, ValidateCallback);
 					}
 					catch (Exception e)
 					{
@@ -133,7 +133,7 @@ namespace UnityFx.Purchasing
 					}
 					else
 					{
-						SetCompleted(new PurchaseValidationResult(PurchaseValidationStatus.Suppressed));
+						SetCompleted(PurchaseValidationResult.Suppressed);
 					}
 
 #endif
@@ -234,7 +234,10 @@ namespace UnityFx.Purchasing
 		public Product Product => _product;
 
 		/// <inheritdoc/>
-		public StoreTransaction Transaction => _transaction;
+		public string TransactionId => _product?.transactionID;
+
+		/// <inheritdoc/>
+		public string Receipt => _receipt;
 
 		/// <inheritdoc/>
 		public PurchaseValidationResult ValidationResult => _validationResult;
@@ -263,17 +266,17 @@ namespace UnityFx.Purchasing
 
 		private void ProcessValidationResult()
 		{
-			Debug.Assert(_transaction != null);
+			Debug.Assert(_product != null);
 
 			try
 			{
 				if (_validationResult == null)
 				{
-					_validationResult = new PurchaseValidationResult(PurchaseValidationStatus.Suppressed);
+					_validationResult = PurchaseValidationResult.Suppressed;
 				}
 
 				var status = _validationResult.Status;
-				var product = _transaction.Product;
+				var product = _product;
 
 				if (status == PurchaseValidationStatus.NotAvailable)
 				{

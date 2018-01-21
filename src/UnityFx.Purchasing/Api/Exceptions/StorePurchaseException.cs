@@ -93,11 +93,11 @@ namespace UnityFx.Purchasing
 			get
 			{
 				var s = base.Message;
-				var transactionInfo = Result.Transaction;
+				var transactionId = Result.TransactionId;
 
-				if (transactionInfo != null)
+				if (transactionId != null)
 				{
-					s += " TransactionID: " + transactionInfo.TransactionId;
+					s += " TransactionID: " + transactionId;
 
 					if (Result.Restored)
 					{

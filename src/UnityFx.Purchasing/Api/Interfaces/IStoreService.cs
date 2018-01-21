@@ -246,11 +246,12 @@ namespace UnityFx.Purchasing
 		bool IsBusy { get; }
 
 		/// <summary>
-		/// Initiates the store initialization. Does nothing (returns a completed operation) if already initialized.
+		/// Initiates the store initialization.
 		/// </summary>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
 		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
+		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
@@ -309,6 +310,7 @@ namespace UnityFx.Purchasing
 		/// <param name="userCallback">The method to be called when the asynchronous initialize operation is completed. The callback is invoked on a thread pool (not the caller thread).</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous initialize operation from other operations.</param>
 		/// <returns>An object that references the asynchronous initialize operation.</returns>
+		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
@@ -406,8 +408,9 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 
 		/// <summary>
-		/// Initializes the store. Does nothing (returns a completed task) if already initialized.
+		/// Initiates the store initialization.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>

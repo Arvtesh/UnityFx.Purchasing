@@ -17,17 +17,22 @@ namespace UnityFx.Purchasing
 		string ProductId { get; }
 
 		/// <summary>
-		/// Returns the purchased product (or <see langword="null"/>). Read only.
+		/// Returns the purchased product or <see langword="null"/> if not available. Read only.
 		/// </summary>
 		Product Product { get; }
 
 		/// <summary>
-		/// Returns the transaction info. Read only.
+		/// Returns identifier of the transaction or <see langword="null"/> if not available. Read only.
 		/// </summary>
-		StoreTransaction Transaction { get; }
+		string TransactionId { get; }
 
 		/// <summary>
-		/// Returns product validation result (<see langword="null"/> if not available). Read only.
+		/// Returns platform transaction receipt (differs from Unity receipt) or <see langword="null"/> if not available. Read only.
+		/// </summary>
+		string Receipt { get; }
+
+		/// <summary>
+		/// Returns product validation result or <see langword="null"/> if not available. Read only.
 		/// </summary>
 		PurchaseValidationResult ValidationResult { get; }
 

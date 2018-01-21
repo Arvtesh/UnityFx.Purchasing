@@ -24,7 +24,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns purchase failure reason. Read only.
 		/// </summary>
-		public StorePurchaseError ErrorId => _reason;
+		public StorePurchaseError ErrorReason => _reason;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
@@ -56,7 +56,10 @@ namespace UnityFx.Purchasing
 		public Product Product => _result.Product;
 
 		/// <inheritdoc/>
-		public StoreTransaction Transaction => _result.Transaction;
+		public string TransactionId => _result.TransactionId;
+
+		/// <inheritdoc/>
+		public string Receipt => _result.Receipt;
 
 		/// <inheritdoc/>
 		public PurchaseValidationResult ValidationResult => _result.ValidationResult;

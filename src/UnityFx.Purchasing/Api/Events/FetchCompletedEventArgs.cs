@@ -23,7 +23,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns fetch failure reason. Read only.
 		/// </summary>
-		public StoreFetchError ErrorId => _reason;
+		public StoreFetchError ErrorReason => _reason;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.

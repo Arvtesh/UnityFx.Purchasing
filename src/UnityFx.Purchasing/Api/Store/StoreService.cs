@@ -88,7 +88,7 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
-		/// <seealso cref="ValidatePurchaseAsync(StoreTransaction)"/>
+		/// <seealso cref="ValidatePurchaseAsync(IStoreTransaction)"/>
 		protected internal abstract Task<StoreConfig> GetStoreConfigAsync();
 
 		/// <summary>
@@ -100,9 +100,9 @@ namespace UnityFx.Purchasing
 		/// <para>Throwing an exception from this method or returning a faulted/canceled task results in
 		/// failed transaction validation.</para>
 		/// </remarks>
-		/// <param name="transaction">The transaction data to validate.</param>
+		/// <param name="transactionInfo">The transaction data to validate.</param>
 		/// <seealso cref="GetStoreConfigAsync()"/>
-		protected internal virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(StoreTransaction transaction)
+		protected internal virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(IStoreTransaction transactionInfo)
 		{
 			return Task.FromResult<PurchaseValidationResult>(null);
 		}
@@ -117,7 +117,7 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		/// <param name="completedDelegate">Operation completed delegate.</param>
 		/// <param name="failedDelegate">Delegate called on operation failure.</param>
-		/// <seealso cref="ValidatePurchase(StoreTransaction, Action{PurchaseValidationResult})"/>
+		/// <seealso cref="ValidatePurchase(IStoreTransaction, Action{PurchaseValidationResult})"/>
 		protected internal abstract void GetStoreConfig(Action<StoreConfig> completedDelegate, Action<Exception> failedDelegate);
 
 		/// <summary>
@@ -128,10 +128,10 @@ namespace UnityFx.Purchasing
 		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.
 		/// </remarks>
 		/// <returns>Returns <see langword="true"/> if validation is implemented; <see langword="false"/> if not.</returns>
-		/// <param name="transaction">The transaction data to validate.</param>
+		/// <param name="transactionInfo">The transaction data to validate.</param>
 		/// <param name="resultDelegate">Operation completed delegate.</param>
 		/// <seealso cref="GetStoreConfig(Action{StoreConfig}, Action{Exception})"/>
-		protected internal virtual bool ValidatePurchase(StoreTransaction transaction, Action<PurchaseValidationResult> resultDelegate)
+		protected internal virtual bool ValidatePurchase(IStoreTransaction transactionInfo, Action<PurchaseValidationResult> resultDelegate)
 		{
 			return false;
 		}
@@ -139,7 +139,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <summary>
-		/// Called when the store initialize operation has been initiated.
+		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.
 		/// </summary>
 		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
 		protected virtual void OnInitializeInitiated(IStoreOperationInfo op)
@@ -148,7 +148,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store initialization has succeeded.
+		/// Called when the store initialization has succeeded. Default implementation raises <see cref="InitializeCompleted"/> event.
 		/// </summary>
 		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
 		protected virtual void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
@@ -157,7 +157,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store fetch operation has been initiated.
+		/// Called when the store fetch operation has been initiated. Default implementation raises <see cref="FetchInitiated"/> event.
 		/// </summary>
 		/// <seealso cref="OnFetchCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
 		protected virtual void OnFetchInitiated(IStoreOperationInfo op)
@@ -166,7 +166,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store fetch has succeeded.
+		/// Called when the store fetch has succeeded. Default implementation raises <see cref="FetchCompleted"/> event.
 		/// </summary>
 		/// <seealso cref="OnFetchInitiated(IStoreOperationInfo)"/>
 		protected virtual void OnFetchCompleted(IStoreOperationInfo op, StoreFetchError failReson, Exception e)
@@ -175,7 +175,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store purchase operation has been initiated.
+		/// Called when the store purchase operation has been initiated. Default implementation raises <see cref="PurchaseInitiated"/> event.
 		/// </summary>
 		/// <seealso cref="OnPurchaseCompleted(IPurchaseResult, StorePurchaseError, Exception)"/>
 		protected virtual void OnPurchaseInitiated(IStoreOperationInfo op, string productId, bool restored)
@@ -184,7 +184,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store purchase operation succeded.
+		/// Called when the store purchase operation succeded. Default implementation raises <see cref="PurchaseCompleted"/> event.
 		/// </summary>
 		/// <seealso cref="OnPurchaseInitiated(IStoreOperationInfo, string, bool)"/>
 		protected virtual void OnPurchaseCompleted(IPurchaseResult result, StorePurchaseError failReson, Exception e)
@@ -239,6 +239,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Dispose()"/>
 		/// <seealso cref="Dispose(bool)"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
+		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfDisposed()
@@ -253,18 +254,35 @@ namespace UnityFx.Purchasing
 		/// Throws an <see cref="ArgumentException"/> if the specified <paramref name="productId"/> is <see langword="null"/> or empty string.
 		/// </summary>
 		/// <seealso cref="ThrowIfDisposed"/>
+		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfInvalidProductId(string productId)
 		{
 			if (productId == null)
 			{
-				throw new ArgumentNullException(_serviceName + " product identifier cannot be null", nameof(productId));
+				throw new ArgumentNullException(_serviceName + " product identifier cannot be null.", nameof(productId));
 			}
 
 			if (string.IsNullOrEmpty(productId))
 			{
-				throw new ArgumentException(_serviceName + " product identifier cannot be an empty string", nameof(productId));
+				throw new ArgumentException(_serviceName + " product identifier cannot be an empty string.", nameof(productId));
+			}
+		}
+
+		/// <summary>
+		/// Throws an <see cref="InvalidOperationException"/> if the service is already initialized.
+		/// </summary>
+		/// <seealso cref="IsInitialized"/>
+		/// <seealso cref="ThrowIfDisposed"/>
+		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
+		/// <seealso cref="ThrowIfNotInitialized"/>
+		/// <seealso cref="ThrowIfBusy"/>
+		protected void ThrowIfInitialized()
+		{
+			if (_storeController != null)
+			{
+				throw new InvalidOperationException(_serviceName + " is already initialized.");
 			}
 		}
 
@@ -274,12 +292,13 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="IsInitialized"/>
 		/// <seealso cref="ThrowIfDisposed"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
+		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfNotInitialized()
 		{
 			if (_storeController == null)
 			{
-				throw new InvalidOperationException(_serviceName + " is not initialized");
+				throw new InvalidOperationException(_serviceName + " is not initialized.");
 			}
 		}
 
@@ -289,12 +308,13 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="IsBusy"/>
 		/// <seealso cref="ThrowIfDisposed"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
+		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		protected void ThrowIfBusy()
 		{
 			if (_storeListener.PurchaseOp != null)
 			{
-				throw new InvalidOperationException(_serviceName + " is busy");
+				throw new InvalidOperationException(_serviceName + " is busy.");
 			}
 		}
 
@@ -535,13 +555,9 @@ namespace UnityFx.Purchasing
 		public IStoreOperation InitializeAsync(object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfInitialized();
 
-			if (_storeController == null)
-			{
-				return InitializeInternal(null, stateObject);
-			}
-
-			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, null, stateObject);
+			return InitializeInternal(null, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -569,13 +585,9 @@ namespace UnityFx.Purchasing
 		public IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfInitialized();
 
-			if (_storeController == null)
-			{
-				return InitializeInternal(userCallback, stateObject);
-			}
-
-			return StoreOperation.GetCompletedOperation(_storeListener, StoreOperationId.Initialize, userCallback, stateObject);
+			return InitializeInternal(userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -639,15 +651,11 @@ namespace UnityFx.Purchasing
 		public Task InitializeTaskAsync()
 		{
 			ThrowIfDisposed();
+			ThrowIfInitialized();
 
-			if (_storeController == null)
-			{
-				var tcs = new TaskCompletionSource<object>();
-				InitializeInternal(FetchCompletionCallback, tcs);
-				return tcs.Task;
-			}
-
-			return Task.CompletedTask;
+			var tcs = new TaskCompletionSource<object>();
+			InitializeInternal(FetchCompletionCallback, tcs);
+			return tcs.Task;
 		}
 
 		/// <inheritdoc/>

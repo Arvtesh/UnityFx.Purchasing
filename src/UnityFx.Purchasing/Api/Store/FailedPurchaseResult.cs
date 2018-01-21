@@ -57,7 +57,10 @@ namespace UnityFx.Purchasing
 		public Product Product => _result.Product;
 
 		/// <inheritdoc/>
-		public StoreTransaction Transaction => _result.Transaction;
+		public string TransactionId => _result.TransactionId;
+
+		/// <inheritdoc/>
+		public string Receipt => _result.Receipt;
 
 		/// <inheritdoc/>
 		public PurchaseValidationResult ValidationResult => _result.ValidationResult;
