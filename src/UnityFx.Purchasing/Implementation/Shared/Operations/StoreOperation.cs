@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable asynchronous store operation.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal class StoreOperation : IStoreOperation, IStoreOperationInfo, IAsyncResult, IEnumerator
+	internal class StoreOperation : IStoreOperation, IStoreOperationInfo, IAsyncResult, IEnumerator, IDisposable
 	{
 		#region data
 

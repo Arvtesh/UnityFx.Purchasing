@@ -9,7 +9,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable store operation with status information.
 	/// </summary>
 	/// <seealso cref="IStoreOperation{T}"/>
-	public interface IStoreOperation : IDisposable
+	public interface IStoreOperation
 	{
 		/// <summary>
 		/// Returns an operation identifier. Read only.
