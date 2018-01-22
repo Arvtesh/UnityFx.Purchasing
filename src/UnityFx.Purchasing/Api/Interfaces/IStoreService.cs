@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 #if UNITYFX_SUPPORT_TAP
 using System.Threading.Tasks;
 #endif
@@ -221,6 +222,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="IsInitialized"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IStoreController Controller { get; }
 
 		/// <summary>
@@ -229,6 +231,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso cref="IsInitialized"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IExtensionProvider Extensions { get; }
 
 		/// <summary>
@@ -315,6 +318,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="EndInitialize(IAsyncResult)"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject);
 
 		/// <summary>
@@ -333,6 +337,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginInitialize(AsyncCallback, object)"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		void EndInitialize(IAsyncResult asyncResult);
 
 		/// <summary>
@@ -346,6 +351,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="EndFetch(IAsyncResult)"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject);
 
 		/// <summary>
@@ -363,6 +369,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginFetch(AsyncCallback, object)"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		void EndFetch(IAsyncResult asyncResult);
 
 		/// <summary>
@@ -383,6 +390,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="EndPurchase(IAsyncResult)"/>
 		/// <seealso cref="IsBusy"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject);
 
 		/// <summary>
@@ -401,6 +409,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
 		/// <seealso cref="BeginPurchase(string, AsyncCallback, object)"/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		PurchaseResult EndPurchase(IAsyncResult asyncResult);
 
 #endif

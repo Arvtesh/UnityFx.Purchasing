@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 #if UNITYFX_SUPPORT_TAP
 using System.Threading.Tasks;
@@ -510,6 +511,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public IStoreController Controller
 		{
 			get
@@ -521,6 +523,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public IExtensionProvider Extensions
 		{
 			get
@@ -582,6 +585,7 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_APM
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfDisposed();
@@ -591,6 +595,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void EndInitialize(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
@@ -602,6 +607,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfDisposed();
@@ -611,6 +617,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void EndFetch(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
@@ -622,6 +629,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfInvalidProductId(productId);
@@ -632,6 +640,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public PurchaseResult EndPurchase(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
