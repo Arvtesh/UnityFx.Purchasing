@@ -6,28 +6,47 @@ using System.Diagnostics;
 
 namespace UnityFx.Purchasing
 {
-	internal enum AsyncPatternId
+	internal enum AsyncPatternType
 	{
+		Default,
 		Eap,
 		Apm,
 		Tap
 	}
 
-	internal enum StoreOperationId
+	internal enum StoreOperationType
 	{
-		Initialize = 1,
-		Fetch = 2,
-		Purchase = 3
+		Initialize,
+		Fetch,
+		Purchase
 	}
 
 	internal static class StoreUtility
 	{
-		internal static void TraceError(this TraceSource traceSource, StoreOperationId opId, string s)
+		internal static int GetOperationId(int n, StoreOperationType opType, AsyncPatternType asyncPattern)
 		{
-			traceSource.TraceEvent(TraceEventType.Error, (int)opId, opId.ToString() + " error: " + s);
+			return (n << 4) | ((int)asyncPattern << 2) | (int)opType;
 		}
 
-		internal static void TraceException(this TraceSource traceSource, StoreOperationId opId, Exception e, TraceEventType eventType = TraceEventType.Error)
+		internal static string GetOperationType(int id)
+		{
+			if ((id & (int)StoreOperationType.Purchase) != 0)
+			{
+				return StoreOperationType.Purchase.ToString();
+			}
+			else if ((id & (int)StoreOperationType.Fetch) != 0)
+			{
+				return StoreOperationType.Fetch.ToString();
+			}
+			else if ((id & (int)StoreOperationType.Initialize) != 0)
+			{
+				return StoreOperationType.Initialize.ToString();
+			}
+
+			return "UnknownOperation";
+		}
+
+		internal static void TraceException(this TraceSource traceSource, StoreOperationType opId, Exception e, TraceEventType eventType = TraceEventType.Error)
 		{
 			if (e != null)
 			{

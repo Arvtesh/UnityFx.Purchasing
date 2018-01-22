@@ -21,8 +21,8 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public InitializeOperation(StoreOperationContainer parent, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationId.Initialize, asyncCallback, asyncState)
+		public InitializeOperation(StoreOperationContainer parent, AsyncPatternType asyncPattern, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, StoreOperationType.Initialize, asyncPattern, asyncCallback, asyncState)
 		{
 			_purchasingModule = purchasingModule;
 			_storeListener = storeListener;

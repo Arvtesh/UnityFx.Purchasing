@@ -33,8 +33,8 @@ namespace UnityFx.Purchasing
 
 		internal PurchaseResult ResultUnsafe => new PurchaseResult(this);
 
-		public PurchaseOperation(StoreOperationContainer parent, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationId.Purchase, asyncCallback, asyncState, restored ? "auto-restored" : string.Empty, productId)
+		public PurchaseOperation(StoreOperationContainer parent, AsyncPatternType asyncPattern, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, StoreOperationType.Purchase, asyncPattern, asyncCallback, asyncState, restored ? "auto-restored" : string.Empty, productId)
 		{
 			Debug.Assert(parent != null);
 			Debug.Assert(productId != null);
@@ -46,7 +46,7 @@ namespace UnityFx.Purchasing
 		}
 
 		public PurchaseOperation(StoreOperationContainer parent, Product product, bool restored)
-			: this(parent, product.definition.id, restored, null, null)
+			: this(parent, AsyncPatternType.Default, product.definition.id, restored, null, null)
 		{
 			_product = product;
 			_receipt = product.GetNativeReceipt();
@@ -58,7 +58,7 @@ namespace UnityFx.Purchasing
 
 			if (product != null && product.availableToPurchase)
 			{
-				Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+				Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 				Store.Controller.InitiatePurchase(product);
 			}
 			else
@@ -87,7 +87,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, $"ValidatePurchase: {_productId}, transactionId = {_product.transactionID}");
+				TraceEvent(TraceEventType.Verbose, $"ValidatePurchase: {_productId}, transactionId = {_product.transactionID}");
 
 				if (string.IsNullOrEmpty(_receipt))
 				{
@@ -103,7 +103,7 @@ namespace UnityFx.Purchasing
 					}
 					catch (Exception e)
 					{
-						Console.TraceException(StoreOperationId.Purchase, e);
+						Console.TraceException(StoreOperationType.Purchase, e);
 						SetFailed(StorePurchaseError.ReceiptValidationFailed);
 						return PurchaseProcessingResult.Complete;
 					}
@@ -118,7 +118,7 @@ namespace UnityFx.Purchasing
 					}
 					catch (Exception e)
 					{
-						Console.TraceException(StoreOperationId.Purchase, e);
+						TraceException(e);
 						SetFailed(StorePurchaseError.ReceiptValidationFailed);
 						return PurchaseProcessingResult.Complete;
 					}
@@ -162,7 +162,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(Exception e, bool completedSynchronously = false)
 		{
-			Console.TraceException(StoreOperationId.Purchase, e);
+			TraceException(e);
 
 			if (TrySetException(e, completedSynchronously))
 			{
@@ -183,7 +183,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(Product product, StorePurchaseError reason, Exception e = null)
 		{
-			Console.TraceError(StoreOperationId.Purchase, reason.ToString());
+			TraceError(reason.ToString());
 
 			if (e == null)
 			{
@@ -205,7 +205,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError reason, Exception e = null)
 		{
-			Console.TraceError(StoreOperationId.Purchase, reason.ToString());
+			TraceError(reason.ToString());
 
 			if (e == null)
 			{
@@ -285,7 +285,7 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-					Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, "ConfirmPendingPurchase: " + product.definition.id);
+					TraceEvent(TraceEventType.Verbose, "ConfirmPendingPurchase: " + product.definition.id);
 					Store.Controller.ConfirmPendingPurchase(product);
 
 					if (status == PurchaseValidationStatus.Failure)
@@ -302,7 +302,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				Console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
+				TraceException(e);
 				TrySetException(e);
 			}
 		}

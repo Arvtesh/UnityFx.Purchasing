@@ -15,8 +15,8 @@ namespace UnityFx.Purchasing
 	{
 		#region interface
 
-		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, opId, asyncCallback, asyncState, null, null)
+		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationType opId, AsyncPatternType asyncPattern, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opId, asyncPattern, asyncCallback, asyncState, null, null)
 		{
 		}
 
@@ -39,7 +39,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			Console.TraceError(Type, reason.ToString());
+			TraceError(reason.ToString());
 
 			if (TrySetException(new StoreFetchException(reason)))
 			{
@@ -49,7 +49,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason, Exception e)
 		{
-			Console.TraceException(Type, e);
+			TraceException(e);
 
 			if (TrySetException(new StoreFetchException(reason, e)))
 			{
@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(Exception e, bool completedSynchronously = false)
 		{
-			Console.TraceException(Type, e);
+			TraceException(e);
 
 			if (TrySetException(e, completedSynchronously))
 			{

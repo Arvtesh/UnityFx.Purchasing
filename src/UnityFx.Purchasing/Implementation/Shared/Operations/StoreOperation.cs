@@ -28,12 +28,11 @@ namespace UnityFx.Purchasing
 
 		private readonly int _id;
 		private readonly StoreOperationContainer _owner;
-		private readonly StoreOperationId _type;
+		private readonly StoreOperationType _type;
 		private readonly string _args;
 
 		private static int _lastId;
 
-		private StoreOperation _continuationOp;
 		private AsyncCallback _asyncCallback;
 		private object _asyncState;
 		private EventWaitHandle _waitHandle;
@@ -45,32 +44,28 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal StoreOperationId Type => _type;
+		internal StoreOperationType Type => _type;
 		internal object Owner => _owner;
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
 
-		private StoreOperation(StoreOperation parentOp, AsyncCallback asyncCallback, object asyncState)
+		protected StoreOperation(
+			StoreOperationContainer owner,
+			StoreOperationType opType,
+			AsyncPatternType asyncPattern,
+			AsyncCallback asyncCallback,
+			object asyncState,
+			string comment,
+			string args)
 		{
-			_id = ++_lastId;
-			_owner = parentOp._owner;
-			_type = parentOp._type;
-			_exception = parentOp._exception;
-			_status = parentOp._status;
-			_asyncCallback = asyncCallback;
-			_asyncState = asyncState;
-		}
-
-		protected StoreOperation(StoreOperationContainer owner, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState, string comment, string args)
-		{
-			_id = ++_lastId;
+			_id = StoreUtility.GetOperationId(++_lastId, opType, asyncPattern);
 			_owner = owner;
-			_type = opId;
+			_type = opType;
 			_args = args;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
 
-			var s = opId.ToString();
+			var s = opType.ToString();
 
 			if (!string.IsNullOrEmpty(comment))
 			{
@@ -84,7 +79,7 @@ namespace UnityFx.Purchasing
 
 			owner.AddOperation(this);
 
-			Console.TraceEvent(TraceEventType.Start, (int)opId, s);
+			TraceEvent(TraceEventType.Start, s);
 		}
 
 		internal void AddCompletionHandler(AsyncCallback continuation)
@@ -97,29 +92,6 @@ namespace UnityFx.Purchasing
 			{
 				_asyncCallback += continuation;
 			}
-		}
-
-		internal StoreOperation ContinueWith(AsyncCallback continuation, object asyncState)
-		{
-			var op = new StoreOperation(this, continuation, asyncState);
-
-			if (op.IsCompleted)
-			{
-				continuation?.Invoke(op);
-			}
-			else
-			{
-				var parentOp = this;
-
-				while (parentOp._continuationOp != null)
-				{
-					parentOp = parentOp._continuationOp;
-				}
-
-				parentOp._continuationOp = op;
-			}
-
-			return op;
 		}
 
 		internal void Join()
@@ -173,6 +145,26 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
+		}
+
+		protected void TraceError(string s)
+		{
+			_owner.Store.TraceSource.TraceEvent(TraceEventType.Error, _id, s);
+		}
+
+		protected void TraceException(Exception e)
+		{
+			_owner.Store.TraceSource.TraceData(TraceEventType.Error, _id, e);
+		}
+
+		protected void TraceEvent(TraceEventType eventType, string s)
+		{
+			_owner.Store.TraceSource.TraceEvent(eventType, _id, s);
+		}
+
+		protected void TraceData(TraceEventType eventType, object data)
+		{
+			_owner.Store.TraceSource.TraceData(eventType, _id, data);
 		}
 
 		protected void ThrowIfNotCompletedSuccessfully()
@@ -289,14 +281,14 @@ namespace UnityFx.Purchasing
 					s += ": " + _args;
 				}
 
-				Console.TraceEvent(TraceEventType.Stop, (int)_type, s);
+				TraceEvent(TraceEventType.Stop, s);
 			}
 			finally
 			{
 				_owner.ReleaseOperation(this);
-
-				SignalCompletionEvents();
-				UpdateContinuation(this);
+				_waitHandle?.Set();
+				_asyncCallback?.Invoke(this);
+				_asyncCallback = null;
 			}
 		}
 
@@ -313,26 +305,6 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
-		}
-
-		private void SignalCompletionEvents()
-		{
-			_waitHandle?.Set();
-			_asyncCallback?.Invoke(this);
-			_asyncCallback = null;
-		}
-
-		private void UpdateContinuation(StoreOperation op)
-		{
-			if (TrySetStatus(op._status, false))
-			{
-				_exception = op._exception;
-
-				SignalCompletionEvents();
-			}
-
-			_continuationOp?.UpdateContinuation(op);
-			_continuationOp = null;
 		}
 
 		#endregion

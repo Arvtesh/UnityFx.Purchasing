@@ -240,7 +240,6 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="Dispose()"/>
 		/// <seealso cref="Dispose(bool)"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
-		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfDisposed()
@@ -255,7 +254,6 @@ namespace UnityFx.Purchasing
 		/// Throws an <see cref="ArgumentException"/> if the specified <paramref name="productId"/> is <see langword="null"/> or empty string.
 		/// </summary>
 		/// <seealso cref="ThrowIfDisposed"/>
-		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfInvalidProductId(string productId)
@@ -272,28 +270,11 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Throws an <see cref="InvalidOperationException"/> if the service is already initialized.
-		/// </summary>
-		/// <seealso cref="IsInitialized"/>
-		/// <seealso cref="ThrowIfDisposed"/>
-		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
-		/// <seealso cref="ThrowIfNotInitialized"/>
-		/// <seealso cref="ThrowIfBusy"/>
-		protected void ThrowIfInitialized()
-		{
-			if (_storeController != null)
-			{
-				throw new InvalidOperationException(_serviceName + " is already initialized.");
-			}
-		}
-
-		/// <summary>
 		/// Throws an <see cref="InvalidOperationException"/> if the service is not initialized yet.
 		/// </summary>
 		/// <seealso cref="IsInitialized"/>
 		/// <seealso cref="ThrowIfDisposed"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
-		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfNotInitialized()
 		{
@@ -309,7 +290,6 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="IsBusy"/>
 		/// <seealso cref="ThrowIfDisposed"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
-		/// <seealso cref="ThrowIfInitialized"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		protected void ThrowIfBusy()
 		{
@@ -338,7 +318,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Initialize, e);
 			}
 		}
 
@@ -350,7 +330,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Initialize, ex);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Initialize, ex);
 			}
 		}
 
@@ -362,7 +342,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Fetch, e);
 			}
 		}
 
@@ -374,7 +354,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Fetch, ex);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Fetch, ex);
 			}
 		}
 
@@ -388,7 +368,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, e);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Purchase, e);
 			}
 		}
 
@@ -402,7 +382,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, ex);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Purchase, ex);
 			}
 
 #if UNITYFX_SUPPORT_OBSERVABLES
@@ -420,7 +400,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationId.Purchase, ex);
+				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Purchase, ex);
 			}
 
 #endif
@@ -559,8 +539,9 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfInitialized();
+			ThrowIfInitializePending();
 
-			return InitializeInternal(null, stateObject);
+			return InitializeInternal(AsyncPatternType.Eap, null, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -568,8 +549,9 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
+			ThrowIfFetchPending();
 
-			return FetchInternal(null, stateObject);
+			return FetchInternal(AsyncPatternType.Eap, null, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -579,7 +561,7 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			return PurchaseInternal(productId, null, stateObject);
+			return PurchaseInternal(productId, AsyncPatternType.Eap, null, stateObject);
 		}
 
 #if UNITYFX_SUPPORT_APM
@@ -590,8 +572,9 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfInitialized();
+			ThrowIfInitializePending();
 
-			return InitializeInternal(userCallback, stateObject);
+			return InitializeInternal(AsyncPatternType.Apm, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -600,7 +583,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation(asyncResult, StoreOperationId.Initialize))
+			using (var op = ValidateOperation(asyncResult, StoreOperationType.Initialize))
 			{
 				op.Join();
 			}
@@ -612,8 +595,9 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
+			ThrowIfFetchPending();
 
-			return FetchInternal(userCallback, stateObject);
+			return FetchInternal(AsyncPatternType.Apm, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -622,7 +606,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation(asyncResult, StoreOperationId.Fetch))
+			using (var op = ValidateOperation(asyncResult, StoreOperationType.Fetch))
 			{
 				op.Join();
 			}
@@ -636,7 +620,7 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfBusy();
 
-			return PurchaseInternal(productId, userCallback, stateObject);
+			return PurchaseInternal(productId, AsyncPatternType.Apm, userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -645,7 +629,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation(asyncResult, StoreOperationId.Purchase))
+			using (var op = ValidateOperation(asyncResult, StoreOperationType.Purchase))
 			{
 				op.Join();
 				return (op as PurchaseOperation).ResultUnsafe;
@@ -661,9 +645,10 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfInitialized();
+			ThrowIfInitializePending();
 
 			var tcs = new TaskCompletionSource<object>();
-			InitializeInternal(FetchCompletionCallback, tcs);
+			InitializeInternal(AsyncPatternType.Tap, FetchCompletionCallback, tcs);
 			return tcs.Task;
 		}
 
@@ -672,9 +657,10 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfNotInitialized();
+			ThrowIfFetchPending();
 
 			var tcs = new TaskCompletionSource<object>();
-			FetchInternal(FetchCompletionCallback, tcs);
+			FetchInternal(AsyncPatternType.Tap, FetchCompletionCallback, tcs);
 			return tcs.Task;
 		}
 
@@ -686,7 +672,7 @@ namespace UnityFx.Purchasing
 			ThrowIfBusy();
 
 			var tcs = new TaskCompletionSource<PurchaseResult>();
-			PurchaseInternal(productId, PurchaseCompletionCallback, tcs);
+			PurchaseInternal(productId, AsyncPatternType.Tap, PurchaseCompletionCallback, tcs);
 			return tcs.Task;
 		}
 
@@ -717,17 +703,11 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private StoreOperation InitializeInternal(AsyncCallback userCallback, object stateObject)
+		private StoreOperation InitializeInternal(AsyncPatternType asyncPattern, AsyncCallback userCallback, object stateObject)
 		{
-			var op = _storeListener.InitializeOp;
-
-			if (op != null)
+			if (Application.isMobilePlatform || Application.isEditor)
 			{
-				return op.ContinueWith(userCallback, stateObject);
-			}
-			else if (Application.isMobilePlatform || Application.isEditor)
-			{
-				var result = new InitializeOperation(_storeListener, _purchasingModule, _storeListener, userCallback, stateObject);
+				var result = new InitializeOperation(_storeListener, asyncPattern, _purchasingModule, _storeListener, userCallback, stateObject);
 
 				try
 				{
@@ -747,17 +727,11 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private StoreOperation FetchInternal(AsyncCallback userCallback, object stateObject)
+		private StoreOperation FetchInternal(AsyncPatternType asyncPattern, AsyncCallback userCallback, object stateObject)
 		{
-			var op = _storeListener.FetchOp;
-
-			if (op != null)
+			if (Application.isMobilePlatform || Application.isEditor)
 			{
-				return op.ContinueWith(userCallback, stateObject);
-			}
-			else if (Application.isMobilePlatform || Application.isEditor)
-			{
-				var result = new FetchOperation(_storeListener, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
+				var result = new FetchOperation(_storeListener, asyncPattern, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
 
 				try
 				{
@@ -777,9 +751,9 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		private PurchaseOperation PurchaseInternal(string productId, AsyncCallback userCallback, object stateObject)
+		private PurchaseOperation PurchaseInternal(string productId, AsyncPatternType asyncPattern, AsyncCallback userCallback, object stateObject)
 		{
-			var result = new PurchaseOperation(_storeListener, productId, false, userCallback, stateObject);
+			var result = new PurchaseOperation(_storeListener, asyncPattern, productId, false, userCallback, stateObject);
 
 			try
 			{
@@ -787,7 +761,7 @@ namespace UnityFx.Purchasing
 
 				if (_storeController == null)
 				{
-					fetchOp = InitializeInternal(null, null);
+					fetchOp = _storeListener.InitializeOp ?? InitializeInternal(asyncPattern, null, null);
 				}
 				else
 				{
@@ -834,7 +808,7 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
-		private StoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationId type)
+		private StoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationType type)
 		{
 			if (asyncResult == null)
 			{
@@ -902,6 +876,30 @@ namespace UnityFx.Purchasing
 		}
 
 #endif
+
+		private void ThrowIfInitialized()
+		{
+			if (_storeController != null)
+			{
+				throw new InvalidOperationException(_serviceName + " is already initialized.");
+			}
+		}
+
+		private void ThrowIfInitializePending()
+		{
+			if (_storeListener.InitializeOp != null)
+			{
+				throw new InvalidOperationException(_serviceName + " Initialize is pending.");
+			}
+		}
+
+		private void ThrowIfFetchPending()
+		{
+			if (_storeListener.FetchOp != null)
+			{
+				throw new InvalidOperationException(_serviceName + " Fetch is pending.");
+			}
+		}
 
 		#endregion
 	}
