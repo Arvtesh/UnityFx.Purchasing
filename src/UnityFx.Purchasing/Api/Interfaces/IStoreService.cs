@@ -260,7 +260,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
-		IStoreOperation InitializeAsync(object stateObject);
+		IStoreOperation InitializeAsync(object stateObject = null);
 
 		/// <summary>
 		/// Initiates fetching product information from the store.
@@ -274,7 +274,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="InitializeAsync(object)"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
-		IStoreOperation FetchAsync(object stateObject);
+		IStoreOperation FetchAsync(object stateObject = null);
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -303,14 +303,17 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="InitializeAsync(object)"/>
 		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="IsBusy"/>
-		IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject);
+		IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject = null);
 
 #if UNITYFX_SUPPORT_APM
 
 		/// <summary>
 		/// Begins an asynchronous initialize operation.
 		/// </summary>
-		/// <param name="userCallback">The method to be called when the asynchronous initialize operation is completed. The callback is invoked on a thread pool (not the caller thread).</param>
+		/// <remarks>
+		/// Please see <see cref="InitializeAsync(object)"/> documentation for more information.
+		/// </remarks>
+		/// <param name="userCallback">The method to be called when the asynchronous initialize operation is completed.</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous initialize operation from other operations.</param>
 		/// <returns>An object that references the asynchronous initialize operation.</returns>
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
@@ -343,7 +346,10 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Begins an asynchronous fetch operation.
 		/// </summary>
-		/// <param name="userCallback">The method to be called when the asynchronous fetch operation is completed. The callback is invoked on a thread pool (not the caller thread).</param>
+		/// <remarks>
+		/// Please see <see cref="FetchAsync(object)"/> documentation for more information.
+		/// </remarks>
+		/// <param name="userCallback">The method to be called when the asynchronous fetch operation is completed.</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous fetch operation from other operations.</param>
 		/// <returns>An object that references the asynchronous fetch operation.</returns>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
@@ -419,6 +425,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initiates the store initialization.
 		/// </summary>
+		/// <remarks>
+		/// Please see <see cref="InitializeAsync(object)"/> documentation for more information.
+		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
@@ -431,6 +440,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Fetches product information from the store.
 		/// </summary>
+		/// <remarks>
+		/// Please see <see cref="FetchAsync(object)"/> documentation for more information.
+		/// </remarks>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>

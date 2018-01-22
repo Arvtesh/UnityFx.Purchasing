@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -10,8 +11,11 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Purchasing-related extensions.
 	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public static class StoreExtensions
 	{
+		#region Product
+
 		[Serializable]
 		private struct UnityReceiptData
 		{
@@ -53,5 +57,10 @@ namespace UnityFx.Purchasing
 			storeId = null;
 			return product.receipt;
 		}
+
+		#endregion
+
+		#region IStoreService
+		#endregion
 	}
 }

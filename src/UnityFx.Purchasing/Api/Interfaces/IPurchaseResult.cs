@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -9,6 +10,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Result of a store purchase.
 	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public interface IPurchaseResult : IStoreOperationInfo
 	{
 		/// <summary>

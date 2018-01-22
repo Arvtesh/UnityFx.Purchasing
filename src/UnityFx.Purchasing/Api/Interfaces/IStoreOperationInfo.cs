@@ -2,13 +2,14 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using UnityEngine.Purchasing;
+using System.ComponentModel;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
 	/// A store operation.
 	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public interface IStoreOperationInfo
 	{
 		/// <summary>
