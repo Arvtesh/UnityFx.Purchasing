@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Diagnostics;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 
@@ -21,9 +22,11 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public InitializeOperation(StoreOperationContainer parent, AsyncPatternType asyncPattern, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationType.Initialize, asyncPattern, asyncCallback, asyncState)
+		public InitializeOperation(StoreOperationContainer parent, StoreOperationType opType, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opType, asyncCallback, asyncState)
 		{
+			Debug.Assert((opType & StoreOperationType.Initialize) != 0);
+
 			_purchasingModule = purchasingModule;
 			_storeListener = storeListener;
 

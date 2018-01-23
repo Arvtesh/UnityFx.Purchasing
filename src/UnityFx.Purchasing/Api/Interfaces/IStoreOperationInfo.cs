@@ -13,7 +13,7 @@ namespace UnityFx.Purchasing
 	public interface IStoreOperationInfo
 	{
 		/// <summary>
-		/// Returns identifier of the corresponding operation. Read only.
+		/// Returns identifier of the corresponding operation (matches <see cref="IStoreOperation.Id"/>). Read only.
 		/// </summary>
 		int OperationId { get; }
 

@@ -33,9 +33,10 @@ namespace UnityFx.Purchasing
 
 		internal PurchaseResult ResultUnsafe => new PurchaseResult(this);
 
-		public PurchaseOperation(StoreOperationContainer parent, AsyncPatternType asyncPattern, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationType.Purchase, asyncPattern, asyncCallback, asyncState, restored ? "auto-restored" : string.Empty, productId)
+		public PurchaseOperation(StoreOperationContainer parent, StoreOperationType opType, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, StoreOperationType.Purchase, asyncCallback, asyncState, restored ? "auto-restored" : string.Empty, productId)
 		{
+			Debug.Assert((opType & StoreOperationType.Purchase) != 0);
 			Debug.Assert(parent != null);
 			Debug.Assert(productId != null);
 
@@ -46,7 +47,7 @@ namespace UnityFx.Purchasing
 		}
 
 		public PurchaseOperation(StoreOperationContainer parent, Product product, bool restored)
-			: this(parent, AsyncPatternType.Default, product.definition.id, restored, null, null)
+			: this(parent, StoreOperationType.Purchase, product.definition.id, restored, null, null)
 		{
 			_product = product;
 			_receipt = product.GetNativeReceipt();
@@ -103,7 +104,7 @@ namespace UnityFx.Purchasing
 					}
 					catch (Exception e)
 					{
-						Console.TraceException(StoreOperationType.Purchase, e);
+						TraceException(e);
 						SetFailed(StorePurchaseError.ReceiptValidationFailed);
 						return PurchaseProcessingResult.Complete;
 					}

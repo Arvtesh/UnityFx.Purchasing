@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -21,9 +22,11 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public FetchOperation(StoreOperationContainer parent, AsyncPatternType asyncPattern, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationType.Fetch, asyncPattern, asyncCallback, asyncState)
+		public FetchOperation(StoreOperationContainer parent, StoreOperationType opType, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opType, asyncCallback, asyncState)
 		{
+			Debug.Assert((opType & StoreOperationType.Fetch) != 0);
+
 			_fetchComplete = onComplete;
 			_fetchFailed = onFailed;
 

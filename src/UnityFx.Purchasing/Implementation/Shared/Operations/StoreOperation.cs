@@ -28,7 +28,6 @@ namespace UnityFx.Purchasing
 
 		private readonly int _id;
 		private readonly StoreOperationContainer _owner;
-		private readonly StoreOperationType _type;
 		private readonly string _args;
 
 		private static int _lastId;
@@ -44,28 +43,19 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal StoreOperationType Type => _type;
 		internal object Owner => _owner;
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
 
-		protected StoreOperation(
-			StoreOperationContainer owner,
-			StoreOperationType opType,
-			AsyncPatternType asyncPattern,
-			AsyncCallback asyncCallback,
-			object asyncState,
-			string comment,
-			string args)
+		protected StoreOperation(StoreOperationContainer owner, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment, string args)
 		{
-			_id = StoreUtility.GetOperationId(++_lastId, opType, asyncPattern);
+			_id = (++_lastId << 4) | (int)opType;
 			_owner = owner;
-			_type = opType;
 			_args = args;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
 
-			var s = opType.ToString();
+			var s = GetOperationName();
 
 			if (!string.IsNullOrEmpty(comment))
 			{
@@ -149,7 +139,7 @@ namespace UnityFx.Purchasing
 
 		protected void TraceError(string s)
 		{
-			_owner.Store.TraceSource.TraceEvent(TraceEventType.Error, _id, s);
+			_owner.Store.TraceSource.TraceEvent(TraceEventType.Error, _id, GetOperationName() + ": " + s);
 		}
 
 		protected void TraceException(Exception e)
@@ -179,7 +169,7 @@ namespace UnityFx.Purchasing
 		{
 			if ((_status & _statusDisposedFlag) != 0)
 			{
-				throw new ObjectDisposedException(_type.ToString());
+				throw new ObjectDisposedException(GetOperationName());
 			}
 		}
 
@@ -274,7 +264,7 @@ namespace UnityFx.Purchasing
 		{
 			try
 			{
-				var s = _type.ToString() + (IsCompletedSuccessfully ? " completed" : " failed");
+				var s = GetOperationName() + (IsCompletedSuccessfully ? " completed" : " failed");
 
 				if (!string.IsNullOrEmpty(_args))
 				{
@@ -305,6 +295,24 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
+		}
+
+		private string GetOperationName()
+		{
+			if ((_id & (int)StoreOperationType.Purchase) != 0)
+			{
+				return StoreOperationType.Purchase.ToString();
+			}
+			else if ((_id & (int)StoreOperationType.Fetch) != 0)
+			{
+				return StoreOperationType.Fetch.ToString();
+			}
+			else if ((_id & (int)StoreOperationType.Initialize) != 0)
+			{
+				return StoreOperationType.Initialize.ToString();
+			}
+
+			return "UnknownOperation";
 		}
 
 		#endregion

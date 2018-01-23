@@ -114,7 +114,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationType.Initialize, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _initializeOp.Id, e);
 				}
 			}
 		}
@@ -133,7 +133,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationType.Initialize, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _initializeOp.Id, e);
 				}
 			}
 		}
@@ -152,7 +152,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationType.Fetch, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _fetchOp.Id, e);
 				}
 			}
 		}
@@ -171,7 +171,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationType.Fetch, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _fetchOp.Id, e);
 				}
 			}
 		}
@@ -213,7 +213,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationType.Purchase, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _purchaseOp?.Id ?? 0, e);
 				}
 			}
 
@@ -237,7 +237,7 @@ namespace UnityFx.Purchasing
 						// A restored transaction.
 						if (product != null)
 						{
-							var op = new PurchaseOperation(this, AsyncPatternType.Default, productId, true, null, null);
+							var op = new PurchaseOperation(this, StoreOperationType.Purchase, productId, true, null, null);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else
@@ -260,7 +260,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationType.Purchase, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _purchaseOp?.Id ?? 0, e);
 				}
 			}
 		}
