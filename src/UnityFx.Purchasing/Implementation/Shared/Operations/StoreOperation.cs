@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable asynchronous store operation.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	internal class StoreOperation : IStoreOperation, IStoreOperationInfo, IAsyncResult, IEnumerator, IDisposable
+	internal abstract class StoreOperation : IStoreOperation, IStoreOperationInfo, IAsyncResult, IEnumerator, IDisposable
 	{
 		#region data
 
@@ -43,7 +43,6 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		internal object Owner => _owner;
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
 
@@ -81,6 +80,19 @@ namespace UnityFx.Purchasing
 			else
 			{
 				_asyncCallback += continuation;
+			}
+		}
+
+		internal void Validate(object owner, StoreOperationType type)
+		{
+			if ((_id & 0xf) != (int)type)
+			{
+				throw new ArgumentException("Invalid operation type");
+			}
+
+			if (_owner != owner)
+			{
+				throw new InvalidOperationException("Invalid operation owner");
 			}
 		}
 

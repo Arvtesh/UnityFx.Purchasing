@@ -823,16 +823,7 @@ namespace UnityFx.Purchasing
 
 			if (asyncResult is StoreOperation result)
 			{
-				if ((result.Id & 0xf) != (int)type)
-				{
-					throw new ArgumentException("Invalid operation type", nameof(asyncResult));
-				}
-
-				if (result.Owner != _storeListener)
-				{
-					throw new InvalidOperationException("Invalid operation owner");
-				}
-
+				result.Validate(_storeListener, type);
 				return result;
 			}
 			else
