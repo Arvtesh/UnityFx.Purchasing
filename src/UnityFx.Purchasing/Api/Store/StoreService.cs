@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 #if UNITYFX_SUPPORT_TAP
 using System.Threading.Tasks;
 #endif
@@ -46,6 +47,7 @@ namespace UnityFx.Purchasing
 		private readonly TraceSource _console;
 		private readonly StoreListener _storeListener;
 		private readonly IPurchasingModule _purchasingModule;
+		private readonly SynchronizationContext _syncContext;
 
 		private StoreProductCollection _products;
 #if !NET35
@@ -61,14 +63,14 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Identifier for user trace events.
-		/// </summary>
-		protected const int TraceEventMax = 4;
-
-		/// <summary>
 		/// Returns the <see cref="System.Diagnostics.TraceSource"/> instance used by the service. Read only.
 		/// </summary>
 		protected internal TraceSource TraceSource => _console;
+
+		/// <summary>
+		/// Returns <see cref="SynchronizationContext"/> instance used to forward execution to the main thread. Read only.
+		/// </summary>
+		protected internal SynchronizationContext SyncContext => _syncContext;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
@@ -79,6 +81,27 @@ namespace UnityFx.Purchasing
 			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
 			_storeListener = new StoreListener(this);
+			_syncContext = SynchronizationContext.Current;
+		}
+
+		/// <summary>
+		/// Executes the delegate passed on sync context (if present). Otherwise just invokes the delegate.
+		/// </summary>
+		protected internal void ExecuteOnMainThread(SendOrPostCallback action, object args)
+		{
+			Debug.Assert(action != null);
+
+			if (!_disposed)
+			{
+				if (_syncContext != null)
+				{
+					_syncContext.Post(action, args);
+				}
+				else
+				{
+					action(args);
+				}
+			}
 		}
 
 #if UNITYFX_SUPPORT_TAP

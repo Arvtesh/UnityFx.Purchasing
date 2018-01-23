@@ -115,18 +115,22 @@ namespace UnityFx.Purchasing
 
 		private void GetConfigCallback(StoreConfig storeConfig)
 		{
-			if (!IsCompleted)
-			{
-				TryInitiate(storeConfig);
-			}
+			Store.ExecuteOnMainThread(
+				args =>
+				{
+					TryInitiate(args as StoreConfig);
+				},
+				storeConfig);
 		}
 
 		private void GetConfigErrorCallback(Exception e)
 		{
-			if (!IsCompleted)
-			{
-				SetFailed(StoreFetchError.StoreConfigUnavailable, e);
-			}
+			Store.ExecuteOnMainThread(
+				args =>
+				{
+					SetFailed(StoreFetchError.StoreConfigUnavailable, args as Exception);
+				},
+				e);
 		}
 
 #endif
