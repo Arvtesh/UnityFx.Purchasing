@@ -107,14 +107,14 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Initialize, "OnInitialized");
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Initialize, "OnInitialized");
 					_storeService.SetStoreController(controller, extensions);
 					_initializeOp.SetCompleted();
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationId.Initialize, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _initializeOp.Id, e);
 				}
 			}
 		}
@@ -127,13 +127,13 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Initialize, "OnInitializeFailed: " + error.ToString());
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Initialize, "OnInitializeFailed: " + error.ToString());
 					_initializeOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationId.Initialize, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _initializeOp.Id, e);
 				}
 			}
 		}
@@ -146,13 +146,13 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Fetch, "OnFetch");
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Fetch, "OnFetch");
 					_fetchOp.SetCompleted();
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationId.Fetch, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _fetchOp.Id, e);
 				}
 			}
 		}
@@ -165,18 +165,18 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Fetch, "OnFetchFailed: " + error.ToString());
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Fetch, "OnFetchFailed: " + error.ToString());
 					_fetchOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationId.Fetch, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _fetchOp.Id, e);
 				}
 			}
 		}
 
-		public PurchaseProcessingResult ProcessPurchase(UnityEngine.Purchasing.PurchaseEventArgs args)
+		public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 		{
 			Debug.Assert(args != null);
 			Debug.Assert(args.purchasedProduct != null);
@@ -188,19 +188,19 @@ namespace UnityFx.Purchasing
 					var product = args.purchasedProduct;
 					var productId = product.definition.id;
 
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, "ProcessPurchase: " + productId);
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, "ProcessPurchase: " + productId);
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
 					if (_purchaseOp == null)
 					{
 						// A restored transactions when the _purchaseOp is null.
 						var op = new PurchaseOperation(this, product, true);
-						return op.Validate(product);
+						return op.Validate();
 					}
 					else if (_purchaseOp.ProcessPurchase(product))
 					{
 						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-						return _purchaseOp.Validate(product);
+						return _purchaseOp.Validate();
 					}
 					else
 					{
@@ -213,7 +213,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationId.Purchase, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _purchaseOp?.Id ?? 0, e);
 				}
 			}
 
@@ -230,19 +230,19 @@ namespace UnityFx.Purchasing
 					var productId = product?.definition.id ?? "null";
 					var errorDesc = productId + ", reson=" + reason.ToString();
 
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationId.Purchase, "OnPurchaseFailed: " + errorDesc);
+					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, "OnPurchaseFailed: " + errorDesc);
 
 					if (_purchaseOp == null)
 					{
 						// A restored transaction.
 						if (product != null)
 						{
-							var op = new PurchaseOperation(this, productId, true, null, null);
+							var op = new PurchaseOperation(this, StoreOperationType.Purchase, productId, true, null, null);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else
 						{
-							_console.TraceError(StoreOperationId.Purchase, reason.ToString());
+							_console.TraceEvent(TraceEventType.Error, 0, reason.ToString());
 						}
 					}
 					else if (_purchaseOp.IsSame(product))
@@ -260,7 +260,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceException(StoreOperationId.Purchase, e, TraceEventType.Critical);
+					_console.TraceData(TraceEventType.Critical, _purchaseOp?.Id ?? 0, e);
 				}
 			}
 		}
@@ -286,7 +286,7 @@ namespace UnityFx.Purchasing
 
 		private void TraceUnexpectedProduct(string productId)
 		{
-			_console.TraceEvent(TraceEventType.Warning, (int)StoreOperationId.Purchase, "Unexpected product: " + productId);
+			_console.TraceEvent(TraceEventType.Warning, (int)StoreOperationType.Purchase, "Unexpected product: " + productId);
 		}
 
 		private static StoreFetchError GetInitializeError(InitializationFailureReason error)

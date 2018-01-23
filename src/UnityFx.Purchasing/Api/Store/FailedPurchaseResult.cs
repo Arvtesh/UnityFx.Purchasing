@@ -7,74 +7,76 @@ using UnityEngine.Purchasing;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// A store purchase result for failed purchases.
+	/// Result of a failed store purchase.
 	/// </summary>
-	[Serializable]
-	public class FailedPurchaseResult : PurchaseResult
+	public struct FailedPurchaseResult : IPurchaseResult
 	{
 		#region data
 
-		private StorePurchaseError _error;
-		private Exception _exception;
+		private readonly IPurchaseResult _result;
+		private readonly StorePurchaseError _reason;
+		private readonly Exception _exception;
 
 		#endregion
 
 		#region interface
 
 		/// <summary>
-		/// Returns an error that caused the purchase to fail. Read only.
+		/// Returns purchase failure reason. Read only.
 		/// </summary>
-		public StorePurchaseError Reason => _error;
+		public StorePurchaseError ErrorId => _reason;
 
 		/// <summary>
-		/// Returns exception that caused the failure (if any). Read only.
+		/// Returns an exception which occurred during the operation. Read only.
 		/// </summary>
-		public Exception Exception => _exception;
+		public Exception Error => _exception;
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the purchase operation has failed; <see langword="false"/> otherwise. Read only.
+		/// Returns a value indicating whether an asynchronous operation has been canceled. Read only.
 		/// </summary>
-		public bool IsCanceled => _error == StorePurchaseError.UserCanceled;
+		public bool Cancelled => _reason == StorePurchaseError.UserCanceled;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
+		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> struct.
 		/// </summary>
-		public FailedPurchaseResult(string productId, Product product, StorePurchaseError error, Exception e, bool restored)
-			: base(productId, product, restored)
+		internal FailedPurchaseResult(IPurchaseResult result, StorePurchaseError failReason, Exception e)
 		{
-			_error = error;
+			_result = result;
+			_reason = failReason;
 			_exception = e;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
-		/// </summary>
-		public FailedPurchaseResult(string productId, PurchaseResult purchaseResult, StorePurchaseError error, Exception e, bool restored)
-			: base(productId, purchaseResult.TransactionInfo, purchaseResult.ValidationResult, restored)
-		{
-			_error = error;
-			_exception = e;
-		}
+		#endregion
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
-		/// </summary>
-		public FailedPurchaseResult(string productId, StoreTransaction transactionInfo, PurchaseValidationResult validationResult, StorePurchaseError error, Exception e, bool restored)
-			: base(productId, transactionInfo, validationResult, restored)
-		{
-			_error = error;
-			_exception = e;
-		}
+		#region IPurchaseResult
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FailedPurchaseResult"/> class.
-		/// </summary>
-		public FailedPurchaseResult(StorePurchaseException e)
-			: base(e.ProductId, e.Result.TransactionInfo, e.Result.ValidationResult, e.Result.IsRestored)
-		{
-			_error = e.Reason;
-			_exception = e;
-		}
+		/// <inheritdoc/>
+		public string ProductId => _result.ProductId;
+
+		/// <inheritdoc/>
+		public Product Product => _result.Product;
+
+		/// <inheritdoc/>
+		public string TransactionId => _result.TransactionId;
+
+		/// <inheritdoc/>
+		public string Receipt => _result.Receipt;
+
+		/// <inheritdoc/>
+		public PurchaseValidationResult ValidationResult => _result.ValidationResult;
+
+		/// <inheritdoc/>
+		public bool Restored => _result.Restored;
+
+		#endregion
+
+		#region IStoreOperationInfo
+
+		/// <inheritdoc/>
+		public int OperationId => _result.OperationId;
+
+		/// <inheritdoc/>
+		public object UserState => _result.UserState;
 
 		#endregion
 	}

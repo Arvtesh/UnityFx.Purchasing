@@ -39,11 +39,80 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private PurchaseValidationStatus _status;
+		private readonly PurchaseValidationStatus _status;
+
+		private static PurchaseValidationResult _success;
+		private static PurchaseValidationResult _failure;
+		private static PurchaseValidationResult _notAvailable;
+		private static PurchaseValidationResult _suppressed;
 
 		#endregion
 
 		#region interface
+
+		/// <summary>
+		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Ok"/>. Read only.
+		/// </summary>
+		public static PurchaseValidationResult Success
+		{
+			get
+			{
+				if (_success == null)
+				{
+					_success = new PurchaseValidationResult(PurchaseValidationStatus.Ok);
+				}
+
+				return _success;
+			}
+		}
+
+		/// <summary>
+		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Failure"/>. Read only.
+		/// </summary>
+		public static PurchaseValidationResult Failure
+		{
+			get
+			{
+				if (_failure == null)
+				{
+					_failure = new PurchaseValidationResult(PurchaseValidationStatus.Failure);
+				}
+
+				return _failure;
+			}
+		}
+
+		/// <summary>
+		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.NotAvailable"/>. Read only.
+		/// </summary>
+		public static PurchaseValidationResult NotAvailable
+		{
+			get
+			{
+				if (_notAvailable == null)
+				{
+					_notAvailable = new PurchaseValidationResult(PurchaseValidationStatus.NotAvailable);
+				}
+
+				return _notAvailable;
+			}
+		}
+
+		/// <summary>
+		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Suppressed"/>. Read only.
+		/// </summary>
+		public static PurchaseValidationResult Suppressed
+		{
+			get
+			{
+				if (_suppressed == null)
+				{
+					_suppressed = new PurchaseValidationResult(PurchaseValidationStatus.Suppressed);
+				}
+
+				return _suppressed;
+			}
+		}
 
 		/// <summary>
 		/// Returns the validation status. Read only.

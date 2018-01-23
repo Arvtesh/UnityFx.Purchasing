@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -21,9 +22,11 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public FetchOperation(StoreOperationContainer parent, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationId.Fetch, asyncCallback, asyncState)
+		public FetchOperation(StoreOperationContainer parent, StoreOperationType opType, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opType, asyncCallback, asyncState)
 		{
+			Debug.Assert((opType & StoreOperationType.Fetch) != 0);
+
 			_fetchComplete = onComplete;
 			_fetchFailed = onFailed;
 
@@ -42,12 +45,12 @@ namespace UnityFx.Purchasing
 
 		protected override void InvokeCompleted()
 		{
-			Store.InvokeFetchCompleted(this);
+			Store.InvokeFetchCompleted(this, StoreFetchError.None, null);
 		}
 
 		protected override void InvokeFailed(StoreFetchError reason, Exception e)
 		{
-			Store.InvokeFetchFailed(this, reason, e);
+			Store.InvokeFetchCompleted(this, reason, e);
 		}
 
 		#endregion

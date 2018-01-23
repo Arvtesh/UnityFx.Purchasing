@@ -2,37 +2,29 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Diagnostics;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// Enumerates identifiers for <see cref="TraceSource"/> methods.
-	/// </summary>
-	internal enum StoreOperationId
+	[Flags]
+	internal enum StoreOperationType
 	{
-		Default,
-		Initialize,
-		Fetch,
-		Purchase
+		Initialize = 1,
+		InitializeEap = Initialize | 4,
+		InitializeApm = Initialize | 8,
+		InitializeTap = Initialize | 6,
+
+		Fetch = 2,
+		FetchEap = Fetch | 4,
+		FetchApm = Fetch | 8,
+		FetchTap = Fetch | 6,
+
+		Purchase = 3,
+		PurchaseEap = Purchase | 4,
+		PurchaseApm = Purchase | 8,
+		PurchaseTap = Purchase | 6,
 	}
 
-	/// <summary>
-	/// Helpers.
-	/// </summary>
 	internal static class StoreUtility
 	{
-		internal static void TraceError(this TraceSource traceSource, StoreOperationId opId, string s)
-		{
-			traceSource.TraceEvent(TraceEventType.Error, (int)opId, opId.ToString() + " error: " + s);
-		}
-
-		internal static void TraceException(this TraceSource traceSource, StoreOperationId opId, Exception e, TraceEventType eventType = TraceEventType.Error)
-		{
-			if (e != null)
-			{
-				traceSource.TraceData(eventType, (int)opId, e);
-			}
-		}
 	}
 }

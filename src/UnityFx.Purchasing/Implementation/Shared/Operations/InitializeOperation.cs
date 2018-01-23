@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Diagnostics;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 
@@ -21,9 +22,11 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public InitializeOperation(StoreOperationContainer parent, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, StoreOperationId.Initialize, asyncCallback, asyncState)
+		public InitializeOperation(StoreOperationContainer parent, StoreOperationType opType, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opType, asyncCallback, asyncState)
 		{
+			Debug.Assert((opType & StoreOperationType.Initialize) != 0);
+
 			_purchasingModule = purchasingModule;
 			_storeListener = storeListener;
 
@@ -44,12 +47,12 @@ namespace UnityFx.Purchasing
 
 		protected override void InvokeCompleted()
 		{
-			Store.InvokeInitializeCompleted(this);
+			Store.InvokeInitializeCompleted(this, StoreFetchError.None, null);
 		}
 
 		protected override void InvokeFailed(StoreFetchError reason, Exception e)
 		{
-			Store.InvokeInitializeFailed(this, reason, e);
+			Store.InvokeInitializeCompleted(this, reason, e);
 		}
 
 		#endregion

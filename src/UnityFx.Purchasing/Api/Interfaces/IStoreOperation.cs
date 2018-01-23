@@ -9,13 +9,8 @@ namespace UnityFx.Purchasing
 	/// A yieldable store operation with status information.
 	/// </summary>
 	/// <seealso cref="IStoreOperation{T}"/>
-	public interface IStoreOperation : IAsyncResult, IDisposable
+	public interface IStoreOperation
 	{
-		/// <summary>
-		/// Schedules a continuation to run after the operation has completed.
-		/// </summary>
-		event AsyncCallback Completed;
-
 		/// <summary>
 		/// Returns an operation identifier. Read only.
 		/// </summary>
@@ -31,14 +26,24 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <see langword="true"/> if the operation has completed successfully, <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <seealso cref="IsCompleted"/>
 		/// <seealso cref="IsFaulted"/>
 		/// <seealso cref="IsCanceled"/>
 		bool IsCompletedSuccessfully { get; }
 
 		/// <summary>
+		/// Returns <see langword="true"/> if the operation has completed (either successfully or not), <see langword="false"/> otherwise. Read only.
+		/// </summary>
+		/// <seealso cref="IsCompletedSuccessfully"/>
+		/// <seealso cref="IsFaulted"/>
+		/// <seealso cref="IsCanceled"/>
+		bool IsCompleted { get; }
+
+		/// <summary>
 		/// Returns <see langword="true"/> if the operation has failed for any reason, <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		/// <seealso cref="Exception"/>
+		/// <seealso cref="IsCompleted"/>
 		/// <seealso cref="IsCompletedSuccessfully"/>
 		/// <seealso cref="IsCanceled"/>
 		bool IsFaulted { get; }
@@ -46,6 +51,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <see langword="true"/> if the operation has been canceled by user, <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <seealso cref="IsCompleted"/>
 		/// <seealso cref="IsCompletedSuccessfully"/>
 		/// <seealso cref="IsFaulted"/>
 		bool IsCanceled { get; }

@@ -15,8 +15,8 @@ namespace UnityFx.Purchasing
 	{
 		#region interface
 
-		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationId opId, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, opId, asyncCallback, asyncState, null, null)
+		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationType opId, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, opId, asyncCallback, asyncState, null)
 		{
 		}
 
@@ -31,7 +31,7 @@ namespace UnityFx.Purchasing
 
 		public void SetCompleted()
 		{
-			if (TrySetResult(null))
+			if (TrySetCompleted())
 			{
 				InvokeCompleted();
 			}
@@ -39,7 +39,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason)
 		{
-			Console.TraceError(Type, reason.ToString());
+			TraceError(reason.ToString());
 
 			if (TrySetException(new StoreFetchException(reason)))
 			{
@@ -49,7 +49,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StoreFetchError reason, Exception e)
 		{
-			Console.TraceException(Type, e);
+			TraceException(e);
 
 			if (TrySetException(new StoreFetchException(reason, e)))
 			{
@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(Exception e, bool completedSynchronously = false)
 		{
-			Console.TraceException(Type, e);
+			TraceException(e);
 
 			if (TrySetException(e, completedSynchronously))
 			{
@@ -115,18 +115,22 @@ namespace UnityFx.Purchasing
 
 		private void GetConfigCallback(StoreConfig storeConfig)
 		{
-			if (!IsCompleted)
-			{
-				TryInitiate(storeConfig);
-			}
+			Store.ExecuteOnMainThread(
+				args =>
+				{
+					TryInitiate(args as StoreConfig);
+				},
+				storeConfig);
 		}
 
 		private void GetConfigErrorCallback(Exception e)
 		{
-			if (!IsCompleted)
-			{
-				SetFailed(StoreFetchError.StoreConfigUnavailable, e);
-			}
+			Store.ExecuteOnMainThread(
+				args =>
+				{
+					SetFailed(StoreFetchError.StoreConfigUnavailable, args as Exception);
+				},
+				e);
 		}
 
 #endif

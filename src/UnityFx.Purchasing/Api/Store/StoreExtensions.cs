@@ -2,71 +2,65 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-#if !NET35
-using System.Runtime.ExceptionServices;
-#endif
+using System.ComponentModel;
+using UnityEngine;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Extensions for <see cref="IStoreService"/>.
+	/// Purchasing-related extensions.
 	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public static class StoreExtensions
 	{
-		/// <summary>
-		/// Blocks calling thread until the operation is completed.
-		/// </summary>
-		/// <param name="op">The operation to wait for.</param>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="op"/> is <see langword="null"/>.</exception>
-		public static void Join(this IStoreOperation op)
+		#region Product
+
+		[Serializable]
+		private struct UnityReceiptData
 		{
-			if (op == null)
-			{
-				throw new ArgumentNullException(nameof(op));
-			}
+			public string Store;
+			public string Payload;
 
-			if (!op.IsCompleted)
+			public UnityReceiptData(string store, string payload)
 			{
-				op.AsyncWaitHandle.WaitOne();
-			}
-
-			if (op.Exception != null)
-			{
-#if NET35
-				throw op.Exception;
-#else
-				ExceptionDispatchInfo.Capture(op.Exception).Throw();
-#endif
+				Store = store;
+				Payload = payload;
 			}
 		}
 
 		/// <summary>
-		/// Blocks calling thread until the operation is completed.
+		/// Extracts native platfrom purchase receipt from Unity product.
 		/// </summary>
-		/// <param name="op">The operation to wait for.</param>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="op"/> is <see langword="null"/>.</exception>
-		public static T Join<T>(this IStoreOperation<T> op)
+		public static string GetNativeReceipt(this Product product)
 		{
-			if (op == null)
+			if (string.IsNullOrEmpty(product.receipt))
 			{
-				throw new ArgumentNullException(nameof(op));
+				return product.receipt;
 			}
 
-			if (!op.IsCompleted)
-			{
-				op.AsyncWaitHandle.WaitOne();
-			}
-
-			if (op.Exception != null)
-			{
-#if NET35
-				throw op.Exception;
-#else
-				ExceptionDispatchInfo.Capture(op.Exception).Throw();
-#endif
-			}
-
-			return op.Result;
+			return JsonUtility.FromJson<UnityReceiptData>(product.receipt).Payload;
 		}
+
+		/// <summary>
+		/// Extracts native platfrom purchase receipt from Unity receipt.
+		/// </summary>
+		public static string GetNativeReceipt(this Product product, out string storeId)
+		{
+			if (product.hasReceipt && !string.IsNullOrEmpty(product.receipt))
+			{
+				var receiptData = JsonUtility.FromJson<UnityReceiptData>(product.receipt);
+				storeId = receiptData.Store;
+				return receiptData.Payload;
+			}
+
+			storeId = null;
+			return product.receipt;
+		}
+
+		#endregion
+
+		#region IStoreService
+		#endregion
 	}
 }
