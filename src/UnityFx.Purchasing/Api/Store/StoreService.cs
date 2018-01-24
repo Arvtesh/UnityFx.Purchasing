@@ -104,14 +104,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		/// <summary>
-		/// Returns <see langword="true"/> if the platform is supported by the store; <see langword="false"/> otherwise.
-		/// </summary>
-		protected virtual bool IsPlatformSupported()
-		{
-			return Application.isMobilePlatform || Application.isEditor;
-		}
-
 #if UNITYFX_SUPPORT_TAP
 
 		/// <summary>
@@ -944,6 +936,11 @@ namespace UnityFx.Purchasing
 			{
 				throw new InvalidOperationException(_serviceName + " Fetch is pending.");
 			}
+		}
+
+		private static bool IsPlatformSupported()
+		{
+			return Application.isMobilePlatform || Application.isEditor;
 		}
 
 		#endregion
