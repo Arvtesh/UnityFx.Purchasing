@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 			_fetchComplete = onComplete;
 			_fetchFailed = onFailed;
 
-			Store.InvokeFetchInitiated(this);
+			Store.OnFetchInitiated(this);
 		}
 
 		#endregion
@@ -45,12 +45,12 @@ namespace UnityFx.Purchasing
 
 		protected override void InvokeCompleted()
 		{
-			Store.InvokeFetchCompleted(this, StoreFetchError.None, null);
+			Store.OnFetchCompleted(this, StoreFetchError.None, null);
 		}
 
 		protected override void InvokeFailed(StoreFetchError reason, Exception e)
 		{
-			Store.InvokeFetchCompleted(this, reason, e);
+			Store.OnFetchCompleted(this, reason, e);
 		}
 
 		#endregion

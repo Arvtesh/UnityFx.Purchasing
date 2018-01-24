@@ -43,7 +43,7 @@ namespace UnityFx.Purchasing
 			_productId = productId;
 			_restored = restored;
 
-			Store.InvokePurchaseInitiated(this, productId, restored);
+			Store.OnPurchaseInitiated(this, productId, restored);
 		}
 
 		public PurchaseOperation(StoreOperationContainer parent, Product product, bool restored)
@@ -152,7 +152,7 @@ namespace UnityFx.Purchasing
 		{
 			if (TrySetCompleted())
 			{
-				Store.InvokePurchaseCompleted(this, StorePurchaseError.None, null);
+				Store.OnPurchaseCompleted(this, StorePurchaseError.None, null);
 			}
 		}
 
@@ -169,15 +169,15 @@ namespace UnityFx.Purchasing
 			{
 				if (e is StorePurchaseException spe)
 				{
-					Store.InvokePurchaseCompleted(this, spe.Reason, e);
+					Store.OnPurchaseCompleted(this, spe.Reason, e);
 				}
 				else if (e is StoreFetchException sfe)
 				{
-					Store.InvokePurchaseCompleted(this, StorePurchaseError.StoreNotInitialized, e);
+					Store.OnPurchaseCompleted(this, StorePurchaseError.StoreNotInitialized, e);
 				}
 				else
 				{
-					Store.InvokePurchaseCompleted(this, StorePurchaseError.Unknown, e);
+					Store.OnPurchaseCompleted(this, StorePurchaseError.Unknown, e);
 				}
 			}
 		}
@@ -195,12 +195,12 @@ namespace UnityFx.Purchasing
 			{
 				if (TrySetCanceled())
 				{
-					Store.InvokePurchaseCompleted(this, reason, e);
+					Store.OnPurchaseCompleted(this, reason, e);
 				}
 			}
 			else if (TrySetException(e))
 			{
-				Store.InvokePurchaseCompleted(this, reason, e);
+				Store.OnPurchaseCompleted(this, reason, e);
 			}
 		}
 
@@ -215,7 +215,7 @@ namespace UnityFx.Purchasing
 
 			if (TrySetException(e))
 			{
-				Store.InvokePurchaseCompleted(this, reason, e);
+				Store.OnPurchaseCompleted(this, reason, e);
 			}
 		}
 
