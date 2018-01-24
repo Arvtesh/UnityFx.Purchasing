@@ -330,11 +330,14 @@ namespace UnityFx.Purchasing
 
 		private void ValidateCallback(PurchaseValidationResult validationResult)
 		{
-			Store.ExecuteOnMainThread(
+			Store.QueueOnMainThread(
 				args =>
 				{
-					_validationResult = args as PurchaseValidationResult;
-					ProcessValidationResult();
+					if (!IsCompleted)
+					{
+						_validationResult = args as PurchaseValidationResult;
+						ProcessValidationResult();
+					}
 				},
 				validationResult);
 		}

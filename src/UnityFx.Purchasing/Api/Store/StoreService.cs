@@ -16,6 +16,25 @@ namespace UnityFx.Purchasing
 {
 	using Debug = System.Diagnostics.Debug;
 
+	[Flags]
+	internal enum StoreOperationType
+	{
+		Initialize = 1,
+		InitializeEap = Initialize | 4,
+		InitializeApm = Initialize | 8,
+		InitializeTap = Initialize | 6,
+
+		Fetch = 2,
+		FetchEap = Fetch | 4,
+		FetchApm = Fetch | 8,
+		FetchTap = Fetch | 6,
+
+		Purchase = 3,
+		PurchaseEap = Purchase | 4,
+		PurchaseApm = Purchase | 8,
+		PurchaseTap = Purchase | 6,
+	}
+
 	/// <summary>
 	/// Implementation of <see cref="IStoreService"/>.
 	/// </summary>
@@ -87,7 +106,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Executes the delegate passed on sync context (if present). Otherwise just invokes the delegate.
 		/// </summary>
-		protected internal void ExecuteOnMainThread(SendOrPostCallback action, object args)
+		protected internal void QueueOnMainThread(SendOrPostCallback action, object args)
 		{
 			Debug.Assert(action != null);
 
