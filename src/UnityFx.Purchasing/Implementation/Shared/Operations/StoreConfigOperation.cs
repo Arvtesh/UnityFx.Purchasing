@@ -26,11 +26,6 @@ namespace UnityFx.Purchasing
 		{
 		}
 
-		public void Initiate()
-		{
-			Store.GetStoreConfig(this);
-		}
-
 		public void SetCompleted()
 		{
 			if (TrySetCompleted())

@@ -695,7 +695,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				result.Initiate();
+				GetStoreConfig(result);
 			}
 			catch (Exception e)
 			{
@@ -714,7 +714,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				result.Initiate();
+				GetStoreConfig(result);
 			}
 			catch (Exception e)
 			{
