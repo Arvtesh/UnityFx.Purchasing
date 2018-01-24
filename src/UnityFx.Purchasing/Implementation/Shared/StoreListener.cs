@@ -115,6 +115,7 @@ namespace UnityFx.Purchasing
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _initializeOp.Id, e);
+					throw;
 				}
 			}
 		}
@@ -134,6 +135,7 @@ namespace UnityFx.Purchasing
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _initializeOp.Id, e);
+					throw;
 				}
 			}
 		}
@@ -153,6 +155,7 @@ namespace UnityFx.Purchasing
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _fetchOp.Id, e);
+					throw;
 				}
 			}
 		}
@@ -172,6 +175,7 @@ namespace UnityFx.Purchasing
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _fetchOp.Id, e);
+					throw;
 				}
 			}
 		}
@@ -216,6 +220,7 @@ namespace UnityFx.Purchasing
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, opId, e);
+					throw;
 				}
 			}
 
@@ -265,6 +270,7 @@ namespace UnityFx.Purchasing
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, opId, e);
+					throw;
 				}
 			}
 		}
