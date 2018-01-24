@@ -28,11 +28,7 @@ namespace UnityFx.Purchasing
 
 		public void Initiate()
 		{
-#if UNITYFX_SUPPORT_TAP
-			Store.GetStoreConfigAsync().ContinueWith(GetConfigContinuation);
-#else
 			Store.GetStoreConfig(this);
-#endif
 		}
 
 		public void SetCompleted()
@@ -139,25 +135,6 @@ namespace UnityFx.Purchasing
 				SetFailed(StoreFetchError.StoreConfigUnavailable, new ArgumentNullException(nameof(storeConfig)));
 			}
 		}
-
-#if UNITYFX_SUPPORT_TAP
-
-		private void GetConfigContinuation(Task<StoreConfig> task)
-		{
-			if (!IsCompleted)
-			{
-				if (task.Status == TaskStatus.RanToCompletion)
-				{
-					TryInitiate(task.Result);
-				}
-				else
-				{
-					SetFailed(StoreFetchError.StoreConfigUnavailable, task.Exception?.InnerException);
-				}
-			}
-		}
-
-#endif
 
 		#endregion
 	}

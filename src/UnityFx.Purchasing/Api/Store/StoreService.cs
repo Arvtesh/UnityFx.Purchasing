@@ -147,35 +147,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-#if UNITYFX_SUPPORT_TAP
-
-		/// <summary>
-		/// Requests the store configuration.
-		/// </summary>
-		/// <remarks>
-		/// Typlical implementation would connect to the app server for information on products available.
-		/// </remarks>
-		/// <seealso cref="ValidatePurchaseAsync(IStoreTransaction)"/>
-		protected internal abstract Task<StoreConfig> GetStoreConfigAsync();
-
-		/// <summary>
-		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
-		/// </summary>
-		/// <remarks>
-		/// <para>Typical implementation would first do client validation of the purchase and (if that passes)
-		/// initiate server-side validation.</para>
-		/// <para>Throwing an exception from this method or returning a faulted/canceled task results in
-		/// failed transaction validation.</para>
-		/// </remarks>
-		/// <param name="transactionInfo">The transaction data to validate.</param>
-		/// <seealso cref="GetStoreConfigAsync()"/>
-		protected internal virtual Task<PurchaseValidationResult> ValidatePurchaseAsync(IStoreTransaction transactionInfo)
-		{
-			return Task.FromResult<PurchaseValidationResult>(null);
-		}
-
-#else
-
 		/// <summary>
 		/// Requests the store configuration.
 		/// </summary>
@@ -188,21 +159,18 @@ namespace UnityFx.Purchasing
 
 		/// <summary>
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
-		/// Default implementation just returns <see langword="false"/>.
+		/// Default implementation does nothing.
 		/// </summary>
 		/// <remarks>
 		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.
 		/// </remarks>
-		/// <returns>Returns <see langword="true"/> if validation is implemented; <see langword="false"/> if not.</returns>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
 		/// <param name="completionSource">A provider of completion notification.</param>
 		/// <seealso cref="GetStoreConfig(IAsyncCompletionSource{StoreConfig})"/>
-		protected internal virtual bool ValidatePurchase(IStoreTransaction transactionInfo, IAsyncCompletionSource<PurchaseValidationResult> completionSource)
+		protected internal virtual void ValidatePurchase(IStoreTransaction transactionInfo, IAsyncCompletionSource<PurchaseValidationResult> completionSource)
 		{
-			return false;
+			completionSource.SetResult(PurchaseValidationResult.Suppressed);
 		}
-
-#endif
 
 		/// <summary>
 		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.

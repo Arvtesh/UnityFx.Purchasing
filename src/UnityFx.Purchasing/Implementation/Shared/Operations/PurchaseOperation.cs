@@ -97,11 +97,9 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-#if UNITYFX_SUPPORT_TAP
-
 					try
 					{
-						Store.ValidatePurchaseAsync(this).ContinueWith(ValidateContinuation);
+						Store.ValidatePurchase(this, this);
 					}
 					catch (Exception e)
 					{
@@ -110,35 +108,11 @@ namespace UnityFx.Purchasing
 						return PurchaseProcessingResult.Complete;
 					}
 
-#else
-
-					var validationImplemented = true;
-
-					try
+					// Check if the validation callback was called synchronously.
+					if (!IsCompleted)
 					{
-						validationImplemented = Store.ValidatePurchase(this, this);
+						return PurchaseProcessingResult.Pending;
 					}
-					catch (Exception e)
-					{
-						TraceException(e);
-						SetFailed(StorePurchaseError.ReceiptValidationFailed);
-						return PurchaseProcessingResult.Complete;
-					}
-
-					if (validationImplemented)
-					{
-						// Check if the validation callback was called synchronously.
-						if (!IsCompleted)
-						{
-							return PurchaseProcessingResult.Pending;
-						}
-					}
-					else
-					{
-						SetCompleted(PurchaseValidationResult.Suppressed);
-					}
-
-#endif
 				}
 			}
 			catch (Exception e)
@@ -349,26 +323,6 @@ namespace UnityFx.Purchasing
 				TrySetException(e);
 			}
 		}
-
-#if UNITYFX_SUPPORT_TAP
-
-		private void ValidateContinuation(Task<PurchaseValidationResult> task)
-		{
-			if (!IsCompleted)
-			{
-				if (task.Status == TaskStatus.RanToCompletion)
-				{
-					_validationResult = task.Result;
-					ProcessValidationResult();
-				}
-				else
-				{
-					SetFailed(StorePurchaseError.ReceiptValidationNotAvailable, task.Exception?.InnerException);
-				}
-			}
-		}
-
-#endif
 
 		private static string GetComment(string productId, bool restored)
 		{
