@@ -11,8 +11,14 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Shared functionality of initialize/fetch operations.
 	/// </summary>
-	internal abstract class StoreConfigOperation : StoreOperation
+	internal abstract class StoreConfigOperation : StoreOperation, IAsyncCompletionSource<StoreConfig>
 	{
+		#region data
+
+		private bool _getConfigCompleted;
+
+		#endregion
+
 		#region interface
 
 		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationType opId, AsyncCallback asyncCallback, object asyncState)
@@ -25,7 +31,7 @@ namespace UnityFx.Purchasing
 #if UNITYFX_SUPPORT_TAP
 			Store.GetStoreConfigAsync().ContinueWith(GetConfigContinuation);
 #else
-			Store.GetStoreConfig(GetConfigCallback, GetConfigErrorCallback);
+			Store.GetStoreConfig(this);
 #endif
 		}
 
@@ -73,6 +79,46 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IAsyncCompletionSource
+
+		void IAsyncCompletionSource<StoreConfig>.SetResult(StoreConfig storeConfig)
+		{
+			if (!_getConfigCompleted)
+			{
+				_getConfigCompleted = true;
+
+				Store.QueueOnMainThread(
+					args =>
+					{
+						if (!IsCompleted)
+						{
+							TryInitiate(args as StoreConfig);
+						}
+					},
+					storeConfig);
+			}
+		}
+
+		void IAsyncCompletionSource<StoreConfig>.SetException(Exception e)
+		{
+			if (!_getConfigCompleted)
+			{
+				_getConfigCompleted = true;
+
+				Store.QueueOnMainThread(
+					args =>
+					{
+						if (!IsCompleted)
+						{
+							SetFailed(StoreFetchError.StoreConfigUnavailable, args as Exception);
+						}
+					},
+					e);
+			}
+		}
+
+		#endregion
+
 		#region implementation
 
 		private void TryInitiate(StoreConfig storeConfig)
@@ -109,34 +155,6 @@ namespace UnityFx.Purchasing
 					SetFailed(StoreFetchError.StoreConfigUnavailable, task.Exception?.InnerException);
 				}
 			}
-		}
-
-#else
-
-		private void GetConfigCallback(StoreConfig storeConfig)
-		{
-			Store.QueueOnMainThread(
-				args =>
-				{
-					if (!IsCompleted)
-					{
-						TryInitiate(args as StoreConfig);
-					}
-				},
-				storeConfig);
-		}
-
-		private void GetConfigErrorCallback(Exception e)
-		{
-			Store.QueueOnMainThread(
-				args =>
-				{
-					if (!IsCompleted)
-					{
-						SetFailed(StoreFetchError.StoreConfigUnavailable, args as Exception);
-					}
-				},
-				e);
 		}
 
 #endif

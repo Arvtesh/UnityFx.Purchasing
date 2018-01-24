@@ -182,10 +182,9 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
-		/// <param name="completedDelegate">Operation completed delegate.</param>
-		/// <param name="failedDelegate">Delegate called on operation failure.</param>
-		/// <seealso cref="ValidatePurchase(IStoreTransaction, Action{PurchaseValidationResult})"/>
-		protected internal abstract void GetStoreConfig(Action<StoreConfig> completedDelegate, Action<Exception> failedDelegate);
+		/// <param name="completionSource">A provider of completion notification.</param>
+		/// <seealso cref="ValidatePurchase(IStoreTransaction, IAsyncCompletionSource{PurchaseValidationResult})"/>
+		protected internal abstract void GetStoreConfig(IAsyncCompletionSource<StoreConfig> completionSource);
 
 		/// <summary>
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
@@ -196,9 +195,9 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		/// <returns>Returns <see langword="true"/> if validation is implemented; <see langword="false"/> if not.</returns>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
-		/// <param name="resultDelegate">Operation completed delegate.</param>
-		/// <seealso cref="GetStoreConfig(Action{StoreConfig}, Action{Exception})"/>
-		protected internal virtual bool ValidatePurchase(IStoreTransaction transactionInfo, Action<PurchaseValidationResult> resultDelegate)
+		/// <param name="completionSource">A provider of completion notification.</param>
+		/// <seealso cref="GetStoreConfig(IAsyncCompletionSource{StoreConfig})"/>
+		protected internal virtual bool ValidatePurchase(IStoreTransaction transactionInfo, IAsyncCompletionSource<PurchaseValidationResult> completionSource)
 		{
 			return false;
 		}

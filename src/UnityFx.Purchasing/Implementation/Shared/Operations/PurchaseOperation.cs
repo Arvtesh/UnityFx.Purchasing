@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
-	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IPurchaseResult, IStoreTransaction
+	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IAsyncCompletionSource<PurchaseValidationResult>, IPurchaseResult, IStoreTransaction
 	{
 		#region data
 
@@ -26,6 +26,7 @@ namespace UnityFx.Purchasing
 		private Product _product;
 		private string _receipt;
 		private PurchaseValidationResult _validationResult;
+		private bool _validateCompleted;
 
 		#endregion
 
@@ -115,7 +116,7 @@ namespace UnityFx.Purchasing
 
 					try
 					{
-						validationImplemented = Store.ValidatePurchase(this, ValidateCallback);
+						validationImplemented = Store.ValidatePurchase(this, this);
 					}
 					catch (Exception e)
 					{
@@ -226,6 +227,47 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IAsyncCompletionSource
+
+		void IAsyncCompletionSource<PurchaseValidationResult>.SetResult(PurchaseValidationResult validationResult)
+		{
+			if (!_validateCompleted)
+			{
+				_validateCompleted = true;
+
+				Store.QueueOnMainThread(
+					args =>
+					{
+						if (!IsCompleted)
+						{
+							_validationResult = args as PurchaseValidationResult;
+							ProcessValidationResult();
+						}
+					},
+					validationResult);
+			}
+		}
+
+		void IAsyncCompletionSource<PurchaseValidationResult>.SetException(Exception e)
+		{
+			if (!_validateCompleted)
+			{
+				_validateCompleted = true;
+
+				Store.QueueOnMainThread(
+					args =>
+					{
+						if (!IsCompleted)
+						{
+							SetFailed(StorePurchaseError.ReceiptValidationFailed, args as Exception);
+						}
+					},
+					e);
+			}
+		}
+
+		#endregion
+
 		#region IPurchaseResult
 
 		/// <inheritdoc/>
@@ -324,22 +366,6 @@ namespace UnityFx.Purchasing
 					SetFailed(StorePurchaseError.ReceiptValidationNotAvailable, task.Exception?.InnerException);
 				}
 			}
-		}
-
-#else
-
-		private void ValidateCallback(PurchaseValidationResult validationResult)
-		{
-			Store.QueueOnMainThread(
-				args =>
-				{
-					if (!IsCompleted)
-					{
-						_validationResult = args as PurchaseValidationResult;
-						ProcessValidationResult();
-					}
-				},
-				validationResult);
 		}
 
 #endif
