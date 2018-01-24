@@ -107,7 +107,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Initialize, "OnInitialized");
+					_console.TraceEvent(TraceEventType.Verbose, _initializeOp.Id, "OnInitialized");
 					_storeService.SetStoreController(controller, extensions);
 					_initializeOp.SetCompleted();
 				}
@@ -127,7 +127,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Initialize, "OnInitializeFailed: " + error.ToString());
+					_console.TraceEvent(TraceEventType.Verbose, _initializeOp.Id, "OnInitializeFailed: " + error.ToString());
 					_initializeOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
@@ -146,7 +146,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Fetch, "OnFetch");
+					_console.TraceEvent(TraceEventType.Verbose, _fetchOp.Id, "OnFetch");
 					_fetchOp.SetCompleted();
 				}
 				catch (Exception e)
@@ -165,7 +165,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Fetch, "OnFetchFailed: " + error.ToString());
+					_console.TraceEvent(TraceEventType.Verbose, _fetchOp.Id, "OnFetchFailed: " + error.ToString());
 					_fetchOp.SetFailed(GetInitializeError(error));
 				}
 				catch (Exception e)
@@ -183,13 +183,15 @@ namespace UnityFx.Purchasing
 
 			if (!_disposed)
 			{
+				var opId = _purchaseOp?.Id ?? 0;
+
 				try
 				{
 					var product = args.purchasedProduct;
 					var productId = product.definition.id;
 
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, "ProcessPurchase: " + productId);
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, $"Receipt ({productId}): {product.receipt ?? "null"}");
+					_console.TraceEvent(TraceEventType.Verbose, opId, "ProcessPurchase: " + productId);
+					_console.TraceEvent(TraceEventType.Verbose, opId, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
 					if (_purchaseOp == null)
 					{
@@ -213,7 +215,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceData(TraceEventType.Critical, _purchaseOp?.Id ?? 0, e);
+					_console.TraceData(TraceEventType.Critical, opId, e);
 				}
 			}
 
@@ -224,13 +226,15 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
+				var opId = _purchaseOp?.Id ?? 0;
+
 				try
 				{
 					// NOTE: in some cases product might have null value.
 					var productId = product?.definition.id ?? "null";
 					var errorDesc = productId + ", reson=" + reason.ToString();
 
-					_console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, "OnPurchaseFailed: " + errorDesc);
+					_console.TraceEvent(TraceEventType.Verbose, opId, "OnPurchaseFailed: " + errorDesc);
 
 					if (_purchaseOp == null)
 					{
@@ -260,7 +264,7 @@ namespace UnityFx.Purchasing
 				catch (Exception e)
 				{
 					// Should never get here.
-					_console.TraceData(TraceEventType.Critical, _purchaseOp?.Id ?? 0, e);
+					_console.TraceData(TraceEventType.Critical, opId, e);
 				}
 			}
 		}

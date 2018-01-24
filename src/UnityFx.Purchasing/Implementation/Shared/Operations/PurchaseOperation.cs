@@ -59,7 +59,7 @@ namespace UnityFx.Purchasing
 
 			if (product != null && product.availableToPurchase)
 			{
-				Console.TraceEvent(TraceEventType.Verbose, (int)StoreOperationType.Purchase, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+				TraceEvent(TraceEventType.Verbose, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
 				Store.Controller.InitiatePurchase(product);
 			}
 			else

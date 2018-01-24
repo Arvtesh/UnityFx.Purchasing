@@ -360,7 +360,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Initialize, e);
+				_console.TraceData(TraceEventType.Error, op.OperationId, e);
 			}
 		}
 
@@ -372,7 +372,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Initialize, ex);
+				_console.TraceData(TraceEventType.Error, op.OperationId, ex);
 			}
 		}
 
@@ -384,7 +384,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Fetch, e);
+				_console.TraceData(TraceEventType.Error, op.OperationId, e);
 			}
 		}
 
@@ -396,7 +396,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Fetch, ex);
+				_console.TraceData(TraceEventType.Error, op.OperationId, ex);
 			}
 		}
 
@@ -410,7 +410,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception e)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Purchase, e);
+				_console.TraceData(TraceEventType.Error, op.OperationId, e);
 			}
 		}
 
@@ -424,7 +424,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Purchase, ex);
+				_console.TraceData(TraceEventType.Error, result.OperationId, ex);
 			}
 
 #if UNITYFX_SUPPORT_OBSERVABLES
@@ -442,7 +442,7 @@ namespace UnityFx.Purchasing
 			}
 			catch (Exception ex)
 			{
-				_console.TraceData(TraceEventType.Error, (int)StoreOperationType.Purchase, ex);
+				_console.TraceData(TraceEventType.Error, result.OperationId, ex);
 			}
 
 #endif
