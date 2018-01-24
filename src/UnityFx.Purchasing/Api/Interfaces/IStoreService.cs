@@ -352,6 +352,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso cref="PurchaseAsync(string)"/>
 		/// <seealso cref="InitializeAsync(object)"/>
 		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="IsBusy"/>

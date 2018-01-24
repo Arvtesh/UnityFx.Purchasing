@@ -24,6 +24,11 @@ namespace UnityFx.Purchasing
 		Exception Exception { get; }
 
 		/// <summary>
+		/// Returns user-defined data assosiated with the operation (if any). Read only.
+		/// </summary>
+		object UserState { get; }
+
+		/// <summary>
 		/// Returns <see langword="true"/> if the operation has completed successfully, <see langword="false"/> otherwise. Read only.
 		/// </summary>
 		/// <seealso cref="IsCompleted"/>
