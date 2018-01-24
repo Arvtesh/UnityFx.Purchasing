@@ -254,7 +254,7 @@ namespace UnityFx.Purchasing
 		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
 		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized or initialize operation is pending.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
@@ -268,7 +268,7 @@ namespace UnityFx.Purchasing
 		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <event cref="FetchInitiated">Raised when the operation is created.</event>
 		/// <event cref="FetchCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized or fetch operation is pending.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store instance is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>

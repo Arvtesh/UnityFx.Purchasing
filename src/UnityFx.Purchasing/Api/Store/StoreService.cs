@@ -104,6 +104,14 @@ namespace UnityFx.Purchasing
 			}
 		}
 
+		/// <summary>
+		/// Returns <see langword="true"/> if the platform is supported by the store; <see langword="false"/> otherwise.
+		/// </summary>
+		protected virtual bool IsPlatformSupported()
+		{
+			return Application.isMobilePlatform || Application.isEditor;
+		}
+
 #if UNITYFX_SUPPORT_TAP
 
 		/// <summary>
@@ -262,6 +270,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <seealso cref="Dispose()"/>
 		/// <seealso cref="Dispose(bool)"/>
+		/// <seealso cref="ThrowIfPlatformNotSupported"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
@@ -274,9 +283,25 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
+		/// Throws an <see cref="PlatformNotSupportedException"/> if the platform is not supported by the store.
+		/// </summary>
+		/// <seealso cref="ThrowIfDisposed"/>
+		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
+		/// <seealso cref="ThrowIfNotInitialized"/>
+		/// <seealso cref="ThrowIfBusy"/>
+		protected void ThrowIfPlatformNotSupported()
+		{
+			if (!IsPlatformSupported())
+			{
+				throw new PlatformNotSupportedException();
+			}
+		}
+
+		/// <summary>
 		/// Throws an <see cref="ArgumentException"/> if the specified <paramref name="productId"/> is <see langword="null"/> or empty string.
 		/// </summary>
 		/// <seealso cref="ThrowIfDisposed"/>
+		/// <seealso cref="ThrowIfPlatformNotSupported"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfInvalidProductId(string productId)
@@ -297,6 +322,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <seealso cref="IsInitialized"/>
 		/// <seealso cref="ThrowIfDisposed"/>
+		/// <seealso cref="ThrowIfPlatformNotSupported"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfNotInitialized()
@@ -312,6 +338,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <seealso cref="IsBusy"/>
 		/// <seealso cref="ThrowIfDisposed"/>
+		/// <seealso cref="ThrowIfPlatformNotSupported"/>
 		/// <seealso cref="ThrowIfInvalidProductId(string)"/>
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		protected void ThrowIfBusy()
@@ -561,6 +588,7 @@ namespace UnityFx.Purchasing
 		public IStoreOperation InitializeAsync(object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfInitialized();
 			ThrowIfInitializePending();
 
@@ -571,6 +599,7 @@ namespace UnityFx.Purchasing
 		public IStoreOperation FetchAsync(object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfNotInitialized();
 			ThrowIfFetchPending();
 
@@ -582,6 +611,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfBusy();
 
 			return PurchaseInternal(StoreOperationType.PurchaseEap, productId,  null, stateObject);
@@ -594,6 +624,7 @@ namespace UnityFx.Purchasing
 		public IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfInitialized();
 			ThrowIfInitializePending();
 
@@ -605,6 +636,7 @@ namespace UnityFx.Purchasing
 		public void EndInitialize(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 
 			using (var op = ValidateOperation(asyncResult, StoreOperationType.InitializeApm))
 			{
@@ -617,6 +649,7 @@ namespace UnityFx.Purchasing
 		public IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfNotInitialized();
 			ThrowIfFetchPending();
 
@@ -628,6 +661,7 @@ namespace UnityFx.Purchasing
 		public void EndFetch(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 
 			using (var op = ValidateOperation(asyncResult, StoreOperationType.FetchApm))
 			{
@@ -641,6 +675,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfBusy();
 
 			return PurchaseInternal(StoreOperationType.PurchaseApm, productId, userCallback, stateObject);
@@ -651,6 +686,7 @@ namespace UnityFx.Purchasing
 		public PurchaseResult EndPurchase(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 
 			using (var op = ValidateOperation(asyncResult, StoreOperationType.PurchaseApm))
 			{
@@ -667,6 +703,7 @@ namespace UnityFx.Purchasing
 		public Task InitializeTaskAsync()
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfInitialized();
 			ThrowIfInitializePending();
 
@@ -679,6 +716,7 @@ namespace UnityFx.Purchasing
 		public Task FetchTaskAsync()
 		{
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfNotInitialized();
 			ThrowIfFetchPending();
 
@@ -692,6 +730,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfPlatformNotSupported();
 			ThrowIfBusy();
 
 			var tcs = new TaskCompletionSource<PurchaseResult>();
@@ -730,52 +769,38 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert((opType & StoreOperationType.Initialize) != 0);
 
-			if (Application.isMobilePlatform || Application.isEditor)
-			{
-				var result = new InitializeOperation(_storeListener, opType, _purchasingModule, _storeListener, userCallback, stateObject);
+			var result = new InitializeOperation(_storeListener, opType, _purchasingModule, _storeListener, userCallback, stateObject);
 
-				try
-				{
-					result.Initiate();
-				}
-				catch (Exception e)
-				{
-					result.SetFailed(e, true);
-					throw;
-				}
-
-				return result;
-			}
-			else
+			try
 			{
-				throw new PlatformNotSupportedException();
+				result.Initiate();
 			}
+			catch (Exception e)
+			{
+				result.SetFailed(e, true);
+				throw;
+			}
+
+			return result;
 		}
 
 		private StoreOperation FetchInternal(StoreOperationType opType, AsyncCallback userCallback, object stateObject)
 		{
 			Debug.Assert((opType & StoreOperationType.Fetch) != 0);
 
-			if (Application.isMobilePlatform || Application.isEditor)
-			{
-				var result = new FetchOperation(_storeListener, opType, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
+			var result = new FetchOperation(_storeListener, opType, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
 
-				try
-				{
-					result.Initiate();
-				}
-				catch (Exception e)
-				{
-					result.SetFailed(e, true);
-					throw;
-				}
-
-				return result;
-			}
-			else
+			try
 			{
-				throw new PlatformNotSupportedException();
+				result.Initiate();
 			}
+			catch (Exception e)
+			{
+				result.SetFailed(e, true);
+				throw;
+			}
+
+			return result;
 		}
 
 		private PurchaseOperation PurchaseInternal(StoreOperationType opType, string productId, AsyncCallback userCallback, object stateObject)
