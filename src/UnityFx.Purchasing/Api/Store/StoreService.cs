@@ -94,13 +94,37 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
-		protected StoreService(string name, IPurchasingModule purchasingModule)
+		protected StoreService(IPurchasingModule purchasingModule)
+			: this(null, purchasingModule, SynchronizationContext.Current)
 		{
-			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : "Purchasing." + name;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreService"/> class.
+		/// </summary>
+		protected StoreService(IPurchasingModule purchasingModule, SynchronizationContext syncContext)
+			: this(null, purchasingModule, syncContext)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreService"/> class.
+		/// </summary>
+		protected StoreService(string name, IPurchasingModule purchasingModule)
+			: this(name, purchasingModule, SynchronizationContext.Current)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StoreService"/> class.
+		/// </summary>
+		protected StoreService(string name, IPurchasingModule purchasingModule, SynchronizationContext syncContext)
+		{
+			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : name;
 			_console = new TraceSource(_serviceName);
 			_purchasingModule = purchasingModule;
 			_storeListener = new StoreListener(this);
-			_syncContext = SynchronizationContext.Current;
+			_syncContext = syncContext;
 		}
 
 		/// <summary>
