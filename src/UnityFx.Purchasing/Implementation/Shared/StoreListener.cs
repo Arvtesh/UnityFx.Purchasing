@@ -286,7 +286,7 @@ namespace UnityFx.Purchasing
 
 		private void TraceUnexpectedProduct(string productId)
 		{
-			_console.TraceEvent(TraceEventType.Warning, (int)StoreOperationType.Purchase, "Unexpected product: " + productId);
+			_console.TraceEvent(TraceEventType.Warning, 0, $"Unexpected product. Got {productId} while {_purchaseOp.ProductId} was expected.");
 		}
 
 		private static StoreFetchError GetInitializeError(InitializationFailureReason error)

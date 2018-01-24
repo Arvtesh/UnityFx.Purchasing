@@ -27,7 +27,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' != 'net35'">
-		<DefineConstants>UNITYFX_SUPPORT_APM;UNITYFX_SUPPORT_TAP;UNITYFX_SUPPORT_OBSERVABLES</DefineConstants>
+		<DefineConstants>UNITYFX_SUPPORT_TAP;UNITYFX_SUPPORT_OBSERVABLES</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
