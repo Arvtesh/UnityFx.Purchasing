@@ -577,6 +577,12 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		public IStoreOperation InitializeAsync()
+		{
+			return InitializeAsync(null);
+		}
+
+		/// <inheritdoc/>
 		public IStoreOperation InitializeAsync(object stateObject)
 		{
 			ThrowIfDisposed();
@@ -588,6 +594,12 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		public IStoreOperation FetchAsync()
+		{
+			return FetchAsync(null);
+		}
+
+		/// <inheritdoc/>
 		public IStoreOperation FetchAsync(object stateObject)
 		{
 			ThrowIfDisposed();
@@ -596,6 +608,12 @@ namespace UnityFx.Purchasing
 			ThrowIfFetchPending();
 
 			return FetchInternal(StoreOperationType.FetchEap, null, stateObject);
+		}
+
+		/// <inheritdoc/>
+		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId)
+		{
+			return PurchaseAsync(productId, null);
 		}
 
 		/// <inheritdoc/>
