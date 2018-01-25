@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
-	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IAsyncCompletionSource<PurchaseValidationResult>, IPurchaseResult, IStoreTransaction
+	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IAsyncCompletionSource<PurchaseValidationResult>, IPurchaseResult
 	{
 		#region data
 
@@ -245,6 +245,16 @@ namespace UnityFx.Purchasing
 		#region IPurchaseResult
 
 		/// <inheritdoc/>
+		public PurchaseValidationResult ValidationResult => _validationResult;
+
+		/// <inheritdoc/>
+		public bool Restored => _restored;
+
+		#endregion
+
+		#region IStoreTransaction
+
+		/// <inheritdoc/>
 		public string ProductId => _productId;
 
 		/// <inheritdoc/>
@@ -255,12 +265,6 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		public string Receipt => _receipt;
-
-		/// <inheritdoc/>
-		public PurchaseValidationResult ValidationResult => _validationResult;
-
-		/// <inheritdoc/>
-		public bool Restored => _restored;
 
 		#endregion
 

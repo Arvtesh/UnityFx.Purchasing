@@ -482,7 +482,6 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
 				return _storeController != null;
 			}
 		}
@@ -492,7 +491,6 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
 				return _storeListener.PurchaseOp != null;
 			}
 		}
