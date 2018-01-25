@@ -15,11 +15,13 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Gets or sets a <see cref="SourceSwitch"/> instance that controls tracing and debug output for the service.
 		/// </summary>
+		/// <value>Multilevel switch to control tracing and debug output.</value>
 		SourceSwitch TraceSwitch { get; set; }
 
 		/// <summary>
 		/// Returns a collection of trace listeners for the service. Read only.
 		/// </summary>
+		/// <value>A collection of <see cref="TraceListener"/> objects.</value>
 		TraceListenerCollection TraceListeners { get; }
 	}
 }

@@ -14,18 +14,21 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns identifier of the transaction. Read only.
 		/// </summary>
+		/// <value>A unique identifier for the <see cref="Product"/>'s transaction.</value>
 		/// <seealso cref="Product"/>
 		string TransactionId { get; }
 
 		/// <summary>
-		/// Returns the identifier of the <see cref="Product"/>. Read only.
+		/// Returns a unique identifier of the <see cref="Product"/>. Read only.
 		/// </summary>
+		/// <value>Unique product identifier.</value>
 		/// <seealso cref="Product"/>
 		string ProductId { get; }
 
 		/// <summary>
 		/// Returns the Unity product selected for purchase. Read only.
 		/// </summary>
+		/// <value><c>Unity3d</c> product.</value>
 		/// <seealso cref="ProductId"/>
 		/// <seealso cref="TransactionId"/>
 		/// <seealso cref="Receipt"/>
@@ -34,6 +37,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns native store-specific purchase receipt (differs from Unity receipt). Read only.
 		/// </summary>
+		/// <value>The purchase receipt.</value>
 		/// <seealso cref="Product"/>
 		string Receipt { get; }
 	}

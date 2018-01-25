@@ -190,6 +190,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
+		/// <value>Observable that can be used to track successful purchases.</value>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="FailedPurchases"/>
@@ -198,6 +199,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns push notification provider of the store transactions. Read only.
 		/// </summary>
+		/// <value>Observable that can be used to track failed purchases.</value>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="Purchases"/>
@@ -208,6 +210,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns store products list. Read only.
 		/// </summary>
+		/// <value>Read-only collection of products available in the store.</value>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized yet.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		IStoreProductCollection Products { get; }
@@ -215,12 +218,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the service settings. Read only.
 		/// </summary>
+		/// <value>Store settings.</value>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
-		/// Returns Unity3d store controller. Read only.
+		/// Returns <c>Unity3d</c> store controller. Read only.
 		/// </summary>
+		/// <value><c>Unity3d</c> controller that is responsible for all store operations.</value>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso cref="IsInitialized"/>
@@ -230,6 +235,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns store extensions provider. Read only.
 		/// </summary>
+		/// <value><c>Unity3d</c> controller that provides access for store-specific extensions.</value>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso cref="IsInitialized"/>
@@ -239,12 +245,14 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns <see langword="true"/> if the store is initialized (the product list has been loaded from platform store); <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <value>A value indicating whether the store has been initialized.</value>
 		/// <seealso cref="IsBusy"/>
 		bool IsInitialized { get; }
 
 		/// <summary>
 		/// Returns <see langword="true"/> if the store has pending purchase operation; <see langword="false"/> otherwise. Read only.
 		/// </summary>
+		/// <value>A value indicating whether the store has pending purchase operation.</value>
 		/// <seealso cref="IsInitialized"/>
 		bool IsBusy { get; }
 

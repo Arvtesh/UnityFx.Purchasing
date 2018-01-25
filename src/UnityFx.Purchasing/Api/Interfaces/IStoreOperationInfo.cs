@@ -15,11 +15,13 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns identifier of the corresponding operation (matches <see cref="IStoreOperation.Id"/>). Read only.
 		/// </summary>
+		/// <value>An unique operation identifier.</value>
 		int OperationId { get; }
 
 		/// <summary>
 		/// Returns user-defined data assosiated with the operation (if any). Read only.
 		/// </summary>
+		/// <value>User-defined data.</value>
 		object UserState { get; }
 	}
 }
