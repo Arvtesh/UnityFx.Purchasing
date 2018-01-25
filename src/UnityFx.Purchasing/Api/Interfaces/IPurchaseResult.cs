@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {

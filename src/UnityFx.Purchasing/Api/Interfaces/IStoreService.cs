@@ -128,10 +128,10 @@ namespace UnityFx.Purchasing
 	}
 
 	/// <summary>
-	/// A generic in-app store service.
+	/// An in-app store service based on <see href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</see>.
 	/// </summary>
 	/// <remarks>
-	/// The interface defines a wrapper around <see href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</see>.
+	/// TODO
 	/// </remarks>
 	/// <seealso href="https://docs.unity3d.com/Manual/UnityIAP.html"/>
 	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>

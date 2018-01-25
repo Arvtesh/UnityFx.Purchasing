@@ -10,7 +10,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public class StoreException : Exception
+	public class StoreException : Exception, IStoreOperationInfo
 	{
 		#region data
 
