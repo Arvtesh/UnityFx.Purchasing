@@ -2,12 +2,14 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 
 namespace UnityFx.Purchasing
 {
 	/// <summary>
 	/// Represents the producer side of a an synchronous operation unbound to a delegate.
 	/// </summary>
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	public interface IAsyncCompletionSource<T>
 	{
 		/// <summary>

@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -11,32 +12,32 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public sealed class StorePurchaseException : StoreException
+	public sealed class StorePurchaseException : StoreException, IPurchaseResult
 	{
 		#region data
 
 		private const string _productIdSerializationName = "_productId";
-		private const string _resultSerializationName = "_result";
+		private const string _transactionSerializationName = "_transactionId";
+		private const string _receiptSerializationName = "_receipt";
+		private const string _restoredSerializationName = "_restored";
 		private const string _reasonSerializationName = "_reason";
+
+		private readonly string _productId;
+		private readonly Product _product;
+		private readonly string _transactionId;
+		private readonly string _receipt;
+		private readonly PurchaseValidationResult _validationResult;
+		private readonly bool _restored;
+		private readonly StorePurchaseError _reason = StorePurchaseError.Unknown;
 
 		#endregion
 
 		#region interface
 
 		/// <summary>
-		/// Returns the product identifier. Read only.
-		/// </summary>
-		public string ProductId { get; }
-
-		/// <summary>
-		/// Returns the purchase result. Read only.
-		/// </summary>
-		public IPurchaseResult Result { get; }
-
-		/// <summary>
 		/// Returns the purchase error identifier. Read only.
 		/// </summary>
-		public StorePurchaseError Reason { get; }
+		public StorePurchaseError Reason => _reason;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
@@ -65,22 +66,30 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason)
-			: base(GetMessage(result.ProductId, reason))
+			: base(GetMessage(result.ProductId, reason), result)
 		{
-			ProductId = result.ProductId;
-			Result = result;
-			Reason = reason;
+			_productId = result.ProductId;
+			_product = result.Product;
+			_transactionId = result.TransactionId;
+			_receipt = result.Receipt;
+			_validationResult = result.ValidationResult;
+			_restored = result.Restored;
+			_reason = reason;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
 		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason, Exception innerException)
-			: base(GetMessage(result.ProductId, reason), innerException)
+			: base(GetMessage(result.ProductId, reason), result, innerException)
 		{
-			ProductId = result.ProductId;
-			Result = result;
-			Reason = reason;
+			_productId = result.ProductId;
+			_product = result.Product;
+			_transactionId = result.TransactionId;
+			_receipt = result.Receipt;
+			_validationResult = result.ValidationResult;
+			_restored = result.Restored;
+			_reason = reason;
 		}
 
 		#endregion
@@ -93,13 +102,12 @@ namespace UnityFx.Purchasing
 			get
 			{
 				var s = base.Message;
-				var transactionId = Result.TransactionId;
 
-				if (transactionId != null)
+				if (_transactionId != null)
 				{
-					s += " TransactionID: " + transactionId;
+					s += " TransactionID: " + _transactionId;
 
-					if (Result.Restored)
+					if (_restored)
 					{
 						s += ", auto-restored.";
 					}
@@ -115,16 +123,38 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IPurchaseResult
+
+		/// <inheritdoc/>
+		public string ProductId => _productId;
+
+		/// <inheritdoc/>
+		public Product Product => _product;
+
+		/// <inheritdoc/>
+		public string TransactionId => _transactionId;
+
+		/// <inheritdoc/>
+		public string Receipt => _receipt;
+
+		/// <inheritdoc/>
+		public PurchaseValidationResult ValidationResult => _validationResult;
+
+		/// <inheritdoc/>
+		public bool Restored => _restored;
+
+		#endregion
+
 		#region ISerializable
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
-		/// </summary>
 		private StorePurchaseException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			ProductId = info.GetString(_productIdSerializationName);
-			Reason = (StorePurchaseError)info.GetValue(_reasonSerializationName, typeof(StorePurchaseError));
+			_productId = info.GetString(_productIdSerializationName);
+			_transactionId = info.GetString(_transactionSerializationName);
+			_receipt = info.GetString(_receiptSerializationName);
+			_restored = info.GetBoolean(_restoredSerializationName);
+			_reason = (StorePurchaseError)info.GetValue(_reasonSerializationName, typeof(StorePurchaseError));
 		}
 
 		/// <inheritdoc/>
@@ -133,8 +163,11 @@ namespace UnityFx.Purchasing
 		{
 			base.GetObjectData(info, context);
 
-			info.AddValue(_productIdSerializationName, ProductId);
-			info.AddValue(_reasonSerializationName, Reason.ToString());
+			info.AddValue(_productIdSerializationName, _productId);
+			info.AddValue(_transactionSerializationName, _transactionId);
+			info.AddValue(_receiptSerializationName, _receipt);
+			info.AddValue(_restoredSerializationName, _restored);
+			info.AddValue(_reasonSerializationName, _reason);
 		}
 
 		#endregion

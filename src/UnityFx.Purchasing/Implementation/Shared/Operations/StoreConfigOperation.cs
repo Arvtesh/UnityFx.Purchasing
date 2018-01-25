@@ -38,7 +38,7 @@ namespace UnityFx.Purchasing
 		{
 			TraceError(reason.ToString());
 
-			if (TrySetException(new StoreFetchException(reason)))
+			if (TrySetException(new StoreFetchException(this, reason)))
 			{
 				InvokeFailed(reason, null);
 			}
@@ -48,7 +48,7 @@ namespace UnityFx.Purchasing
 		{
 			TraceException(e);
 
-			if (TrySetException(new StoreFetchException(reason, e)))
+			if (TrySetException(new StoreFetchException(this, reason, e)))
 			{
 				InvokeFailed(reason, e);
 			}

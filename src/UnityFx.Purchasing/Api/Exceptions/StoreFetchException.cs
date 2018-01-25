@@ -3,7 +3,6 @@
 
 using System;
 using System.Runtime.Serialization;
-using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
@@ -11,11 +10,13 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public sealed class StoreFetchException : StoreException
+	public sealed class StoreFetchException : StoreException, IStoreOperationInfo
 	{
 		#region data
 
 		private const string _reasonSerializationName = "_reason";
+
+		private readonly StoreFetchError _reason = StoreFetchError.Unknown;
 
 		#endregion
 
@@ -24,7 +25,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns initialization failure reason. Read only.
 		/// </summary>
-		public StoreFetchError Reason { get; }
+		public StoreFetchError Reason => _reason;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
@@ -52,39 +53,37 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreFetchException(StoreFetchError reason)
-			: base(reason.ToString())
+		public StoreFetchException(IStoreOperationInfo op, StoreFetchError reason)
+			: base(reason.ToString(), op)
 		{
-			Reason = reason;
+			_reason = reason;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreFetchException(StoreFetchError reason, Exception innerException)
-			: base(reason.ToString(), innerException)
+		public StoreFetchException(IStoreOperationInfo op, StoreFetchError reason, Exception innerException)
+			: base(reason.ToString(), op, innerException)
 		{
-			Reason = reason;
+			_reason = reason;
 		}
 
 		#endregion
 
 		#region ISerializable
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
-		/// </summary>
 		private StoreFetchException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			Reason = (StoreFetchError)info.GetValue(_reasonSerializationName, typeof(StoreFetchError));
+			_reason = (StoreFetchError)info.GetValue(_reasonSerializationName, typeof(StoreFetchError));
 		}
 
 		/// <inheritdoc/>
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue(_reasonSerializationName, Reason.ToString());
+
+			info.AddValue(_reasonSerializationName, _reason);
 		}
 
 		#endregion
