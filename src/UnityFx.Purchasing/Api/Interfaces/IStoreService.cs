@@ -135,6 +135,7 @@ namespace UnityFx.Purchasing
 	/// </remarks>
 	/// <seealso href="https://docs.unity3d.com/Manual/UnityIAP.html"/>
 	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+	/// <seealso cref="IStoreOperation"/>
 	/// <seealso cref="IStoreController"/>
 	/// <seealso cref="IExtensionProvider"/>
 	public interface IStoreService : IDisposable

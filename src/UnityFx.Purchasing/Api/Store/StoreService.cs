@@ -44,14 +44,14 @@ namespace UnityFx.Purchasing
 	/// public class MySimpleStore : StoreService
 	/// {
 	///     public MySimpleStore()
-	///         : base(null, StandardPurchasingModule.Instance())
+	///         : base(StandardPurchasingModule.Instance())
 	///     {
 	///     }
 	///
-	///     protected override void GetStoreConfig(Action&lt;StoreConfig&gt; onSuccess, Action&lt;Exception&gt; onFailure)
+	///     protected override void GetStoreConfig(IAsyncCompletionSource&lt;StoreConfig&gt; completionSource)
 	///     {
 	///         var products = new ProductDefinition[] { new ProductDefinition("test_product", ProductType.Consumable) };
-	///         onSuccess(new StoreConfig(products));
+	///         completionSource.SetResult(new StoreConfig(products));
 	///     }
 	/// }
 	/// </code>
@@ -87,13 +87,14 @@ namespace UnityFx.Purchasing
 		protected internal TraceSource TraceSource => _console;
 
 		/// <summary>
-		/// Returns <see cref="SynchronizationContext"/> instance used to forward execution to the main thread. Read only.
+		/// Returns <see cref="SynchronizationContext"/> instance used to forward execution to the main thread (can be <see langword="null"/>). Read only.
 		/// </summary>
 		protected internal SynchronizationContext SyncContext => _syncContext;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
+		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
 		protected StoreService(IPurchasingModule purchasingModule)
 			: this(null, purchasingModule, SynchronizationContext.Current)
 		{
@@ -102,6 +103,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
+		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
+		/// <param name="syncContext">A synchronization context used to forward execution to the main thread.</param>
 		protected StoreService(IPurchasingModule purchasingModule, SynchronizationContext syncContext)
 			: this(null, purchasingModule, syncContext)
 		{
@@ -110,6 +113,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
+		/// <param name="name">Name of the store service (<c>Purchasing</c> is used by default).</param>
+		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
 		protected StoreService(string name, IPurchasingModule purchasingModule)
 			: this(name, purchasingModule, SynchronizationContext.Current)
 		{
@@ -118,6 +123,9 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
+		/// <param name="name">Name of the store service (<c>Purchasing</c> is used by default).</param>
+		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
+		/// <param name="syncContext">A synchronization context used to forward execution to the main thread.</param>
 		protected StoreService(string name, IPurchasingModule purchasingModule, SynchronizationContext syncContext)
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : name;
@@ -434,6 +442,7 @@ namespace UnityFx.Purchasing
 			get
 			{
 				ThrowIfDisposed();
+				ThrowIfNotInitialized();
 
 				if (_products == null)
 				{
@@ -558,7 +567,6 @@ namespace UnityFx.Purchasing
 		public void EndInitialize(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
-			ThrowIfPlatformNotSupported();
 
 			using (var op = ValidateOperation(asyncResult, StoreOperationType.InitializeApm))
 			{
@@ -583,7 +591,6 @@ namespace UnityFx.Purchasing
 		public void EndFetch(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
-			ThrowIfPlatformNotSupported();
 
 			using (var op = ValidateOperation(asyncResult, StoreOperationType.FetchApm))
 			{
@@ -608,7 +615,6 @@ namespace UnityFx.Purchasing
 		public PurchaseResult EndPurchase(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
-			ThrowIfPlatformNotSupported();
 
 			using (var op = ValidateOperation(asyncResult, StoreOperationType.PurchaseApm))
 			{
@@ -728,6 +734,7 @@ namespace UnityFx.Purchasing
 		private PurchaseOperation PurchaseInternal(StoreOperationType opType, string productId, AsyncCallback userCallback, object stateObject)
 		{
 			Debug.Assert((opType & StoreOperationType.Purchase) != 0);
+			Debug.Assert(!string.IsNullOrEmpty(productId));
 
 			var result = new PurchaseOperation(_storeListener, opType, productId, false, userCallback, stateObject);
 
