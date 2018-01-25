@@ -1,0 +1,476 @@
+{
+  "homepages": [],
+  "source_base_path": "D:/dev/projects/UnityFx.Purchasing/src/DocFx",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.FailedPurchaseResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.FailedPurchaseResult.html",
+          "hash": "VNugdUlLg3FgFE+gxr2rTg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.FetchCompletedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.FetchCompletedEventArgs.html",
+          "hash": "DHGBV99WPYwwwtNhL0pekg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.FetchInitiatedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.FetchInitiatedEventArgs.html",
+          "hash": "it0TdXH2O183oJ6cM8UdUg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IAsyncCompletionSource-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IAsyncCompletionSource-1.html",
+          "hash": "HDj0PBGb891YnLKkDoDpow=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IPurchaseResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IPurchaseResult.html",
+          "hash": "3uY7oGMHSDG9arA8TAVqeA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreOperation-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreOperation-1.html",
+          "hash": "KSU37L8qP4ge9S6BFJReJQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreOperation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreOperation.html",
+          "hash": "yRecop+jyAQUuOGAcxjqpQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreOperationInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreOperationInfo.html",
+          "hash": "PogNyEDzExsyMISLo7AKRw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreProductCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreProductCollection.html",
+          "hash": "ztb9ZsGBWW2QQ/zxkPToMw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreService.html",
+          "hash": "fpm9x/FpdaexwY3mmV3yBA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreServiceSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreServiceSettings.html",
+          "hash": "Bkm7OEUSWfvTnFhLxo//lA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.IStoreTransaction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.IStoreTransaction.html",
+          "hash": "Cl7J53d1s/NTyxvA7LRSow=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.PurchaseCompletedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.PurchaseCompletedEventArgs.html",
+          "hash": "xZYXrm+C+cfxK2Dz6bggQA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.PurchaseInitiatedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.PurchaseInitiatedEventArgs.html",
+          "hash": "721alYJ3KVvn2IwYh8PN2g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.PurchaseResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.PurchaseResult.html",
+          "hash": "pQYukSFapJsopDqpZTukVQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.PurchaseValidationResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.PurchaseValidationResult.html",
+          "hash": "OTTs6+6v5lwp/bN2+nD6LA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.PurchaseValidationStatus.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.PurchaseValidationStatus.html",
+          "hash": "N5MMYfGE4KxgH4UCCHg0fg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreConfig.html",
+          "hash": "rkJl0lt4EYxaw6xoHAE2ew=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreException.html",
+          "hash": "7bhQD9Td+z71p4IWxhc4Yw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreExtensions.html",
+          "hash": "vrMxdmgkR7t1xW4TkcLLMA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreFetchError.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreFetchError.html",
+          "hash": "fs56PG6j2ICHRI3y2Xgj5A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreFetchException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreFetchException.html",
+          "hash": "s6TGpPBK3OsMtJGh10PPwQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreOperationEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreOperationEventArgs.html",
+          "hash": "4HEu2Wao4F/7CUDSiaIRuQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StorePurchaseError.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StorePurchaseError.html",
+          "hash": "7fdxQictuxwJO9iBRlIUJQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StorePurchaseException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StorePurchaseException.html",
+          "hash": "Mn1zriTzWm9Y6HzMZXOkOQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.StoreService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.StoreService.html",
+          "hash": "pZ4GzxvDhqbBJs5NkF9LTw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/UnityFx.Purchasing.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/UnityFx.Purchasing.html",
+          "hash": "q1VceJgstNAea7GvhvCOSg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "LkzlT0jAgFF6082YccCksw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "GZLNrfbJszCNo4UH03Dagw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/docs.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/docs.html",
+          "hash": "2tlKkf9910i28YYxnWcQPg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/getting_started.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/getting_started.html",
+          "hash": "h0xFM2B4pi+JqOJWm928/Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "1wGM94aeyHlQvfVyahjxEQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/support.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/support.html",
+          "hash": "gFYB19rvyWPHVSJXdocpjw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "Q35MKLvp4tQZvi7RFlZmbg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "JXooeEc612VXMj+EeRaCZQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "hrKzHHyE+YIxYb/kx2ZvUg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build"
+      },
+      "processors": {
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build"
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build"
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing"
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

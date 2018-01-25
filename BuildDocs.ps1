@@ -1,0 +1,1 @@
+.\src\BuildDocs.ps1
