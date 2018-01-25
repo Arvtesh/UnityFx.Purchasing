@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.FailedPurchaseResult.html",
-          "hash": "VNugdUlLg3FgFE+gxr2rTg=="
+          "hash": "J7LpBloXUd55f8vZmn27Fw=="
         }
       },
       "is_incremental": false,
@@ -21,7 +21,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.FetchCompletedEventArgs.html",
-          "hash": "DHGBV99WPYwwwtNhL0pekg=="
+          "hash": "Qx4+AUKnMD2j1b6Z11/hrQ=="
         }
       },
       "is_incremental": false,
@@ -33,7 +33,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.FetchInitiatedEventArgs.html",
-          "hash": "it0TdXH2O183oJ6cM8UdUg=="
+          "hash": "hVYkTLFwfwPKl09n54IjDg=="
         }
       },
       "is_incremental": false,
@@ -45,7 +45,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IAsyncCompletionSource-1.html",
-          "hash": "HDj0PBGb891YnLKkDoDpow=="
+          "hash": "32wgVcuGt2vFgIGf7ykGWw=="
         }
       },
       "is_incremental": false,
@@ -57,7 +57,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IPurchaseResult.html",
-          "hash": "3uY7oGMHSDG9arA8TAVqeA=="
+          "hash": "gA/jMyt9AIMj5/riqpOphQ=="
         }
       },
       "is_incremental": false,
@@ -69,7 +69,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreOperation-1.html",
-          "hash": "KSU37L8qP4ge9S6BFJReJQ=="
+          "hash": "o5yQZOSeGjmg75nn6Qy1EA=="
         }
       },
       "is_incremental": false,
@@ -81,7 +81,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreOperation.html",
-          "hash": "yRecop+jyAQUuOGAcxjqpQ=="
+          "hash": "aL/ZYyJjx51cMjF/xEC2yA=="
         }
       },
       "is_incremental": false,
@@ -93,7 +93,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreOperationInfo.html",
-          "hash": "PogNyEDzExsyMISLo7AKRw=="
+          "hash": "8bx1menTmbw3OlXn0E5TQQ=="
         }
       },
       "is_incremental": false,
@@ -105,7 +105,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreProductCollection.html",
-          "hash": "ztb9ZsGBWW2QQ/zxkPToMw=="
+          "hash": "PYK+8fTgYDjyLotswDNYcA=="
         }
       },
       "is_incremental": false,
@@ -117,7 +117,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreService.html",
-          "hash": "fpm9x/FpdaexwY3mmV3yBA=="
+          "hash": "NK07lwepnXKaIaqfTp/o/g=="
         }
       },
       "is_incremental": false,
@@ -129,7 +129,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreServiceSettings.html",
-          "hash": "Bkm7OEUSWfvTnFhLxo//lA=="
+          "hash": "ZVpiE5Fq08YgaH3b5BVn0g=="
         }
       },
       "is_incremental": false,
@@ -141,7 +141,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.IStoreTransaction.html",
-          "hash": "Cl7J53d1s/NTyxvA7LRSow=="
+          "hash": "gNRC7EqnKS0Wgt/E+nONmg=="
         }
       },
       "is_incremental": false,
@@ -153,7 +153,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.PurchaseCompletedEventArgs.html",
-          "hash": "xZYXrm+C+cfxK2Dz6bggQA=="
+          "hash": "JFmWu8KP6wzTKxK9dGDECg=="
         }
       },
       "is_incremental": false,
@@ -165,7 +165,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.PurchaseInitiatedEventArgs.html",
-          "hash": "721alYJ3KVvn2IwYh8PN2g=="
+          "hash": "5YWLdgm/vEd45pD7pyGhRA=="
         }
       },
       "is_incremental": false,
@@ -177,7 +177,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.PurchaseResult.html",
-          "hash": "pQYukSFapJsopDqpZTukVQ=="
+          "hash": "pJay+YqxqOouPPu1BxH3mQ=="
         }
       },
       "is_incremental": false,
@@ -189,7 +189,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.PurchaseValidationResult.html",
-          "hash": "OTTs6+6v5lwp/bN2+nD6LA=="
+          "hash": "6qW3Se5qlDCoH41feQpqjw=="
         }
       },
       "is_incremental": false,
@@ -213,7 +213,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StoreConfig.html",
-          "hash": "rkJl0lt4EYxaw6xoHAE2ew=="
+          "hash": "9qqowPxOXAiBdrdjb9FVUQ=="
         }
       },
       "is_incremental": false,
@@ -225,7 +225,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StoreException.html",
-          "hash": "7bhQD9Td+z71p4IWxhc4Yw=="
+          "hash": "mjMsqgN1QggSjAX3h8E3Nw=="
         }
       },
       "is_incremental": false,
@@ -237,7 +237,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StoreExtensions.html",
-          "hash": "vrMxdmgkR7t1xW4TkcLLMA=="
+          "hash": "2GqgBSQVObj9SCLJ1JuQPw=="
         }
       },
       "is_incremental": false,
@@ -261,7 +261,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StoreFetchException.html",
-          "hash": "s6TGpPBK3OsMtJGh10PPwQ=="
+          "hash": "qKB0tG8jXhHREhSU1An2mg=="
         }
       },
       "is_incremental": false,
@@ -273,7 +273,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StoreOperationEventArgs.html",
-          "hash": "4HEu2Wao4F/7CUDSiaIRuQ=="
+          "hash": "p6ytwgu8fMm80vr19nX+Rg=="
         }
       },
       "is_incremental": false,
@@ -297,7 +297,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StorePurchaseException.html",
-          "hash": "Mn1zriTzWm9Y6HzMZXOkOQ=="
+          "hash": "my2duc8xyfRUgfgTcpvDUA=="
         }
       },
       "is_incremental": false,
@@ -309,7 +309,7 @@
       "output": {
         ".html": {
           "relative_path": "api/UnityFx.Purchasing.StoreService.html",
-          "hash": "pZ4GzxvDhqbBJs5NkF9LTw=="
+          "hash": "6yl7UaMAz+ZmNClZxviSGQ=="
         }
       },
       "is_incremental": false,
@@ -336,7 +336,7 @@
           "hash": "LkzlT0jAgFF6082YccCksw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -360,7 +360,7 @@
           "hash": "2tlKkf9910i28YYxnWcQPg=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -372,7 +372,7 @@
           "hash": "h0xFM2B4pi+JqOJWm928/Q=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -384,7 +384,7 @@
           "hash": "1wGM94aeyHlQvfVyahjxEQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -396,7 +396,7 @@
           "hash": "gFYB19rvyWPHVSJXdocpjw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -420,7 +420,7 @@
           "hash": "JXooeEc612VXMj+EeRaCZQ=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -439,7 +439,8 @@
   "incremental_info": [
     {
       "status": {
-        "can_incremental": true,
+        "can_incremental": false,
+        "details": "Cannot build incrementally because config changed.",
         "incrementalPhase": "build"
       },
       "processors": {
@@ -449,11 +450,11 @@
           "incrementalPhase": "build"
         },
         "ConceptualDocumentProcessor": {
-          "can_incremental": true,
+          "can_incremental": false,
           "incrementalPhase": "build"
         },
         "ManagedReferenceDocumentProcessor": {
-          "can_incremental": true,
+          "can_incremental": false,
           "incrementalPhase": "build"
         }
       }
