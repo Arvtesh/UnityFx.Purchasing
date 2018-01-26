@@ -82,6 +82,27 @@
     <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html">IStoreTransaction</a></div>
     <div><a class="xref" href="UnityFx.Purchasing.IStoreOperationInfo.html">IStoreOperationInfo</a></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.ValueType.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.ValueType.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.ValueType.ToString()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="UnityFx.Purchasing.html">UnityFx.Purchasing</a></h6>
   <h6><strong>Assembly</strong>: UnityFx.Purchasing.dll</h6>
   <h5 id="UnityFx_Purchasing_PurchaseResult_syntax">Syntax</h5>
@@ -99,7 +120,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_OperationId_" data-uid="UnityFx.Purchasing.PurchaseResult.OperationId*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_OperationId" data-uid="UnityFx.Purchasing.PurchaseResult.OperationId">OperationId</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns identifier of the corresponding operation (matches <a class="xref" href="UnityFx.Purchasing.IStoreOperation.html#UnityFx_Purchasing_IStoreOperation_Id">Id</a>). Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -116,7 +138,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td></td>
+        <td><p>An unique operation identifier.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -129,7 +152,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_Product_" data-uid="UnityFx.Purchasing.PurchaseResult.Product*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_Product" data-uid="UnityFx.Purchasing.PurchaseResult.Product">Product</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns the Unity product selected for purchase. Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -146,10 +170,17 @@
     <tbody>
       <tr>
         <td><span class="xref">UnityEngine.Purchasing.Product</span></td>
-        <td></td>
+        <td><p><code>Unity3d</code> product.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="UnityFx_Purchasing_PurchaseResult_Product_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_ProductId">ProductId</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_TransactionId">TransactionId</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_Receipt">Receipt</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_PurchaseResult_ProductId.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.PurchaseResult.ProductId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -159,7 +190,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_ProductId_" data-uid="UnityFx.Purchasing.PurchaseResult.ProductId*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_ProductId" data-uid="UnityFx.Purchasing.PurchaseResult.ProductId">ProductId</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns a unique identifier of the <a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_Product">Product</a>. Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -176,10 +208,15 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><p>Unique product identifier.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="UnityFx_Purchasing_PurchaseResult_ProductId_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_Product">Product</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_PurchaseResult_Receipt.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.PurchaseResult.Receipt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -189,7 +226,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_Receipt_" data-uid="UnityFx.Purchasing.PurchaseResult.Receipt*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_Receipt" data-uid="UnityFx.Purchasing.PurchaseResult.Receipt">Receipt</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns native store-specific purchase receipt (differs from Unity receipt). Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -206,10 +244,15 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><p>The purchase receipt.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="UnityFx_Purchasing_PurchaseResult_Receipt_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_Product">Product</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_PurchaseResult_Restored.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.PurchaseResult.Restored%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -219,7 +262,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_Restored_" data-uid="UnityFx.Purchasing.PurchaseResult.Restored*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_Restored" data-uid="UnityFx.Purchasing.PurchaseResult.Restored">Restored</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns <span class="xref">true</span> if the purchase was auto-restored; <span class="xref">false</span> otherwise. Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -249,7 +293,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_TransactionId_" data-uid="UnityFx.Purchasing.PurchaseResult.TransactionId*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_TransactionId" data-uid="UnityFx.Purchasing.PurchaseResult.TransactionId">TransactionId</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns identifier of the transaction. Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -266,10 +311,15 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><p>A unique identifier for the <a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_Product">Product</a>&apos;s transaction.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="UnityFx_Purchasing_PurchaseResult_TransactionId_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreTransaction.html#UnityFx_Purchasing_IStoreTransaction_Product">Product</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_PurchaseResult_UserState.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.PurchaseResult.UserState%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -279,7 +329,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_UserState_" data-uid="UnityFx.Purchasing.PurchaseResult.UserState*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_UserState" data-uid="UnityFx.Purchasing.PurchaseResult.UserState">UserState</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns user-defined data assosiated with the operation (if any). Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -296,7 +347,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td></td>
+        <td><p>User-defined data.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -309,7 +361,8 @@
   </span>
   <a id="UnityFx_Purchasing_PurchaseResult_ValidationResult_" data-uid="UnityFx.Purchasing.PurchaseResult.ValidationResult*"></a>
   <h4 id="UnityFx_Purchasing_PurchaseResult_ValidationResult" data-uid="UnityFx.Purchasing.PurchaseResult.ValidationResult">ValidationResult</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns product validation result or <span class="xref">null</span> if not available. Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">

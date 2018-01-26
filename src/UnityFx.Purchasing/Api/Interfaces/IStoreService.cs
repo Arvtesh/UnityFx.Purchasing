@@ -261,6 +261,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initiates the store initialization. Returns a completed operation if store is already initialized.
 		/// </summary>
+		/// <returns>An object that can be used to track the operation progress.</returns>
 		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
 		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
@@ -274,6 +275,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initiates fetching product information from the store.
 		/// </summary>
+		/// <returns>An object that can be used to track the operation progress.</returns>
 		/// <event cref="FetchInitiated">Raised when the operation is created.</event>
 		/// <event cref="FetchCompleted">Raised when the operation has completed (either successfully or not).</event>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized or fetch operation is pending.</exception>
@@ -291,6 +293,7 @@ namespace UnityFx.Purchasing
 		/// Please see <see cref="PurchaseAsync(string, object)"/> documentation for more information.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
+		/// <returns>An object that can be used to track the operation progress.</returns>
 		/// <event cref="PurchaseInitiated">Raised when the operation is created.</event>
 		/// <event cref="PurchaseCompleted">Raised when the operation has completed (either successfully or not).</event>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
@@ -322,6 +325,7 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
+		/// <returns>An object that can be used to track the operation progress.</returns>
 		/// <event cref="PurchaseInitiated">Raised when the operation is created.</event>
 		/// <event cref="PurchaseCompleted">Raised when the operation has completed (either successfully or not).</event>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
@@ -457,6 +461,7 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Please see <see cref="InitializeAsync()"/> documentation for more information.
 		/// </remarks>
+		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
@@ -472,6 +477,7 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Please see <see cref="FetchAsync()"/> documentation for more information.
 		/// </remarks>
+		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
@@ -488,6 +494,7 @@ namespace UnityFx.Purchasing
 		/// Please see <see cref="PurchaseAsync(string, object)"/> documentation for more information.
 		/// </remarks>
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
+		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="productId"/> is an empty string.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</exception>

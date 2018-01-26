@@ -117,6 +117,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the validation status. Read only.
 		/// </summary>
+		/// <value>Identifier of the validation status.</value>
 		public PurchaseValidationStatus Status => _status;
 
 		/// <summary>

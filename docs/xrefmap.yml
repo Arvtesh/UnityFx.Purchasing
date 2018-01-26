@@ -157,11 +157,11 @@ references:
   commentId: M:UnityFx.Purchasing.FetchCompletedEventArgs.#ctor(UnityFx.Purchasing.IStoreOperationInfo)
   fullName: UnityFx.Purchasing.FetchCompletedEventArgs.FetchCompletedEventArgs(UnityFx.Purchasing.IStoreOperationInfo)
   nameWithType: FetchCompletedEventArgs.FetchCompletedEventArgs(IStoreOperationInfo)
-- uid: UnityFx.Purchasing.FetchCompletedEventArgs.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
+- uid: UnityFx.Purchasing.FetchCompletedEventArgs.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
   name: FetchCompletedEventArgs(IStoreOperationInfo, StoreFetchError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.FetchCompletedEventArgs.html#UnityFx_Purchasing_FetchCompletedEventArgs__ctor_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_Exception_
-  commentId: M:UnityFx.Purchasing.FetchCompletedEventArgs.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
-  fullName: UnityFx.Purchasing.FetchCompletedEventArgs.FetchCompletedEventArgs(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.FetchCompletedEventArgs.html#UnityFx_Purchasing_FetchCompletedEventArgs__ctor_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_System_Exception_
+  commentId: M:UnityFx.Purchasing.FetchCompletedEventArgs.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
+  fullName: UnityFx.Purchasing.FetchCompletedEventArgs.FetchCompletedEventArgs(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, System.Exception)
   nameWithType: FetchCompletedEventArgs.FetchCompletedEventArgs(IStoreOperationInfo, StoreFetchError, Exception)
 - uid: UnityFx.Purchasing.FetchCompletedEventArgs.#ctor*
   name: FetchCompletedEventArgs
@@ -220,12 +220,12 @@ references:
   fullName.vb: UnityFx.Purchasing.IAsyncCompletionSource(Of T)
   nameWithType: IAsyncCompletionSource<T>
   nameWithType.vb: IAsyncCompletionSource(Of T)
-- uid: UnityFx.Purchasing.IAsyncCompletionSource`1.SetException(Exception)
+- uid: UnityFx.Purchasing.IAsyncCompletionSource`1.SetException(System.Exception)
   name: SetException(Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.IAsyncCompletionSource-1.html#UnityFx_Purchasing_IAsyncCompletionSource_1_SetException_Exception_
-  commentId: M:UnityFx.Purchasing.IAsyncCompletionSource`1.SetException(Exception)
-  fullName: UnityFx.Purchasing.IAsyncCompletionSource<T>.SetException(Exception)
-  fullName.vb: UnityFx.Purchasing.IAsyncCompletionSource(Of T).SetException(Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.IAsyncCompletionSource-1.html#UnityFx_Purchasing_IAsyncCompletionSource_1_SetException_System_Exception_
+  commentId: M:UnityFx.Purchasing.IAsyncCompletionSource`1.SetException(System.Exception)
+  fullName: UnityFx.Purchasing.IAsyncCompletionSource<T>.SetException(System.Exception)
+  fullName.vb: UnityFx.Purchasing.IAsyncCompletionSource(Of T).SetException(System.Exception)
   nameWithType: IAsyncCompletionSource<T>.SetException(Exception)
   nameWithType.vb: IAsyncCompletionSource(Of T).SetException(Exception)
 - uid: UnityFx.Purchasing.IAsyncCompletionSource`1.SetException*
@@ -523,12 +523,6 @@ references:
   commentId: M:UnityFx.Purchasing.IStoreService.FetchAsync
   fullName: UnityFx.Purchasing.IStoreService.FetchAsync()
   nameWithType: IStoreService.FetchAsync()
-- uid: UnityFx.Purchasing.IStoreService.FetchAsync(System.Object)
-  name: FetchAsync(Object)
-  href: api/netstandard2.0/UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_
-  commentId: M:UnityFx.Purchasing.IStoreService.FetchAsync(System.Object)
-  fullName: UnityFx.Purchasing.IStoreService.FetchAsync(System.Object)
-  nameWithType: IStoreService.FetchAsync(Object)
 - uid: UnityFx.Purchasing.IStoreService.FetchAsync*
   name: FetchAsync
   href: api/netstandard2.0/UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_
@@ -565,12 +559,6 @@ references:
   commentId: M:UnityFx.Purchasing.IStoreService.InitializeAsync
   fullName: UnityFx.Purchasing.IStoreService.InitializeAsync()
   nameWithType: IStoreService.InitializeAsync()
-- uid: UnityFx.Purchasing.IStoreService.InitializeAsync(System.Object)
-  name: InitializeAsync(Object)
-  href: api/netstandard2.0/UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_
-  commentId: M:UnityFx.Purchasing.IStoreService.InitializeAsync(System.Object)
-  fullName: UnityFx.Purchasing.IStoreService.InitializeAsync(System.Object)
-  nameWithType: IStoreService.InitializeAsync(Object)
 - uid: UnityFx.Purchasing.IStoreService.InitializeAsync*
   name: InitializeAsync
   href: api/netstandard2.0/UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_
@@ -709,6 +697,18 @@ references:
   commentId: T:UnityFx.Purchasing.IStoreServiceSettings
   fullName: UnityFx.Purchasing.IStoreServiceSettings
   nameWithType: IStoreServiceSettings
+- uid: UnityFx.Purchasing.IStoreServiceSettings.MaxNumberOfPendingPurchases
+  name: MaxNumberOfPendingPurchases
+  href: api/netstandard2.0/UnityFx.Purchasing.IStoreServiceSettings.html#UnityFx_Purchasing_IStoreServiceSettings_MaxNumberOfPendingPurchases
+  commentId: P:UnityFx.Purchasing.IStoreServiceSettings.MaxNumberOfPendingPurchases
+  fullName: UnityFx.Purchasing.IStoreServiceSettings.MaxNumberOfPendingPurchases
+  nameWithType: IStoreServiceSettings.MaxNumberOfPendingPurchases
+- uid: UnityFx.Purchasing.IStoreServiceSettings.MaxNumberOfPendingPurchases*
+  name: MaxNumberOfPendingPurchases
+  href: api/netstandard2.0/UnityFx.Purchasing.IStoreServiceSettings.html#UnityFx_Purchasing_IStoreServiceSettings_MaxNumberOfPendingPurchases_
+  commentId: Overload:UnityFx.Purchasing.IStoreServiceSettings.MaxNumberOfPendingPurchases
+  fullName: UnityFx.Purchasing.IStoreServiceSettings.MaxNumberOfPendingPurchases
+  nameWithType: IStoreServiceSettings.MaxNumberOfPendingPurchases
 - uid: UnityFx.Purchasing.IStoreServiceSettings.TraceListeners
   name: TraceListeners
   href: api/netstandard2.0/UnityFx.Purchasing.IStoreServiceSettings.html#UnityFx_Purchasing_IStoreServiceSettings_TraceListeners
@@ -799,11 +799,11 @@ references:
   commentId: M:UnityFx.Purchasing.PurchaseCompletedEventArgs.#ctor(UnityFx.Purchasing.IPurchaseResult)
   fullName: UnityFx.Purchasing.PurchaseCompletedEventArgs.PurchaseCompletedEventArgs(UnityFx.Purchasing.IPurchaseResult)
   nameWithType: PurchaseCompletedEventArgs.PurchaseCompletedEventArgs(IPurchaseResult)
-- uid: UnityFx.Purchasing.PurchaseCompletedEventArgs.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,Exception)
+- uid: UnityFx.Purchasing.PurchaseCompletedEventArgs.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,System.Exception)
   name: PurchaseCompletedEventArgs(IPurchaseResult, StorePurchaseError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.PurchaseCompletedEventArgs.html#UnityFx_Purchasing_PurchaseCompletedEventArgs__ctor_UnityFx_Purchasing_IPurchaseResult_UnityFx_Purchasing_StorePurchaseError_Exception_
-  commentId: M:UnityFx.Purchasing.PurchaseCompletedEventArgs.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,Exception)
-  fullName: UnityFx.Purchasing.PurchaseCompletedEventArgs.PurchaseCompletedEventArgs(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.PurchaseCompletedEventArgs.html#UnityFx_Purchasing_PurchaseCompletedEventArgs__ctor_UnityFx_Purchasing_IPurchaseResult_UnityFx_Purchasing_StorePurchaseError_System_Exception_
+  commentId: M:UnityFx.Purchasing.PurchaseCompletedEventArgs.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,System.Exception)
+  fullName: UnityFx.Purchasing.PurchaseCompletedEventArgs.PurchaseCompletedEventArgs(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError, System.Exception)
   nameWithType: PurchaseCompletedEventArgs.PurchaseCompletedEventArgs(IPurchaseResult, StorePurchaseError, Exception)
 - uid: UnityFx.Purchasing.PurchaseCompletedEventArgs.#ctor*
   name: PurchaseCompletedEventArgs
@@ -1165,13 +1165,13 @@ references:
   commentId: T:UnityFx.Purchasing.StoreConfig
   fullName: UnityFx.Purchasing.StoreConfig
   nameWithType: StoreConfig
-- uid: UnityFx.Purchasing.StoreConfig.#ctor(IEnumerable{UnityEngine.Purchasing.ProductDefinition})
+- uid: UnityFx.Purchasing.StoreConfig.#ctor(System.Collections.Generic.IEnumerable{UnityEngine.Purchasing.ProductDefinition})
   name: StoreConfig(IEnumerable<ProductDefinition>)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreConfig.html#UnityFx_Purchasing_StoreConfig__ctor_IEnumerable_UnityEngine_Purchasing_ProductDefinition__
-  commentId: M:UnityFx.Purchasing.StoreConfig.#ctor(IEnumerable{UnityEngine.Purchasing.ProductDefinition})
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreConfig.html#UnityFx_Purchasing_StoreConfig__ctor_System_Collections_Generic_IEnumerable_UnityEngine_Purchasing_ProductDefinition__
+  commentId: M:UnityFx.Purchasing.StoreConfig.#ctor(System.Collections.Generic.IEnumerable{UnityEngine.Purchasing.ProductDefinition})
   name.vb: StoreConfig(IEnumerable(Of ProductDefinition))
-  fullName: UnityFx.Purchasing.StoreConfig.StoreConfig(IEnumerable<UnityEngine.Purchasing.ProductDefinition>)
-  fullName.vb: UnityFx.Purchasing.StoreConfig.StoreConfig(IEnumerable(Of UnityEngine.Purchasing.ProductDefinition))
+  fullName: UnityFx.Purchasing.StoreConfig.StoreConfig(System.Collections.Generic.IEnumerable<UnityEngine.Purchasing.ProductDefinition>)
+  fullName.vb: UnityFx.Purchasing.StoreConfig.StoreConfig(System.Collections.Generic.IEnumerable(Of UnityEngine.Purchasing.ProductDefinition))
   nameWithType: StoreConfig.StoreConfig(IEnumerable<ProductDefinition>)
   nameWithType.vb: StoreConfig.StoreConfig(IEnumerable(Of ProductDefinition))
 - uid: UnityFx.Purchasing.StoreConfig.#ctor*
@@ -1204,11 +1204,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreException.#ctor
   fullName: UnityFx.Purchasing.StoreException.StoreException()
   nameWithType: StoreException.StoreException()
-- uid: UnityFx.Purchasing.StoreException.#ctor(SerializationInfo,StreamingContext)
+- uid: UnityFx.Purchasing.StoreException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
   name: StoreException(SerializationInfo, StreamingContext)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException__ctor_SerializationInfo_StreamingContext_
-  commentId: M:UnityFx.Purchasing.StoreException.#ctor(SerializationInfo,StreamingContext)
-  fullName: UnityFx.Purchasing.StoreException.StoreException(SerializationInfo, StreamingContext)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: UnityFx.Purchasing.StoreException.StoreException(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
   nameWithType: StoreException.StoreException(SerializationInfo, StreamingContext)
 - uid: UnityFx.Purchasing.StoreException.#ctor(System.String)
   name: StoreException(String)
@@ -1216,11 +1216,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.String)
   fullName: UnityFx.Purchasing.StoreException.StoreException(System.String)
   nameWithType: StoreException.StoreException(String)
-- uid: UnityFx.Purchasing.StoreException.#ctor(System.String,Exception)
+- uid: UnityFx.Purchasing.StoreException.#ctor(System.String,System.Exception)
   name: StoreException(String, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException__ctor_System_String_Exception_
-  commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.String,Exception)
-  fullName: UnityFx.Purchasing.StoreException.StoreException(System.String, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException__ctor_System_String_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.String,System.Exception)
+  fullName: UnityFx.Purchasing.StoreException.StoreException(System.String, System.Exception)
   nameWithType: StoreException.StoreException(String, Exception)
 - uid: UnityFx.Purchasing.StoreException.#ctor(System.String,UnityFx.Purchasing.IStoreOperationInfo)
   name: StoreException(String, IStoreOperationInfo)
@@ -1228,11 +1228,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.String,UnityFx.Purchasing.IStoreOperationInfo)
   fullName: UnityFx.Purchasing.StoreException.StoreException(System.String, UnityFx.Purchasing.IStoreOperationInfo)
   nameWithType: StoreException.StoreException(String, IStoreOperationInfo)
-- uid: UnityFx.Purchasing.StoreException.#ctor(System.String,UnityFx.Purchasing.IStoreOperationInfo,Exception)
+- uid: UnityFx.Purchasing.StoreException.#ctor(System.String,UnityFx.Purchasing.IStoreOperationInfo,System.Exception)
   name: StoreException(String, IStoreOperationInfo, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException__ctor_System_String_UnityFx_Purchasing_IStoreOperationInfo_Exception_
-  commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.String,UnityFx.Purchasing.IStoreOperationInfo,Exception)
-  fullName: UnityFx.Purchasing.StoreException.StoreException(System.String, UnityFx.Purchasing.IStoreOperationInfo, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException__ctor_System_String_UnityFx_Purchasing_IStoreOperationInfo_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreException.#ctor(System.String,UnityFx.Purchasing.IStoreOperationInfo,System.Exception)
+  fullName: UnityFx.Purchasing.StoreException.StoreException(System.String, UnityFx.Purchasing.IStoreOperationInfo, System.Exception)
   nameWithType: StoreException.StoreException(String, IStoreOperationInfo, Exception)
 - uid: UnityFx.Purchasing.StoreException.#ctor*
   name: StoreException
@@ -1240,11 +1240,11 @@ references:
   commentId: Overload:UnityFx.Purchasing.StoreException.#ctor
   fullName: UnityFx.Purchasing.StoreException.StoreException
   nameWithType: StoreException.StoreException
-- uid: UnityFx.Purchasing.StoreException.GetObjectData(SerializationInfo,StreamingContext)
+- uid: UnityFx.Purchasing.StoreException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
   name: GetObjectData(SerializationInfo, StreamingContext)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException_GetObjectData_SerializationInfo_StreamingContext_
-  commentId: M:UnityFx.Purchasing.StoreException.GetObjectData(SerializationInfo,StreamingContext)
-  fullName: UnityFx.Purchasing.StoreException.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreException.html#UnityFx_Purchasing_StoreException_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:UnityFx.Purchasing.StoreException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: UnityFx.Purchasing.StoreException.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
   nameWithType: StoreException.GetObjectData(SerializationInfo, StreamingContext)
 - uid: UnityFx.Purchasing.StoreException.GetObjectData*
   name: GetObjectData
@@ -1369,11 +1369,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreFetchException.#ctor(System.String)
   fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException(System.String)
   nameWithType: StoreFetchException.StoreFetchException(String)
-- uid: UnityFx.Purchasing.StoreFetchException.#ctor(System.String,Exception)
+- uid: UnityFx.Purchasing.StoreFetchException.#ctor(System.String,System.Exception)
   name: StoreFetchException(String, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html#UnityFx_Purchasing_StoreFetchException__ctor_System_String_Exception_
-  commentId: M:UnityFx.Purchasing.StoreFetchException.#ctor(System.String,Exception)
-  fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException(System.String, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html#UnityFx_Purchasing_StoreFetchException__ctor_System_String_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreFetchException.#ctor(System.String,System.Exception)
+  fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException(System.String, System.Exception)
   nameWithType: StoreFetchException.StoreFetchException(String, Exception)
 - uid: UnityFx.Purchasing.StoreFetchException.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError)
   name: StoreFetchException(IStoreOperationInfo, StoreFetchError)
@@ -1381,11 +1381,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreFetchException.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError)
   fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError)
   nameWithType: StoreFetchException.StoreFetchException(IStoreOperationInfo, StoreFetchError)
-- uid: UnityFx.Purchasing.StoreFetchException.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
+- uid: UnityFx.Purchasing.StoreFetchException.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
   name: StoreFetchException(IStoreOperationInfo, StoreFetchError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html#UnityFx_Purchasing_StoreFetchException__ctor_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_Exception_
-  commentId: M:UnityFx.Purchasing.StoreFetchException.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
-  fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html#UnityFx_Purchasing_StoreFetchException__ctor_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreFetchException.#ctor(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
+  fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, System.Exception)
   nameWithType: StoreFetchException.StoreFetchException(IStoreOperationInfo, StoreFetchError, Exception)
 - uid: UnityFx.Purchasing.StoreFetchException.#ctor*
   name: StoreFetchException
@@ -1393,11 +1393,11 @@ references:
   commentId: Overload:UnityFx.Purchasing.StoreFetchException.#ctor
   fullName: UnityFx.Purchasing.StoreFetchException.StoreFetchException
   nameWithType: StoreFetchException.StoreFetchException
-- uid: UnityFx.Purchasing.StoreFetchException.GetObjectData(SerializationInfo,StreamingContext)
+- uid: UnityFx.Purchasing.StoreFetchException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
   name: GetObjectData(SerializationInfo, StreamingContext)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html#UnityFx_Purchasing_StoreFetchException_GetObjectData_SerializationInfo_StreamingContext_
-  commentId: M:UnityFx.Purchasing.StoreFetchException.GetObjectData(SerializationInfo,StreamingContext)
-  fullName: UnityFx.Purchasing.StoreFetchException.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html#UnityFx_Purchasing_StoreFetchException_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:UnityFx.Purchasing.StoreFetchException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: UnityFx.Purchasing.StoreFetchException.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
   nameWithType: StoreFetchException.GetObjectData(SerializationInfo, StreamingContext)
 - uid: UnityFx.Purchasing.StoreFetchException.GetObjectData*
   name: GetObjectData
@@ -1567,11 +1567,11 @@ references:
   commentId: M:UnityFx.Purchasing.StorePurchaseException.#ctor(System.String)
   fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException(System.String)
   nameWithType: StorePurchaseException.StorePurchaseException(String)
-- uid: UnityFx.Purchasing.StorePurchaseException.#ctor(System.String,Exception)
+- uid: UnityFx.Purchasing.StorePurchaseException.#ctor(System.String,System.Exception)
   name: StorePurchaseException(String, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html#UnityFx_Purchasing_StorePurchaseException__ctor_System_String_Exception_
-  commentId: M:UnityFx.Purchasing.StorePurchaseException.#ctor(System.String,Exception)
-  fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException(System.String, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html#UnityFx_Purchasing_StorePurchaseException__ctor_System_String_System_Exception_
+  commentId: M:UnityFx.Purchasing.StorePurchaseException.#ctor(System.String,System.Exception)
+  fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException(System.String, System.Exception)
   nameWithType: StorePurchaseException.StorePurchaseException(String, Exception)
 - uid: UnityFx.Purchasing.StorePurchaseException.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError)
   name: StorePurchaseException(IPurchaseResult, StorePurchaseError)
@@ -1579,11 +1579,11 @@ references:
   commentId: M:UnityFx.Purchasing.StorePurchaseException.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError)
   fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError)
   nameWithType: StorePurchaseException.StorePurchaseException(IPurchaseResult, StorePurchaseError)
-- uid: UnityFx.Purchasing.StorePurchaseException.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,Exception)
+- uid: UnityFx.Purchasing.StorePurchaseException.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,System.Exception)
   name: StorePurchaseException(IPurchaseResult, StorePurchaseError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html#UnityFx_Purchasing_StorePurchaseException__ctor_UnityFx_Purchasing_IPurchaseResult_UnityFx_Purchasing_StorePurchaseError_Exception_
-  commentId: M:UnityFx.Purchasing.StorePurchaseException.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,Exception)
-  fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html#UnityFx_Purchasing_StorePurchaseException__ctor_UnityFx_Purchasing_IPurchaseResult_UnityFx_Purchasing_StorePurchaseError_System_Exception_
+  commentId: M:UnityFx.Purchasing.StorePurchaseException.#ctor(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,System.Exception)
+  fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError, System.Exception)
   nameWithType: StorePurchaseException.StorePurchaseException(IPurchaseResult, StorePurchaseError, Exception)
 - uid: UnityFx.Purchasing.StorePurchaseException.#ctor*
   name: StorePurchaseException
@@ -1591,11 +1591,11 @@ references:
   commentId: Overload:UnityFx.Purchasing.StorePurchaseException.#ctor
   fullName: UnityFx.Purchasing.StorePurchaseException.StorePurchaseException
   nameWithType: StorePurchaseException.StorePurchaseException
-- uid: UnityFx.Purchasing.StorePurchaseException.GetObjectData(SerializationInfo,StreamingContext)
+- uid: UnityFx.Purchasing.StorePurchaseException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
   name: GetObjectData(SerializationInfo, StreamingContext)
-  href: api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html#UnityFx_Purchasing_StorePurchaseException_GetObjectData_SerializationInfo_StreamingContext_
-  commentId: M:UnityFx.Purchasing.StorePurchaseException.GetObjectData(SerializationInfo,StreamingContext)
-  fullName: UnityFx.Purchasing.StorePurchaseException.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html#UnityFx_Purchasing_StorePurchaseException_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:UnityFx.Purchasing.StorePurchaseException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  fullName: UnityFx.Purchasing.StorePurchaseException.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
   nameWithType: StorePurchaseException.GetObjectData(SerializationInfo, StreamingContext)
 - uid: UnityFx.Purchasing.StorePurchaseException.GetObjectData*
   name: GetObjectData
@@ -1711,11 +1711,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreService.#ctor(System.String,UnityEngine.Purchasing.Extension.IPurchasingModule)
   fullName: UnityFx.Purchasing.StoreService.StoreService(System.String, UnityEngine.Purchasing.Extension.IPurchasingModule)
   nameWithType: StoreService.StoreService(String, IPurchasingModule)
-- uid: UnityFx.Purchasing.StoreService.#ctor(System.String,UnityEngine.Purchasing.Extension.IPurchasingModule,SynchronizationContext)
+- uid: UnityFx.Purchasing.StoreService.#ctor(System.String,UnityEngine.Purchasing.Extension.IPurchasingModule,System.Threading.SynchronizationContext)
   name: StoreService(String, IPurchasingModule, SynchronizationContext)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService__ctor_System_String_UnityEngine_Purchasing_Extension_IPurchasingModule_SynchronizationContext_
-  commentId: M:UnityFx.Purchasing.StoreService.#ctor(System.String,UnityEngine.Purchasing.Extension.IPurchasingModule,SynchronizationContext)
-  fullName: UnityFx.Purchasing.StoreService.StoreService(System.String, UnityEngine.Purchasing.Extension.IPurchasingModule, SynchronizationContext)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService__ctor_System_String_UnityEngine_Purchasing_Extension_IPurchasingModule_System_Threading_SynchronizationContext_
+  commentId: M:UnityFx.Purchasing.StoreService.#ctor(System.String,UnityEngine.Purchasing.Extension.IPurchasingModule,System.Threading.SynchronizationContext)
+  fullName: UnityFx.Purchasing.StoreService.StoreService(System.String, UnityEngine.Purchasing.Extension.IPurchasingModule, System.Threading.SynchronizationContext)
   nameWithType: StoreService.StoreService(String, IPurchasingModule, SynchronizationContext)
 - uid: UnityFx.Purchasing.StoreService.#ctor(UnityEngine.Purchasing.Extension.IPurchasingModule)
   name: StoreService(IPurchasingModule)
@@ -1723,11 +1723,11 @@ references:
   commentId: M:UnityFx.Purchasing.StoreService.#ctor(UnityEngine.Purchasing.Extension.IPurchasingModule)
   fullName: UnityFx.Purchasing.StoreService.StoreService(UnityEngine.Purchasing.Extension.IPurchasingModule)
   nameWithType: StoreService.StoreService(IPurchasingModule)
-- uid: UnityFx.Purchasing.StoreService.#ctor(UnityEngine.Purchasing.Extension.IPurchasingModule,SynchronizationContext)
+- uid: UnityFx.Purchasing.StoreService.#ctor(UnityEngine.Purchasing.Extension.IPurchasingModule,System.Threading.SynchronizationContext)
   name: StoreService(IPurchasingModule, SynchronizationContext)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService__ctor_UnityEngine_Purchasing_Extension_IPurchasingModule_SynchronizationContext_
-  commentId: M:UnityFx.Purchasing.StoreService.#ctor(UnityEngine.Purchasing.Extension.IPurchasingModule,SynchronizationContext)
-  fullName: UnityFx.Purchasing.StoreService.StoreService(UnityEngine.Purchasing.Extension.IPurchasingModule, SynchronizationContext)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService__ctor_UnityEngine_Purchasing_Extension_IPurchasingModule_System_Threading_SynchronizationContext_
+  commentId: M:UnityFx.Purchasing.StoreService.#ctor(UnityEngine.Purchasing.Extension.IPurchasingModule,System.Threading.SynchronizationContext)
+  fullName: UnityFx.Purchasing.StoreService.StoreService(UnityEngine.Purchasing.Extension.IPurchasingModule, System.Threading.SynchronizationContext)
   nameWithType: StoreService.StoreService(IPurchasingModule, SynchronizationContext)
 - uid: UnityFx.Purchasing.StoreService.#ctor*
   name: StoreService
@@ -1795,12 +1795,6 @@ references:
   commentId: M:UnityFx.Purchasing.StoreService.FetchAsync
   fullName: UnityFx.Purchasing.StoreService.FetchAsync()
   nameWithType: StoreService.FetchAsync()
-- uid: UnityFx.Purchasing.StoreService.FetchAsync(System.Object)
-  name: FetchAsync(Object)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_FetchAsync_System_Object_
-  commentId: M:UnityFx.Purchasing.StoreService.FetchAsync(System.Object)
-  fullName: UnityFx.Purchasing.StoreService.FetchAsync(System.Object)
-  nameWithType: StoreService.FetchAsync(Object)
 - uid: UnityFx.Purchasing.StoreService.FetchAsync*
   name: FetchAsync
   href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_FetchAsync_
@@ -1852,12 +1846,6 @@ references:
   commentId: M:UnityFx.Purchasing.StoreService.InitializeAsync
   fullName: UnityFx.Purchasing.StoreService.InitializeAsync()
   nameWithType: StoreService.InitializeAsync()
-- uid: UnityFx.Purchasing.StoreService.InitializeAsync(System.Object)
-  name: InitializeAsync(Object)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_InitializeAsync_System_Object_
-  commentId: M:UnityFx.Purchasing.StoreService.InitializeAsync(System.Object)
-  fullName: UnityFx.Purchasing.StoreService.InitializeAsync(System.Object)
-  nameWithType: StoreService.InitializeAsync(Object)
 - uid: UnityFx.Purchasing.StoreService.InitializeAsync*
   name: InitializeAsync
   href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_InitializeAsync_
@@ -1912,11 +1900,23 @@ references:
   commentId: Overload:UnityFx.Purchasing.StoreService.IsInitialized
   fullName: UnityFx.Purchasing.StoreService.IsInitialized
   nameWithType: StoreService.IsInitialized
-- uid: UnityFx.Purchasing.StoreService.OnFetchCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
+- uid: UnityFx.Purchasing.StoreService.MaxNumberOfPendingPurchases
+  name: MaxNumberOfPendingPurchases
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_MaxNumberOfPendingPurchases
+  commentId: P:UnityFx.Purchasing.StoreService.MaxNumberOfPendingPurchases
+  fullName: UnityFx.Purchasing.StoreService.MaxNumberOfPendingPurchases
+  nameWithType: StoreService.MaxNumberOfPendingPurchases
+- uid: UnityFx.Purchasing.StoreService.MaxNumberOfPendingPurchases*
+  name: MaxNumberOfPendingPurchases
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_MaxNumberOfPendingPurchases_
+  commentId: Overload:UnityFx.Purchasing.StoreService.MaxNumberOfPendingPurchases
+  fullName: UnityFx.Purchasing.StoreService.MaxNumberOfPendingPurchases
+  nameWithType: StoreService.MaxNumberOfPendingPurchases
+- uid: UnityFx.Purchasing.StoreService.OnFetchCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
   name: OnFetchCompleted(IStoreOperationInfo, StoreFetchError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_OnFetchCompleted_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_Exception_
-  commentId: M:UnityFx.Purchasing.StoreService.OnFetchCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
-  fullName: UnityFx.Purchasing.StoreService.OnFetchCompleted(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_OnFetchCompleted_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreService.OnFetchCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
+  fullName: UnityFx.Purchasing.StoreService.OnFetchCompleted(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, System.Exception)
   nameWithType: StoreService.OnFetchCompleted(IStoreOperationInfo, StoreFetchError, Exception)
 - uid: UnityFx.Purchasing.StoreService.OnFetchCompleted*
   name: OnFetchCompleted
@@ -1936,11 +1936,11 @@ references:
   commentId: Overload:UnityFx.Purchasing.StoreService.OnFetchInitiated
   fullName: UnityFx.Purchasing.StoreService.OnFetchInitiated
   nameWithType: StoreService.OnFetchInitiated
-- uid: UnityFx.Purchasing.StoreService.OnInitializeCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
+- uid: UnityFx.Purchasing.StoreService.OnInitializeCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
   name: OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_OnInitializeCompleted_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_Exception_
-  commentId: M:UnityFx.Purchasing.StoreService.OnInitializeCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,Exception)
-  fullName: UnityFx.Purchasing.StoreService.OnInitializeCompleted(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_OnInitializeCompleted_UnityFx_Purchasing_IStoreOperationInfo_UnityFx_Purchasing_StoreFetchError_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreService.OnInitializeCompleted(UnityFx.Purchasing.IStoreOperationInfo,UnityFx.Purchasing.StoreFetchError,System.Exception)
+  fullName: UnityFx.Purchasing.StoreService.OnInitializeCompleted(UnityFx.Purchasing.IStoreOperationInfo, UnityFx.Purchasing.StoreFetchError, System.Exception)
   nameWithType: StoreService.OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)
 - uid: UnityFx.Purchasing.StoreService.OnInitializeCompleted*
   name: OnInitializeCompleted
@@ -1960,11 +1960,11 @@ references:
   commentId: Overload:UnityFx.Purchasing.StoreService.OnInitializeInitiated
   fullName: UnityFx.Purchasing.StoreService.OnInitializeInitiated
   nameWithType: StoreService.OnInitializeInitiated
-- uid: UnityFx.Purchasing.StoreService.OnPurchaseCompleted(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,Exception)
+- uid: UnityFx.Purchasing.StoreService.OnPurchaseCompleted(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,System.Exception)
   name: OnPurchaseCompleted(IPurchaseResult, StorePurchaseError, Exception)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_OnPurchaseCompleted_UnityFx_Purchasing_IPurchaseResult_UnityFx_Purchasing_StorePurchaseError_Exception_
-  commentId: M:UnityFx.Purchasing.StoreService.OnPurchaseCompleted(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,Exception)
-  fullName: UnityFx.Purchasing.StoreService.OnPurchaseCompleted(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError, Exception)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_OnPurchaseCompleted_UnityFx_Purchasing_IPurchaseResult_UnityFx_Purchasing_StorePurchaseError_System_Exception_
+  commentId: M:UnityFx.Purchasing.StoreService.OnPurchaseCompleted(UnityFx.Purchasing.IPurchaseResult,UnityFx.Purchasing.StorePurchaseError,System.Exception)
+  fullName: UnityFx.Purchasing.StoreService.OnPurchaseCompleted(UnityFx.Purchasing.IPurchaseResult, UnityFx.Purchasing.StorePurchaseError, System.Exception)
   nameWithType: StoreService.OnPurchaseCompleted(IPurchaseResult, StorePurchaseError, Exception)
 - uid: UnityFx.Purchasing.StoreService.OnPurchaseCompleted*
   name: OnPurchaseCompleted
@@ -2050,11 +2050,11 @@ references:
   commentId: Overload:UnityFx.Purchasing.StoreService.PurchaseTaskAsync
   fullName: UnityFx.Purchasing.StoreService.PurchaseTaskAsync
   nameWithType: StoreService.PurchaseTaskAsync
-- uid: UnityFx.Purchasing.StoreService.QueueOnMainThread(SendOrPostCallback,System.Object)
+- uid: UnityFx.Purchasing.StoreService.QueueOnMainThread(System.Threading.SendOrPostCallback,System.Object)
   name: QueueOnMainThread(SendOrPostCallback, Object)
-  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_QueueOnMainThread_SendOrPostCallback_System_Object_
-  commentId: M:UnityFx.Purchasing.StoreService.QueueOnMainThread(SendOrPostCallback,System.Object)
-  fullName: UnityFx.Purchasing.StoreService.QueueOnMainThread(SendOrPostCallback, System.Object)
+  href: api/netstandard2.0/UnityFx.Purchasing.StoreService.html#UnityFx_Purchasing_StoreService_QueueOnMainThread_System_Threading_SendOrPostCallback_System_Object_
+  commentId: M:UnityFx.Purchasing.StoreService.QueueOnMainThread(System.Threading.SendOrPostCallback,System.Object)
+  fullName: UnityFx.Purchasing.StoreService.QueueOnMainThread(System.Threading.SendOrPostCallback, System.Object)
   nameWithType: StoreService.QueueOnMainThread(SendOrPostCallback, Object)
 - uid: UnityFx.Purchasing.StoreService.QueueOnMainThread*
   name: QueueOnMainThread

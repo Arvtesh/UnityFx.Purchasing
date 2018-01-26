@@ -76,11 +76,20 @@
   <div class="markdown level0 summary"><p>A read-only collection of <a class="xref" href="UnityFx.Purchasing.IStoreService.html">IStoreService</a> products.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1.count#System_Collections_Generic_IReadOnlyCollection_1_Count">IReadOnlyCollection&lt;Product&gt;.Count</a>
+    </div>
+    <div>
+      <span class="xref">System.Collections.Generic.IEnumerable&lt;UnityEngine.Purchasing.Product&gt;.GetEnumerator()</span>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="UnityFx.Purchasing.html">UnityFx.Purchasing</a></h6>
   <h6><strong>Assembly</strong>: UnityFx.Purchasing.dll</h6>
   <h5 id="UnityFx_Purchasing_IStoreProductCollection_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IStoreProductCollection : IReadOnlyCollection&lt;Product&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IStoreProductCollection : IReadOnlyCollection&lt;Product&gt;, IEnumerable&lt;Product&gt;, IEnumerable</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -89,7 +98,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreProductCollection_Item_System_String_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreProductCollection.Item(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreProductCollection.cs/#L32">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreProductCollection.cs/#L33">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreProductCollection_Item_" data-uid="UnityFx.Purchasing.IStoreProductCollection.Item*"></a>
   <h4 id="UnityFx_Purchasing_IStoreProductCollection_Item_System_String_" data-uid="UnityFx.Purchasing.IStoreProductCollection.Item(System.String)">Item[String]</h4>
@@ -133,6 +142,27 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown if <code data-dev-comment-type="paramref" class="paramref">productId</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.keynotfoundexception">KeyNotFoundException</a></td>
+        <td><p>Thrown if no product with the specified identifier found.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
@@ -140,7 +170,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreProductCollection_Contains_System_String_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreProductCollection.Contains(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreProductCollection.cs/#L47">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreProductCollection.cs/#L50">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreProductCollection_Contains_" data-uid="UnityFx.Purchasing.IStoreProductCollection.Contains*"></a>
   <h4 id="UnityFx_Purchasing_IStoreProductCollection_Contains_System_String_" data-uid="UnityFx.Purchasing.IStoreProductCollection.Contains(System.String)">Contains(String)</h4>
@@ -180,7 +210,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p>A value that indicates if the product exists in the collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown if <code data-dev-comment-type="paramref" class="paramref">productId</code> is <span class="xref">null</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -189,7 +236,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreProductCollection_TryGetProduct_System_String_UnityEngine_Purchasing_Product__.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreProductCollection.TryGetProduct(System.String%2CUnityEngine.Purchasing.Product%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreProductCollection.cs/#L40">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreProductCollection.cs/#L42">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreProductCollection_TryGetProduct_" data-uid="UnityFx.Purchasing.IStoreProductCollection.TryGetProduct*"></a>
   <h4 id="UnityFx_Purchasing_IStoreProductCollection_TryGetProduct_System_String_UnityEngine_Purchasing_Product__" data-uid="UnityFx.Purchasing.IStoreProductCollection.TryGetProduct(System.String,UnityEngine.Purchasing.Product@)">TryGetProduct(String, out Product)</h4>
@@ -235,7 +282,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p>Operation success flag.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown if <code data-dev-comment-type="paramref" class="paramref">productId</code> is <span class="xref">null</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>

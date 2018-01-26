@@ -76,6 +76,12 @@
   <div class="markdown level0 summary"><p>An in-app store service based on <a href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.IDisposable.Dispose()</span>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="UnityFx.Purchasing.html">UnityFx.Purchasing</a></h6>
   <h6><strong>Assembly</strong>: UnityFx.Purchasing.dll</h6>
   <h5 id="UnityFx_Purchasing_IStoreService_syntax">Syntax</h5>
@@ -92,7 +98,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_Controller.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.Controller%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L232">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L234">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_Controller_" data-uid="UnityFx.Purchasing.IStoreService.Controller*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_Controller" data-uid="UnityFx.Purchasing.IStoreService.Controller">Controller</h4>
@@ -119,6 +125,27 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is not initialized.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 id="UnityFx_Purchasing_IStoreService_Controller_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_IsInitialized">IsInitialized</a></div>
@@ -128,7 +155,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_Extensions.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.Extensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L242">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L244">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_Extensions_" data-uid="UnityFx.Purchasing.IStoreService.Extensions*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_Extensions" data-uid="UnityFx.Purchasing.IStoreService.Extensions">Extensions</h4>
@@ -155,6 +182,27 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is not initialized.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 id="UnityFx_Purchasing_IStoreService_Extensions_seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_IsInitialized">IsInitialized</a></div>
@@ -164,7 +212,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_FailedPurchases.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.FailedPurchases%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L206">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L208">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_FailedPurchases_" data-uid="UnityFx.Purchasing.IStoreService.FailedPurchases*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_FailedPurchases" data-uid="UnityFx.Purchasing.IStoreService.FailedPurchases">FailedPurchases</h4>
@@ -185,8 +233,24 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IObservable</span>&lt;<a class="xref" href="UnityFx.Purchasing.FailedPurchaseResult.html">FailedPurchaseResult</a>&gt;</td>
+        <td><span class="xref">System.IObservable</span>&lt;<a class="xref" href="UnityFx.Purchasing.FailedPurchaseResult.html">FailedPurchaseResult</a>&gt;</td>
         <td><p>Observable that can be used to track failed purchases.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
 </td>
       </tr>
     </tbody>
@@ -201,11 +265,11 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_IsBusy.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.IsBusy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L257">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L259">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_IsBusy_" data-uid="UnityFx.Purchasing.IStoreService.IsBusy*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_IsBusy" data-uid="UnityFx.Purchasing.IStoreService.IsBusy">IsBusy</h4>
-  <div class="markdown level1 summary"><p>Returns <span class="xref">true</span> if the store has pending purchase operation; <span class="xref">false</span> otherwise. Read only.</p>
+  <div class="markdown level1 summary"><p>Returns <span class="xref">true</span> if the store has pending operations; <span class="xref">false</span> otherwise. Read only.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -223,7 +287,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p>A value indicating whether the store has pending purchase operation.</p>
+        <td><p>A value indicating whether the store has pending operations.</p>
 </td>
       </tr>
     </tbody>
@@ -237,7 +301,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_IsInitialized.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.IsInitialized%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L250">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L252">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_IsInitialized_" data-uid="UnityFx.Purchasing.IStoreService.IsInitialized*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_IsInitialized" data-uid="UnityFx.Purchasing.IStoreService.IsInitialized">IsInitialized</h4>
@@ -273,7 +337,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_Products.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.Products%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L216">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L218">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_Products_" data-uid="UnityFx.Purchasing.IStoreService.Products*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_Products" data-uid="UnityFx.Purchasing.IStoreService.Products">Products</h4>
@@ -300,12 +364,33 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is not initialized yet.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_Purchases.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.Purchases%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L197">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L199">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_Purchases_" data-uid="UnityFx.Purchasing.IStoreService.Purchases*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_Purchases" data-uid="UnityFx.Purchasing.IStoreService.Purchases">Purchases</h4>
@@ -326,8 +411,24 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IObservable</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseResult.html">PurchaseResult</a>&gt;</td>
+        <td><span class="xref">System.IObservable</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseResult.html">PurchaseResult</a>&gt;</td>
         <td><p>Observable that can be used to track successful purchases.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
 </td>
       </tr>
     </tbody>
@@ -342,7 +443,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_Settings.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.Settings%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L223">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L225">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_Settings_" data-uid="UnityFx.Purchasing.IStoreService.Settings*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_Settings" data-uid="UnityFx.Purchasing.IStoreService.Settings">Settings</h4>
@@ -369,6 +470,22 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
@@ -376,7 +493,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_FetchAsync.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.FetchAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L300">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L287">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_FetchAsync_" data-uid="UnityFx.Purchasing.IStoreService.FetchAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_FetchAsync" data-uid="UnityFx.Purchasing.IStoreService.FetchAsync">FetchAsync()</h4>
@@ -398,79 +515,49 @@
     <tbody>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.IStoreOperation.html">IStoreOperation</a></td>
-        <td></td>
+        <td><p>An object that can be used to track the operation progress.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is not initialized or fetch operation is pending.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_FetchAsync_seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_">FetchAsync(Object)</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync">InitializeAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_">PurchaseAsync(String)</a></div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.FetchAsync(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L315">View Source</a>
-  </span>
-  <a id="UnityFx_Purchasing_IStoreService_FetchAsync_" data-uid="UnityFx.Purchasing.IStoreService.FetchAsync*"></a>
-  <h4 id="UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_" data-uid="UnityFx.Purchasing.IStoreService.FetchAsync(System.Object)">FetchAsync(Object)</h4>
-  <div class="markdown level1 summary"><p>Initiates fetching product information from the store.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">IStoreOperation FetchAsync(object stateObject)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td><span class="parametername">stateObject</span></td>
-        <td><p>A user-provided object that distinguishes this particular operation from others.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="UnityFx.Purchasing.IStoreOperation.html">IStoreOperation</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="UnityFx_Purchasing_IStoreService_FetchAsync_System_Object__seealso">See Also</h5>
-  <div class="seealso">
-      <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync">FetchAsync()</a></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_">InitializeAsync(Object)</a></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object_">PurchaseAsync(String, Object)</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_FetchTaskAsync.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.FetchTaskAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L514">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L488">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_FetchTaskAsync_" data-uid="UnityFx.Purchasing.IStoreService.FetchTaskAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_FetchTaskAsync" data-uid="UnityFx.Purchasing.IStoreService.FetchTaskAsync">FetchTaskAsync()</h4>
@@ -491,13 +578,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>A <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> instance that can be used to track the operation progress.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_FetchTaskAsync_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Please see <a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_">FetchAsync(Object)</a> documentation for more information.</p>
+  <div class="markdown level1 remarks"><p>Please see <a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync">FetchAsync()</a> documentation for more information.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -508,6 +596,21 @@
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is not initialized.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.StoreFetchException.html">StoreFetchException</a></td>
         <td><p>Thrown if fetching fails.</p>
@@ -526,11 +629,11 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_InitializeAsync.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.InitializeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L271">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L273">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_InitializeAsync_" data-uid="UnityFx.Purchasing.IStoreService.InitializeAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_InitializeAsync" data-uid="UnityFx.Purchasing.IStoreService.InitializeAsync">InitializeAsync()</h4>
-  <div class="markdown level1 summary"><p>Initiates the store initialization.</p>
+  <div class="markdown level1 summary"><p>Initiates the store initialization. Returns a completed operation if store is already initialized.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -548,79 +651,49 @@
     <tbody>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.IStoreOperation.html">IStoreOperation</a></td>
-        <td></td>
+        <td><p>An object that can be used to track the operation progress.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is already initialized.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_InitializeAsync_seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_">InitializeAsync(Object)</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync">FetchAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_">PurchaseAsync(String)</a></div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.InitializeAsync(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L286">View Source</a>
-  </span>
-  <a id="UnityFx_Purchasing_IStoreService_InitializeAsync_" data-uid="UnityFx.Purchasing.IStoreService.InitializeAsync*"></a>
-  <h4 id="UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_" data-uid="UnityFx.Purchasing.IStoreService.InitializeAsync(System.Object)">InitializeAsync(Object)</h4>
-  <div class="markdown level1 summary"><p>Initiates the store initialization.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">IStoreOperation InitializeAsync(object stateObject)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td><span class="parametername">stateObject</span></td>
-        <td><p>A user-provided object that distinguishes this particular operation from others.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="UnityFx.Purchasing.IStoreOperation.html">IStoreOperation</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object__seealso">See Also</h5>
-  <div class="seealso">
-      <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync">InitializeAsync()</a></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_">FetchAsync(Object)</a></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object_">PurchaseAsync(String, Object)</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_InitializeTaskAsync.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.InitializeTaskAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L499">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L472">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_InitializeTaskAsync_" data-uid="UnityFx.Purchasing.IStoreService.InitializeTaskAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_InitializeTaskAsync" data-uid="UnityFx.Purchasing.IStoreService.InitializeTaskAsync">InitializeTaskAsync()</h4>
@@ -641,13 +714,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>A <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> instance that can be used to track the operation progress.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_InitializeTaskAsync_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Please see <a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_">InitializeAsync(Object)</a> documentation for more information.</p>
+  <div class="markdown level1 remarks"><p>Please see <a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync">InitializeAsync()</a> documentation for more information.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -658,6 +732,21 @@
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store is already initialized.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.StoreFetchException.html">StoreFetchException</a></td>
         <td><p>Thrown if initialization fails.</p>
@@ -676,7 +765,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.PurchaseAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L337">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L310">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_PurchaseAsync_" data-uid="UnityFx.Purchasing.IStoreService.PurchaseAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_" data-uid="UnityFx.Purchasing.IStoreService.PurchaseAsync(System.String)">PurchaseAsync(String)</h4>
@@ -716,7 +805,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.IStoreOperation-1.html">IStoreOperation</a>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseResult.html">PurchaseResult</a>&gt;</td>
-        <td></td>
+        <td><p>An object that can be used to track the operation progress.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -733,8 +823,33 @@
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown if the <code data-dev-comment-type="paramref" class="paramref">productId</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown if the <code data-dev-comment-type="paramref" class="paramref">productId</code> is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="UnityFx.Purchasing.StorePurchaseException.html">StorePurchaseException</a></td>
         <td><p>Thrown in case of purchase-related errors.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
 </td>
       </tr>
     </tbody>
@@ -752,7 +867,7 @@
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.PurchaseAsync(System.String%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L367">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L342">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_PurchaseAsync_" data-uid="UnityFx.Purchasing.IStoreService.PurchaseAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object_" data-uid="UnityFx.Purchasing.IStoreService.PurchaseAsync(System.String,System.Object)">PurchaseAsync(String, Object)</h4>
@@ -798,13 +913,14 @@
     <tbody>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.IStoreOperation-1.html">IStoreOperation</a>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseResult.html">PurchaseResult</a>&gt;</td>
-        <td></td>
+        <td><p>An object that can be used to track the operation progress.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Internally method does the following:
-<ol><li></li><li></li><li></li><li></li></ol>
+<ol><li></li><li></li><li></li><li></li><li></li></ol>
 Please note that the call would fail if another purchase operation is pending. Use <a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_IsBusy">IsBusy</a> to determine if that is the case.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
@@ -817,8 +933,33 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown if the <code data-dev-comment-type="paramref" class="paramref">productId</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown if the <code data-dev-comment-type="paramref" class="paramref">productId</code> is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="UnityFx.Purchasing.StorePurchaseException.html">StorePurchaseException</a></td>
         <td><p>Thrown in case of purchase-related errors.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
 </td>
       </tr>
     </tbody>
@@ -827,8 +968,8 @@ Please note that the call would fail if another purchase operation is pending. U
   <div class="seealso">
       <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_">PurchaseAsync(String)</a></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_">InitializeAsync(Object)</a></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_">FetchAsync(Object)</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync">InitializeAsync()</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync">FetchAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_IsBusy">IsBusy</a></div>
   </div>
   <span class="small pull-right mobile-hide">
@@ -836,7 +977,7 @@ Please note that the call would fail if another purchase operation is pending. U
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_PurchaseTaskAsync_System_String_.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.PurchaseTaskAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L534">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L509">View Source</a>
   </span>
   <a id="UnityFx_Purchasing_IStoreService_PurchaseTaskAsync_" data-uid="UnityFx.Purchasing.IStoreService.PurchaseTaskAsync*"></a>
   <h4 id="UnityFx_Purchasing_IStoreService_PurchaseTaskAsync_System_String_" data-uid="UnityFx.Purchasing.IStoreService.PurchaseTaskAsync(System.String)">PurchaseTaskAsync(String)</h4>
@@ -875,8 +1016,9 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseResult.html">PurchaseResult</a>&gt;</td>
-        <td></td>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseResult.html">PurchaseResult</a>&gt;</td>
+        <td><p>A <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> instance that can be used to track the operation progress.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -892,6 +1034,31 @@ Please note that the call would fail if another purchase operation is pending. U
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>Thrown if <code data-dev-comment-type="paramref" class="paramref">productId</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Thrown if <code data-dev-comment-type="paramref" class="paramref">productId</code> is an empty string.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.platformnotsupportedexception">PlatformNotSupportedException</a></td>
+        <td><p>Thrown if platform does not support purchasing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>Thrown if the store is disposed.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="UnityFx.Purchasing.StoreFetchException.html">StoreFetchException</a></td>
         <td><p>Thrown if the store initialization/fetch triggered/awaited by the call fails.</p>
@@ -938,7 +1105,7 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchCompletedEventArgs.html">FetchCompletedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchCompletedEventArgs.html">FetchCompletedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -946,7 +1113,7 @@ Please note that the call would fail if another purchase operation is pending. U
   <h5 id="UnityFx_Purchasing_IStoreService_FetchCompleted_seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_">FetchAsync(Object)</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync">FetchAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchInitiated">FetchInitiated</a></div>
   </div>
   <span class="small pull-right mobile-hide">
@@ -974,14 +1141,14 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchInitiatedEventArgs.html">FetchInitiatedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchInitiatedEventArgs.html">FetchInitiatedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_FetchInitiated_seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync_System_Object_">FetchAsync(Object)</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchAsync">FetchAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_FetchCompleted">FetchCompleted</a></div>
   </div>
   <span class="small pull-right mobile-hide">
@@ -1009,7 +1176,7 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchCompletedEventArgs.html">FetchCompletedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchCompletedEventArgs.html">FetchCompletedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -1017,7 +1184,7 @@ Please note that the call would fail if another purchase operation is pending. U
   <h5 id="UnityFx_Purchasing_IStoreService_InitializeCompleted_seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_">InitializeAsync(Object)</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync">InitializeAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeInitiated">InitializeInitiated</a></div>
   </div>
   <span class="small pull-right mobile-hide">
@@ -1045,14 +1212,14 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchInitiatedEventArgs.html">FetchInitiatedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.FetchInitiatedEventArgs.html">FetchInitiatedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_InitializeInitiated_seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync_System_Object_">InitializeAsync(Object)</a></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeAsync">InitializeAsync()</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_InitializeCompleted">InitializeCompleted</a></div>
   </div>
   <span class="small pull-right mobile-hide">
@@ -1060,7 +1227,7 @@ Please note that the call would fail if another purchase operation is pending. U
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_PurchaseCompleted.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.PurchaseCompleted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L186">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L188">View Source</a>
   </span>
   <h4 id="UnityFx_Purchasing_IStoreService_PurchaseCompleted" data-uid="UnityFx.Purchasing.IStoreService.PurchaseCompleted">PurchaseCompleted</h4>
   <div class="markdown level1 summary"><p>Raised when a purchase has completed successfully.</p>
@@ -1080,7 +1247,7 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseCompletedEventArgs.html">PurchaseCompletedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseCompletedEventArgs.html">PurchaseCompletedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -1088,6 +1255,7 @@ Please note that the call would fail if another purchase operation is pending. U
   <h5 id="UnityFx_Purchasing_IStoreService_PurchaseCompleted_seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap</a></span></div>
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_">PurchaseAsync(String)</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object_">PurchaseAsync(String, Object)</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseInitiated">PurchaseInitiated</a></div>
   </div>
@@ -1096,7 +1264,7 @@ Please note that the call would fail if another purchase operation is pending. U
     <a href="https://github.com/Arvtesh/UnityFx.Purchasing/new/develop/apiSpec/new?filename=UnityFx_Purchasing_IStoreService_PurchaseInitiated.md&amp;value=---%0Auid%3A%20UnityFx.Purchasing.IStoreService.PurchaseInitiated%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L178">View Source</a>
+    <a href="https://github.com/Arvtesh/UnityFx.Purchasing/blob/develop/src/UnityFx.Purchasing/Api/Interfaces/IStoreService.cs/#L179">View Source</a>
   </span>
   <h4 id="UnityFx_Purchasing_IStoreService_PurchaseInitiated" data-uid="UnityFx.Purchasing.IStoreService.PurchaseInitiated">PurchaseInitiated</h4>
   <div class="markdown level1 summary"><p>Raised when a new purchase is initiated.</p>
@@ -1116,13 +1284,14 @@ Please note that the call would fail if another purchase operation is pending. U
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseInitiatedEventArgs.html">PurchaseInitiatedEventArgs</a>&gt;</td>
+        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="UnityFx.Purchasing.PurchaseInitiatedEventArgs.html">PurchaseInitiatedEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h5 id="UnityFx_Purchasing_IStoreService_PurchaseInitiated_seealso">See Also</h5>
   <div class="seealso">
+      <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_">PurchaseAsync(String)</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseAsync_System_String_System_Object_">PurchaseAsync(String, Object)</a></div>
       <div><a class="xref" href="UnityFx.Purchasing.IStoreService.html#UnityFx_Purchasing_IStoreService_PurchaseCompleted">PurchaseCompleted</a></div>
   </div>

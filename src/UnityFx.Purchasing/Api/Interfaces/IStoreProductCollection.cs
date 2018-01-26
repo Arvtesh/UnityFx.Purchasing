@@ -20,6 +20,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns the number of elements in the collection. Read only.
 		/// </summary>
+		/// <value>Number of products in the collection.</value>
 		int Count { get; }
 #endif
 
@@ -36,6 +37,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <param name="productId">The product identifier.</param>
 		/// <param name="product">The product instance.</param>
+		/// <returns>Operation success flag.</returns>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
 		bool TryGetProduct(string productId, out Product product);
 
@@ -43,6 +45,7 @@ namespace UnityFx.Purchasing
 		/// Determines whether a product with the specified identifier is present in the collection.
 		/// </summary>
 		/// <param name="productId">The product identifier.</param>
+		/// <returns>A value that indicates if the product exists in the collection.</returns>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
 		bool Contains(string productId);
 	}

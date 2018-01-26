@@ -79,13 +79,41 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">StoreOperationEventArgs</span></div>
-      <div class="level2"><a class="xref" href="UnityFx.Purchasing.FetchInitiatedEventArgs.html">FetchInitiatedEventArgs</a></div>
-      <div class="level2"><a class="xref" href="UnityFx.Purchasing.PurchaseInitiatedEventArgs.html">PurchaseInitiatedEventArgs</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventargs">EventArgs</a></div>
+    <div class="level2"><span class="xref">StoreOperationEventArgs</span></div>
+      <div class="level3"><a class="xref" href="UnityFx.Purchasing.FetchInitiatedEventArgs.html">FetchInitiatedEventArgs</a></div>
+      <div class="level3"><a class="xref" href="UnityFx.Purchasing.PurchaseInitiatedEventArgs.html">PurchaseInitiatedEventArgs</a></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="UnityFx.Purchasing.IStoreOperationInfo.html">IStoreOperationInfo</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventargs.empty">EventArgs.Empty</a>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="UnityFx.Purchasing.html">UnityFx.Purchasing</a></h6>
   <h6><strong>Assembly</strong>: UnityFx.Purchasing.dll</h6>
@@ -139,7 +167,8 @@
   </span>
   <a id="UnityFx_Purchasing_StoreOperationEventArgs_OperationId_" data-uid="UnityFx.Purchasing.StoreOperationEventArgs.OperationId*"></a>
   <h4 id="UnityFx_Purchasing_StoreOperationEventArgs_OperationId" data-uid="UnityFx.Purchasing.StoreOperationEventArgs.OperationId">OperationId</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns identifier of the corresponding operation (matches <a class="xref" href="UnityFx.Purchasing.IStoreOperation.html#UnityFx_Purchasing_IStoreOperation_Id">Id</a>). Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -156,7 +185,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td></td>
+        <td><p>An unique operation identifier.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -169,7 +199,8 @@
   </span>
   <a id="UnityFx_Purchasing_StoreOperationEventArgs_UserState_" data-uid="UnityFx.Purchasing.StoreOperationEventArgs.UserState*"></a>
   <h4 id="UnityFx_Purchasing_StoreOperationEventArgs_UserState" data-uid="UnityFx.Purchasing.StoreOperationEventArgs.UserState">UserState</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns user-defined data assosiated with the operation (if any). Read only.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -186,7 +217,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td></td>
+        <td><p>User-defined data.</p>
+</td>
       </tr>
     </tbody>
   </table>

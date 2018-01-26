@@ -24,16 +24,19 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Returns purchase failure reason. Read only.
 		/// </summary>
+		/// <value>Identifier of the error.</value>
 		public StorePurchaseError ErrorId => _reason;
 
 		/// <summary>
 		/// Returns an exception which occurred during the operation. Read only.
 		/// </summary>
+		/// <value>Exception instance.</value>
 		public Exception Error => _exception;
 
 		/// <summary>
 		/// Returns a value indicating whether an asynchronous operation has been canceled. Read only.
 		/// </summary>
+		/// <value>Cancellation flag.</value>
 		public bool Cancelled => _reason == StorePurchaseError.UserCanceled;
 
 		/// <summary>
