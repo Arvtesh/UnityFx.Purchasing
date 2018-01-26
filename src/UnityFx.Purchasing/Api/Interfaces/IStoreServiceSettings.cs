@@ -23,5 +23,11 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <value>A collection of <see cref="TraceListener"/> objects.</value>
 		TraceListenerCollection TraceListeners { get; }
+
+		/// <summary>
+		/// Gets or sets maximum number of concurrent purchases. Default value is <c>1</c>.
+		/// </summary>
+		/// <value>Maximum number of concurrent purchases.</value>
+		int MaxNumberOfPendingPurchases { get; set; }
 	}
 }

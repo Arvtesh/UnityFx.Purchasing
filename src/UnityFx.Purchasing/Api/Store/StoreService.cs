@@ -75,6 +75,7 @@ namespace UnityFx.Purchasing
 #endif
 		private IStoreController _storeController;
 		private IExtensionProvider _storeExtensions;
+		private int _maxPendingPurchases = 1;
 		private bool _disposed;
 
 		#endregion
@@ -353,7 +354,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="ThrowIfNotInitialized"/>
 		protected void ThrowIfBusy()
 		{
-			if (_storeListener.PurchaseOp != null)
+			if (_storeListener.IsBusy)
 			{
 				throw new InvalidOperationException(_serviceName + " is busy.");
 			}
@@ -493,7 +494,7 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				return _storeListener.PurchaseOp != null;
+				return _storeListener.IsBusy;
 			}
 		}
 
@@ -526,12 +527,11 @@ namespace UnityFx.Purchasing
 		/// <inheritdoc/>
 		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
 		{
-			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfInvalidProductId(productId);
 			ThrowIfPlatformNotSupported();
-			ThrowIfBusy();
 
-			return PurchaseInternal(StoreOperationType.PurchaseEap, productId,  null, stateObject);
+			return PurchaseInternal(StoreOperationType.PurchaseEap, productId, null, stateObject);
 		}
 
 #if UNITYFX_SUPPORT_APM
@@ -588,10 +588,9 @@ namespace UnityFx.Purchasing
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject)
 		{
-			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfInvalidProductId(productId);
 			ThrowIfPlatformNotSupported();
-			ThrowIfBusy();
 
 			return PurchaseInternal(StoreOperationType.PurchaseApm, productId, userCallback, stateObject);
 		}
@@ -642,10 +641,9 @@ namespace UnityFx.Purchasing
 		/// <inheritdoc/>
 		public Task<PurchaseResult> PurchaseTaskAsync(string productId)
 		{
-			ThrowIfInvalidProductId(productId);
 			ThrowIfDisposed();
+			ThrowIfInvalidProductId(productId);
 			ThrowIfPlatformNotSupported();
-			ThrowIfBusy();
 
 			var tcs = new TaskCompletionSource<PurchaseResult>();
 			PurchaseInternal(StoreOperationType.PurchaseTap, productId, PurchaseCompletionCallback, tcs);
@@ -659,10 +657,44 @@ namespace UnityFx.Purchasing
 		#region IStoreServiceSettings
 
 		/// <inheritdoc/>
-		public SourceSwitch TraceSwitch { get => _console.Switch; set => _console.Switch = value; }
+		public SourceSwitch TraceSwitch
+		{
+			get
+			{
+				return _console.Switch;
+			}
+			set
+			{
+				_console.Switch = value;
+			}
+		}
 
 		/// <inheritdoc/>
-		public TraceListenerCollection TraceListeners => _console.Listeners;
+		public TraceListenerCollection TraceListeners
+		{
+			get
+			{
+				return _console.Listeners;
+			}
+		}
+
+		/// <inheritdoc/>
+		public int MaxNumberOfPendingPurchases
+		{
+			get
+			{
+				return _maxPendingPurchases;
+			}
+			set
+			{
+				if (value <= 0)
+				{
+					throw new ArgumentOutOfRangeException("Only positive values allowed.");
+				}
+
+				_maxPendingPurchases = value;
+			}
+		}
 
 		#endregion
 
@@ -752,7 +784,7 @@ namespace UnityFx.Purchasing
 							{
 								try
 								{
-									result.Initiate();
+									_storeListener.TryInitiatePurchase(result);
 								}
 								catch (Exception e)
 								{
@@ -768,7 +800,7 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-					result.Initiate();
+					_storeListener.TryInitiatePurchase(result);
 				}
 			}
 			catch (Exception e)

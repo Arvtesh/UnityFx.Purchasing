@@ -10,8 +10,8 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		internal abstract StoreService Store { get; }
-		internal abstract void AddOperation(IStoreOperation op);
-		internal abstract void ReleaseOperation(IStoreOperation op);
+		internal abstract void AddOperation(StoreOperation op);
+		internal abstract void ReleaseOperation(StoreOperation op);
 
 		#endregion
 

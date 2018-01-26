@@ -324,14 +324,16 @@ namespace UnityFx.Purchasing
 			try
 			{
 				var s = GetOperationName() + (IsCompletedSuccessfully ? " completed" : " failed");
+
 				TraceEvent(TraceEventType.Stop, s);
+
+				_waitHandle?.Set();
+				_asyncCallback?.Invoke(this);
+				_asyncCallback = null;
 			}
 			finally
 			{
 				_owner.ReleaseOperation(this);
-				_waitHandle?.Set();
-				_asyncCallback?.Invoke(this);
-				_asyncCallback = null;
 			}
 		}
 

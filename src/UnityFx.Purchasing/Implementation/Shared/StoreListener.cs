@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine.Purchasing;
 
@@ -19,7 +20,7 @@ namespace UnityFx.Purchasing
 
 		private InitializeOperation _initializeOp;
 		private FetchOperation _fetchOp;
-		private PurchaseOperation _purchaseOp;
+		private List<PurchaseOperation> _purchaseOps;
 		private bool _disposed;
 
 		#endregion
@@ -30,12 +31,21 @@ namespace UnityFx.Purchasing
 
 		public FetchOperation FetchOp => _fetchOp;
 
-		public PurchaseOperation PurchaseOp => _purchaseOp;
+		public bool IsBusy => _purchaseOps.Count > 0;
 
 		public StoreListener(StoreService storeService)
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
+			_purchaseOps = new List<PurchaseOperation>();
+		}
+
+		public void TryInitiatePurchase(PurchaseOperation op)
+		{
+			if (_purchaseOps[0] == op)
+			{
+				op.Initiate();
+			}
 		}
 
 		#endregion
@@ -44,7 +54,7 @@ namespace UnityFx.Purchasing
 
 		internal override StoreService Store => _storeService;
 
-		internal override void AddOperation(IStoreOperation op)
+		internal override void AddOperation(StoreOperation op)
 		{
 			Debug.Assert(!_disposed);
 
@@ -52,9 +62,15 @@ namespace UnityFx.Purchasing
 			{
 				Debug.Assert(_initializeOp == null);
 				Debug.Assert(_fetchOp == null);
-				Debug.Assert(_purchaseOp == null);
 
-				_purchaseOp = pop;
+				if (_purchaseOps.Count < _storeService.MaxNumberOfPendingPurchases)
+				{
+					_purchaseOps.Add(pop);
+				}
+				else
+				{
+					throw new InvalidOperationException("Maximum number of concurrent purchase operations is exceeded.");
+				}
 			}
 			else if (op is FetchOperation fop)
 			{
@@ -76,7 +92,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal override void ReleaseOperation(IStoreOperation op)
+		internal override void ReleaseOperation(StoreOperation op)
 		{
 			if (op == _initializeOp)
 			{
@@ -86,9 +102,24 @@ namespace UnityFx.Purchasing
 			{
 				_fetchOp = null;
 			}
-			else if (op == _purchaseOp)
+			else if (op is PurchaseOperation pop)
 			{
-				_purchaseOp = null;
+				_purchaseOps.Remove(pop);
+
+				// Start next purchase operation in queue (if any).
+				if (_purchaseOps.Count > 0)
+				{
+					var popNext = _purchaseOps[0];
+
+					try
+					{
+						popNext.Initiate();
+					}
+					catch (Exception e)
+					{
+						popNext.SetFailed(e);
+					}
+				}
 			}
 		}
 
@@ -187,7 +218,8 @@ namespace UnityFx.Purchasing
 
 			if (!_disposed)
 			{
-				var opId = _purchaseOp?.Id ?? 0;
+				var op = _purchaseOps.Count > 0 ? _purchaseOps[0] : null;
+				var opId = op?.Id ?? 0;
 
 				try
 				{
@@ -197,22 +229,22 @@ namespace UnityFx.Purchasing
 					_console.TraceEvent(TraceEventType.Verbose, opId, "ProcessPurchase: " + productId);
 					_console.TraceEvent(TraceEventType.Verbose, opId, $"Receipt ({productId}): {product.receipt ?? "null"}");
 
-					if (_purchaseOp == null)
+					if (op == null)
 					{
 						// A restored transactions when the _purchaseOp is null.
-						var op = new PurchaseOperation(this, product, true);
+						op = new PurchaseOperation(this, product, true);
 						return op.Validate();
 					}
-					else if (_purchaseOp.ProcessPurchase(product))
+					else if (op.ProcessPurchase(product))
 					{
 						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-						return _purchaseOp.Validate();
+						return op.Validate();
 					}
 					else
 					{
 						// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase()
 						// call (bypassing IStoreService API). Do not process it.
-						TraceUnexpectedProduct(productId);
+						TraceUnexpectedProduct(productId, op.ProductId);
 						return PurchaseProcessingResult.Complete;
 					}
 				}
@@ -231,7 +263,8 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
-				var opId = _purchaseOp?.Id ?? 0;
+				var op = _purchaseOps.Count > 0 ? _purchaseOps[0] : null;
+				var opId = op?.Id ?? 0;
 
 				try
 				{
@@ -241,12 +274,12 @@ namespace UnityFx.Purchasing
 
 					_console.TraceEvent(TraceEventType.Verbose, opId, "OnPurchaseFailed: " + errorDesc);
 
-					if (_purchaseOp == null)
+					if (op == null)
 					{
 						// A restored transaction.
 						if (product != null)
 						{
-							var op = new PurchaseOperation(this, StoreOperationType.Purchase, productId, true, null, null);
+							op = new PurchaseOperation(this, StoreOperationType.Purchase, productId, true, null, null);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else
@@ -254,16 +287,16 @@ namespace UnityFx.Purchasing
 							_console.TraceEvent(TraceEventType.Error, 0, reason.ToString());
 						}
 					}
-					else if (_purchaseOp.IsSame(product))
+					else if (op.IsSame(product))
 					{
 						// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-						_purchaseOp.SetFailed(product, GetPurchaseError(reason));
+						op.SetFailed(product, GetPurchaseError(reason));
 					}
 					else
 					{
 						// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase()
 						// call (bypassing IStoreService API).
-						TraceUnexpectedProduct(productId);
+						TraceUnexpectedProduct(productId, op.ProductId);
 					}
 				}
 				catch (Exception e)
@@ -284,7 +317,12 @@ namespace UnityFx.Purchasing
 			if (!_disposed)
 			{
 				_disposed = true;
-				_purchaseOp?.SetFailed(StorePurchaseError.StoreDisposed);
+
+				while (_purchaseOps.Count > 0)
+				{
+					_purchaseOps[0].SetFailed(StorePurchaseError.StoreDisposed);
+				}
+
 				_fetchOp?.SetFailed(StoreFetchError.StoreDisposed);
 				_initializeOp?.SetFailed(StoreFetchError.StoreDisposed);
 			}
@@ -294,9 +332,9 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private void TraceUnexpectedProduct(string productId)
+		private void TraceUnexpectedProduct(string productId, string expectedProductId)
 		{
-			_console.TraceEvent(TraceEventType.Warning, 0, $"Unexpected product. Got {productId} while {_purchaseOp.ProductId} was expected.");
+			_console.TraceEvent(TraceEventType.Warning, 0, $"Unexpected product. Got {productId} while {expectedProductId} was expected.");
 		}
 
 		private static StoreFetchError GetInitializeError(InitializationFailureReason error)
