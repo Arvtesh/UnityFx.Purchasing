@@ -16,6 +16,7 @@ namespace UnityFx.Purchasing
 	/// A yieldable asynchronous store operation.
 	/// </summary>
 	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	internal abstract class StoreOperation : IStoreOperation, IStoreOperationInfo, IAsyncResult, IEnumerator, IDisposable
 	{
 		#region data
@@ -45,6 +46,38 @@ namespace UnityFx.Purchasing
 
 		protected StoreService Store => _owner.Store;
 		protected TraceSource Console => _owner.Store.TraceSource;
+
+		internal string DebuggerDisplay
+		{
+			get
+			{
+				var result = GetOperationName();
+				var state = "Running";
+
+				if ((_status & _statusCompleted) != 0)
+				{
+					state = "Completed";
+				}
+				else if ((_status & _statusFaulted) != 0)
+				{
+					state = "Faulted";
+				}
+				else if ((_status & _statusCanceled) != 0)
+				{
+					state = "Canceled";
+				}
+
+				result += ", State = ";
+				result += state;
+
+				if ((_status & _statusDisposedFlag) != 0)
+				{
+					result += ", Disposed";
+				}
+
+				return result;
+			}
+		}
 
 		protected StoreOperation(StoreOperationContainer owner, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
 		{
