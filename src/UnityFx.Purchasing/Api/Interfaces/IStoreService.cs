@@ -252,9 +252,9 @@ namespace UnityFx.Purchasing
 		bool IsInitialized { get; }
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the store has pending purchase operation; <see langword="false"/> otherwise. Read only.
+		/// Returns <see langword="true"/> if the store has pending operations; <see langword="false"/> otherwise. Read only.
 		/// </summary>
-		/// <value>A value indicating whether the store has pending purchase operation.</value>
+		/// <value>A value indicating whether the store has pending operations.</value>
 		/// <seealso cref="IsInitialized"/>
 		bool IsBusy { get; }
 

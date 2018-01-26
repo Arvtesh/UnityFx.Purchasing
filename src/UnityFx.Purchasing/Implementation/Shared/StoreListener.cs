@@ -31,7 +31,7 @@ namespace UnityFx.Purchasing
 
 		public FetchOperation FetchOp => _fetchOp;
 
-		public bool IsBusy => _purchaseOps.Count > 0;
+		public bool IsBusy => _purchaseOps.Count > 0 || _fetchOp != null || _initializeOp != null;
 
 		public StoreListener(StoreService storeService)
 		{
