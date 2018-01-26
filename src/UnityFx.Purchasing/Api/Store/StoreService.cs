@@ -500,35 +500,21 @@ namespace UnityFx.Purchasing
 		/// <inheritdoc/>
 		public IStoreOperation InitializeAsync()
 		{
-			return InitializeAsync(null);
-		}
-
-		/// <inheritdoc/>
-		public IStoreOperation InitializeAsync(object stateObject)
-		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
 			ThrowIfInitialized();
-			ThrowIfInitializePending();
 
-			return InitializeInternal(StoreOperationType.InitializeEap, null, stateObject);
+			return _storeListener.InitializeOp ?? InitializeInternal(StoreOperationType.InitializeEap, null, null);
 		}
 
 		/// <inheritdoc/>
 		public IStoreOperation FetchAsync()
 		{
-			return FetchAsync(null);
-		}
-
-		/// <inheritdoc/>
-		public IStoreOperation FetchAsync(object stateObject)
-		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
 			ThrowIfNotInitialized();
-			ThrowIfFetchPending();
 
-			return FetchInternal(StoreOperationType.FetchEap, null, stateObject);
+			return _storeListener.FetchOp ?? FetchInternal(StoreOperationType.FetchEap, null, null);
 		}
 
 		/// <inheritdoc/>
@@ -696,6 +682,8 @@ namespace UnityFx.Purchasing
 		private StoreOperation InitializeInternal(StoreOperationType opType, AsyncCallback userCallback, object stateObject)
 		{
 			Debug.Assert((opType & StoreOperationType.Initialize) != 0);
+			Debug.Assert(_storeListener.InitializeOp == null);
+			Debug.Assert(_storeController == null);
 
 			var result = new InitializeOperation(_storeListener, opType, _purchasingModule, _storeListener, userCallback, stateObject);
 
@@ -715,6 +703,7 @@ namespace UnityFx.Purchasing
 		private StoreOperation FetchInternal(StoreOperationType opType, AsyncCallback userCallback, object stateObject)
 		{
 			Debug.Assert((opType & StoreOperationType.Fetch) != 0);
+			Debug.Assert(_storeListener.FetchOp == null);
 
 			var result = new FetchOperation(_storeListener, opType, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
 

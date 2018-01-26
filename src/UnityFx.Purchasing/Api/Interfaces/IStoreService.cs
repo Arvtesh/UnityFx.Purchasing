@@ -143,7 +143,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Raised when the store initialization has been initiated.
 		/// </summary>
-		/// <seealso cref="InitializeAsync(object)"/>
+		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="InitializeCompleted"/>
 		event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
 
@@ -151,14 +151,14 @@ namespace UnityFx.Purchasing
 		/// Raised when the store has been initialized.
 		/// </summary>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-		/// <seealso cref="InitializeAsync(object)"/>
+		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="InitializeInitiated"/>
 		event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
 
 		/// <summary>
 		/// Raised when the store initialization has been initiated.
 		/// </summary>
-		/// <seealso cref="FetchAsync(object)"/>
+		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="FetchCompleted"/>
 		event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
 
@@ -166,13 +166,14 @@ namespace UnityFx.Purchasing
 		/// Raised when the store has been initialized.
 		/// </summary>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-		/// <seealso cref="FetchAsync(object)"/>
+		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="FetchInitiated"/>
 		event EventHandler<FetchCompletedEventArgs> FetchCompleted;
 
 		/// <summary>
 		/// Raised when a new purchase is initiated.
 		/// </summary>
+		/// <seealso cref="PurchaseAsync(string)"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="PurchaseCompleted"/>
 		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
@@ -181,6 +182,7 @@ namespace UnityFx.Purchasing
 		/// Raised when a purchase has completed successfully.
 		/// </summary>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso cref="PurchaseAsync(string)"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="PurchaseInitiated"/>
 		event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
@@ -257,35 +259,19 @@ namespace UnityFx.Purchasing
 		bool IsBusy { get; }
 
 		/// <summary>
-		/// Initiates the store initialization.
+		/// Initiates the store initialization. Returns a completed operation if store is already initialized.
 		/// </summary>
 		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
 		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized or initialize operation is pending.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-		/// <seealso cref="InitializeAsync(object)"/>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		IStoreOperation InitializeAsync();
 
 		/// <summary>
-		/// Initiates the store initialization.
-		/// </summary>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
-		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
-		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized or initialize operation is pending.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-		/// <seealso cref="InitializeAsync()"/>
-		/// <seealso cref="FetchAsync(object)"/>
-		/// <seealso cref="PurchaseAsync(string, object)"/>
-		IStoreOperation InitializeAsync(object stateObject);
-
-		/// <summary>
 		/// Initiates fetching product information from the store.
 		/// </summary>
 		/// <event cref="FetchInitiated">Raised when the operation is created.</event>
@@ -294,25 +280,9 @@ namespace UnityFx.Purchasing
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-		/// <seealso cref="FetchAsync(object)"/>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		IStoreOperation FetchAsync();
-
-		/// <summary>
-		/// Initiates fetching product information from the store.
-		/// </summary>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
-		/// <event cref="FetchInitiated">Raised when the operation is created.</event>
-		/// <event cref="FetchCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized or fetch operation is pending.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-		/// <seealso cref="FetchAsync()"/>
-		/// <seealso cref="InitializeAsync(object)"/>
-		/// <seealso cref="PurchaseAsync(string, object)"/>
-		IStoreOperation FetchAsync(object stateObject);
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -361,8 +331,8 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
-		/// <seealso cref="InitializeAsync(object)"/>
-		/// <seealso cref="FetchAsync(object)"/>
+		/// <seealso cref="InitializeAsync()"/>
+		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="IsBusy"/>
 		IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject);
 
@@ -372,7 +342,7 @@ namespace UnityFx.Purchasing
 		/// Begins an asynchronous initialize operation.
 		/// </summary>
 		/// <remarks>
-		/// Please see <see cref="InitializeAsync(object)"/> documentation for more information.
+		/// Please see <see cref="InitializeAsync()"/> documentation for more information.
 		/// </remarks>
 		/// <param name="userCallback">The method to be called when the asynchronous initialize operation is completed.</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous initialize operation from other operations.</param>
@@ -390,8 +360,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <remarks>
 		/// The method will block until the operation has completed. <see cref="EndInitialize(IAsyncResult)"/> must be called
-		/// exactly for every call to <see cref="BeginInitialize(AsyncCallback, object)"/>. <paramref name="asyncResult"/>
-		/// should not be used after the call.
+		/// exactly for every call to <see cref="BeginInitialize(AsyncCallback, object)"/>.
 		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
@@ -408,7 +377,7 @@ namespace UnityFx.Purchasing
 		/// Begins an asynchronous fetch operation.
 		/// </summary>
 		/// <remarks>
-		/// Please see <see cref="FetchAsync(object)"/> documentation for more information.
+		/// Please see <see cref="FetchAsync()"/> documentation for more information.
 		/// </remarks>
 		/// <param name="userCallback">The method to be called when the asynchronous fetch operation is completed.</param>
 		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous fetch operation from other operations.</param>
@@ -426,8 +395,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <remarks>
 		/// The method will block until the operation has completed. <see cref="EndFetch(IAsyncResult)"/> must be called
-		/// exactly for every call to <see cref="BeginFetch(AsyncCallback, object)"/>. <paramref name="asyncResult"/>
-		/// should not be used after the call.
+		/// exactly for every call to <see cref="BeginFetch(AsyncCallback, object)"/>.
 		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
@@ -465,8 +433,7 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <remarks>
 		/// The method will block until the operation has completed. <see cref="EndPurchase(IAsyncResult)"/> must be called
-		/// exactly for every call to <see cref="BeginPurchase(string, AsyncCallback, object)"/>. <paramref name="asyncResult"/>
-		/// should not be used after the call.
+		/// exactly for every call to <see cref="BeginPurchase(string, AsyncCallback, object)"/>.
 		/// </remarks>
 		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
@@ -487,7 +454,7 @@ namespace UnityFx.Purchasing
 		/// Initiates the store initialization.
 		/// </summary>
 		/// <remarks>
-		/// Please see <see cref="InitializeAsync(object)"/> documentation for more information.
+		/// Please see <see cref="InitializeAsync()"/> documentation for more information.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
@@ -502,7 +469,7 @@ namespace UnityFx.Purchasing
 		/// Fetches product information from the store.
 		/// </summary>
 		/// <remarks>
-		/// Please see <see cref="FetchAsync(object)"/> documentation for more information.
+		/// Please see <see cref="FetchAsync()"/> documentation for more information.
 		/// </remarks>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
