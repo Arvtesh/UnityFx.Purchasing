@@ -4,330 +4,6 @@
   "xrefmap": "xrefmap.yml",
   "files": [
     {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.FailedPurchaseResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.FailedPurchaseResult.html",
-          "hash": "JWSPGYd49W4jfK343suFNw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.FetchCompletedEventArgs.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.FetchCompletedEventArgs.html",
-          "hash": "6m16jf9Us+4Niu6KuoNWJw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.FetchInitiatedEventArgs.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.FetchInitiatedEventArgs.html",
-          "hash": "hVYkTLFwfwPKl09n54IjDg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IAsyncCompletionSource-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IAsyncCompletionSource-1.html",
-          "hash": "32wgVcuGt2vFgIGf7ykGWw=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IPurchaseResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IPurchaseResult.html",
-          "hash": "gA/jMyt9AIMj5/riqpOphQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreOperation-1.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreOperation-1.html",
-          "hash": "g2Tbd48gAgKwK8cKqJr9ig=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreOperation.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreOperation.html",
-          "hash": "fIy5lQ/+HxDCHZ0AicU4dg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreOperationInfo.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreOperationInfo.html",
-          "hash": "yTCTDwxt17KPQMTzPsuQHA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreProductCollection.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreProductCollection.html",
-          "hash": "PYK+8fTgYDjyLotswDNYcA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreService.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreService.html",
-          "hash": "+sKL3uIuiETxlwZGU4C3sA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreServiceSettings.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreServiceSettings.html",
-          "hash": "/GTxkc+7+vBNLF/H/EnaXw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.IStoreTransaction.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.IStoreTransaction.html",
-          "hash": "n29y0XDbpzOqS0GwdvXyGQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.PurchaseCompletedEventArgs.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.PurchaseCompletedEventArgs.html",
-          "hash": "DM6Lg2wk8SSCOxKwd9qztw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.PurchaseInitiatedEventArgs.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.PurchaseInitiatedEventArgs.html",
-          "hash": "5YWLdgm/vEd45pD7pyGhRA=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.PurchaseResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.PurchaseResult.html",
-          "hash": "IoYwgbQZkaPnl8A3MX3piw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.PurchaseValidationResult.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.PurchaseValidationResult.html",
-          "hash": "6qW3Se5qlDCoH41feQpqjw=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.PurchaseValidationStatus.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.PurchaseValidationStatus.html",
-          "hash": "N5MMYfGE4KxgH4UCCHg0fg=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreConfig.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreConfig.html",
-          "hash": "9qqowPxOXAiBdrdjb9FVUQ=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreException.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreException.html",
-          "hash": "V3efFNt0/PRcAZVyTjjkuQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreExtensions.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreExtensions.html",
-          "hash": "2GqgBSQVObj9SCLJ1JuQPw=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreFetchError.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreFetchError.html",
-          "hash": "fs56PG6j2ICHRI3y2Xgj5A=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreFetchException.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreFetchException.html",
-          "hash": "qKB0tG8jXhHREhSU1An2mg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreOperationEventArgs.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreOperationEventArgs.html",
-          "hash": "CkYIUGSkfPTYSOxmW1+u7w=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StorePurchaseError.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StorePurchaseError.html",
-          "hash": "7fdxQictuxwJO9iBRlIUJQ=="
-        }
-      },
-      "is_incremental": true,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StorePurchaseException.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StorePurchaseException.html",
-          "hash": "QF+lpz22UQCSJuT/7uQGKQ=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.StoreService.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.StoreService.html",
-          "hash": "FSLZpsGJ2IcLnbv2G/Tefw=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/UnityFx.Purchasing.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/UnityFx.Purchasing.html",
-          "hash": "q1VceJgstNAea7GvhvCOSg=="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
       "type": "Conceptual",
       "source_relative_path": "api/index.md",
       "output": {
@@ -336,7 +12,331 @@
           "hash": "LkzlT0jAgFF6082YccCksw=="
         }
       },
-      "is_incremental": true,
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.FailedPurchaseResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.FailedPurchaseResult.html",
+          "hash": "Seg+OAxpWZDMNi/MPetMOg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.FetchCompletedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.FetchCompletedEventArgs.html",
+          "hash": "nSYEt7RXD1yGbGl3hDDSiw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.FetchInitiatedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.FetchInitiatedEventArgs.html",
+          "hash": "Bax/gK0yCEvy11K9qYB+6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IAsyncCompletionSource-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IAsyncCompletionSource-1.html",
+          "hash": "TYKd4g00eM+IzFhnjMxULA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IPurchaseResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IPurchaseResult.html",
+          "hash": "ERiVRifGofrwY/GfZXfgtQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreOperation-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreOperation-1.html",
+          "hash": "hfH48fP5PU7ym7cFbvQ64A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreOperation.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreOperation.html",
+          "hash": "uPSO9p2AElsYqmv1aC6rMg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreOperationInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreOperationInfo.html",
+          "hash": "lbnNRPATy3in3hosWFXoXA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreProductCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreProductCollection.html",
+          "hash": "RrPh3Imm23Kqv5pf7zZkBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreService.html",
+          "hash": "BmFHvOAmrPVomXabZP3RzQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreServiceSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreServiceSettings.html",
+          "hash": "0v03tsUVdNjJqVcYID4OBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreTransaction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.IStoreTransaction.html",
+          "hash": "l5Ejes4jDYLdzxZfzdtpLQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseCompletedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseCompletedEventArgs.html",
+          "hash": "hLcDGH6o6aQ69Lx6PpwYFQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseInitiatedEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseInitiatedEventArgs.html",
+          "hash": "FA/kxIpfF2lELaufwWubhg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseResult.html",
+          "hash": "pAEQDFsY1eJtewnevT5d9Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseValidationResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseValidationResult.html",
+          "hash": "4vliTp40QjA9E9V0BkGEBg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseValidationStatus.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.PurchaseValidationStatus.html",
+          "hash": "uqwJ8w99gh0dw0vXYU6pJg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreConfig.html",
+          "hash": "6uXWuYyQKHzQzrbs0OrqVg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreException.html",
+          "hash": "tMjpOnjBm4j9xLU0tFy4ow=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreExtensions.html",
+          "hash": "ib9suMxyfV2qL6yRR6CiLw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreFetchError.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreFetchError.html",
+          "hash": "zhRXkpuKbQd2EY00MUXjqg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreFetchException.html",
+          "hash": "eNv4CWRpsVus2Hs1GFAu5Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreOperationEventArgs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreOperationEventArgs.html",
+          "hash": "dC+BKGzml2AmboDaxHhz8Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StorePurchaseError.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StorePurchaseError.html",
+          "hash": "20m3v701LSDfcdJHAbli1A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StorePurchaseException.html",
+          "hash": "DPu4teiL7zEaFzilk0GI5A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.StoreService.html",
+          "hash": "vST+qqgKBaOTe4EJbuTG9w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/netstandard2.0/UnityFx.Purchasing.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/netstandard2.0/UnityFx.Purchasing.html",
+          "hash": "XWtzRFKbEX1Xqnoq5uolQA=="
+        }
+      },
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -345,7 +345,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "GZLNrfbJszCNo4UH03Dagw=="
+          "hash": "xiCMZujYctQnZkhF5OPbOg=="
         }
       },
       "is_incremental": false,
@@ -443,17 +443,17 @@
         "incrementalPhase": "build"
       },
       "processors": {
-        "ConceptualDocumentProcessor": {
-          "can_incremental": true,
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": true,
           "incrementalPhase": "build"
         },
-        "TocDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
           "incrementalPhase": "build"
         }
       }
