@@ -27,9 +27,11 @@ namespace UnityFx.Purchasing
 		private const int _statusCompleted = 4;
 		private const int _statusFaulted = 8;
 		private const int _statusCanceled = 16;
+		private const int _typeMask = 0xf;
+		private const int _typeMask2 = 0x3;
 
 		private readonly int _id;
-		private readonly StoreOperationContainer _owner;
+		private readonly IStoreOperationOwner _owner;
 
 		private static int _lastId;
 
@@ -45,7 +47,6 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		protected StoreService Store => _owner.Store;
-		protected TraceSource Console => _owner.Store.TraceSource;
 
 		internal string DebuggerDisplay
 		{
@@ -79,7 +80,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		protected StoreOperation(StoreOperationContainer owner, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
+		protected StoreOperation(IStoreOperationOwner owner, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
 		{
 			_id = (++_lastId << 4) | (int)opType;
 			_owner = owner;
@@ -112,7 +113,7 @@ namespace UnityFx.Purchasing
 
 		internal void Validate(object owner, StoreOperationType type)
 		{
-			if ((_id & 0xf) != (int)type)
+			if ((_id & _typeMask) != (int)type)
 			{
 				throw new ArgumentException("Invalid operation type");
 			}
@@ -178,22 +179,22 @@ namespace UnityFx.Purchasing
 
 		protected void TraceError(string s)
 		{
-			_owner.Store.TraceSource.TraceEvent(TraceEventType.Error, _id, GetOperationName() + ": " + s);
+			_owner.TraceSource.TraceEvent(TraceEventType.Error, _id, GetOperationName() + ": " + s);
 		}
 
 		protected void TraceException(Exception e)
 		{
-			_owner.Store.TraceSource.TraceData(TraceEventType.Error, _id, e);
+			_owner.TraceSource.TraceData(TraceEventType.Error, _id, e);
 		}
 
 		protected void TraceEvent(TraceEventType eventType, string s)
 		{
-			_owner.Store.TraceSource.TraceEvent(eventType, _id, s);
+			_owner.TraceSource.TraceEvent(eventType, _id, s);
 		}
 
 		protected void TraceData(TraceEventType eventType, object data)
 		{
-			_owner.Store.TraceSource.TraceData(eventType, _id, data);
+			_owner.TraceSource.TraceData(eventType, _id, data);
 		}
 
 		protected void ThrowIfNotCompletedSuccessfully()
@@ -210,26 +211,6 @@ namespace UnityFx.Purchasing
 			{
 				throw new ObjectDisposedException(GetOperationName());
 			}
-		}
-
-		protected string GetOperationName()
-		{
-			var result = "UnknownOperation";
-
-			if ((_id & (int)StoreOperationType.Purchase) != 0)
-			{
-				result = StoreOperationType.Purchase.ToString();
-			}
-			else if ((_id & (int)StoreOperationType.Fetch) != 0)
-			{
-				result = StoreOperationType.Fetch.ToString();
-			}
-			else if ((_id & (int)StoreOperationType.Initialize) != 0)
-			{
-				result = StoreOperationType.Initialize.ToString();
-			}
-
-			return $"{result} ({_id.ToString(CultureInfo.InvariantCulture)})";
 		}
 
 		#endregion
@@ -350,6 +331,12 @@ namespace UnityFx.Purchasing
 			}
 
 			return false;
+		}
+
+		private string GetOperationName()
+		{
+			var result = (StoreOperationType)(_id & _typeMask2);
+			return $"{result.ToString()} ({_id.ToString(CultureInfo.InvariantCulture)})";
 		}
 
 		#endregion

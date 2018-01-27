@@ -22,7 +22,7 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public InitializeOperation(StoreOperationContainer parent, StoreOperationType opType, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
+		public InitializeOperation(IStoreOperationOwner parent, StoreOperationType opType, IPurchasingModule purchasingModule, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
 			: base(parent, opType, asyncCallback, asyncState)
 		{
 			Debug.Assert((opType & StoreOperationType.Initialize) != 0);

@@ -21,7 +21,7 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public StoreConfigOperation(StoreOperationContainer parent, StoreOperationType opId, AsyncCallback asyncCallback, object asyncState)
+		public StoreConfigOperation(IStoreOperationOwner parent, StoreOperationType opId, AsyncCallback asyncCallback, object asyncState)
 			: base(parent, opId, asyncCallback, asyncState, null)
 		{
 		}

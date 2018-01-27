@@ -19,20 +19,22 @@ namespace UnityFx.Purchasing
 	[Flags]
 	internal enum StoreOperationType
 	{
+		Unknown = 0,
+
 		Initialize = 1,
-		InitializeEap = Initialize | 4,
-		InitializeApm = Initialize | 8,
-		InitializeTap = Initialize | 6,
+		InitializeEap = Initialize | 0x4,
+		InitializeApm = Initialize | 0x8,
+		InitializeTap = Initialize | 0xc,
 
 		Fetch = 2,
-		FetchEap = Fetch | 4,
-		FetchApm = Fetch | 8,
-		FetchTap = Fetch | 6,
+		FetchEap = Fetch | 0x4,
+		FetchApm = Fetch | 0x8,
+		FetchTap = Fetch | 0xc,
 
 		Purchase = 3,
-		PurchaseEap = Purchase | 4,
-		PurchaseApm = Purchase | 8,
-		PurchaseTap = Purchase | 6,
+		PurchaseEap = Purchase | 0x4,
+		PurchaseApm = Purchase | 0x8,
+		PurchaseTap = Purchase | 0xc,
 	}
 
 	/// <summary>

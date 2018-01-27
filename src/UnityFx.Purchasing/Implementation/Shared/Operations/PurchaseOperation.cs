@@ -34,7 +34,7 @@ namespace UnityFx.Purchasing
 
 		internal PurchaseResult ResultUnsafe => new PurchaseResult(this);
 
-		public PurchaseOperation(StoreOperationContainer parent, StoreOperationType opType, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
+		public PurchaseOperation(IStoreOperationOwner parent, StoreOperationType opType, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
 			: base(parent, StoreOperationType.Purchase, asyncCallback, asyncState, GetComment(productId, restored))
 		{
 			Debug.Assert((opType & StoreOperationType.Purchase) != 0);
@@ -47,7 +47,7 @@ namespace UnityFx.Purchasing
 			Store.OnPurchaseInitiated(this, productId, restored);
 		}
 
-		public PurchaseOperation(StoreOperationContainer parent, Product product, bool restored)
+		public PurchaseOperation(IStoreOperationOwner parent, Product product, bool restored)
 			: this(parent, StoreOperationType.Purchase, product.definition.id, restored, null, null)
 		{
 			_product = product;

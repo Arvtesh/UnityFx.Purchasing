@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreListener"/>.
 	/// </summary>
-	internal sealed class StoreListener : StoreOperationContainer, IStoreListener, IDisposable
+	internal sealed class StoreListener : IStoreOperationOwner, IStoreListener, IDisposable
 	{
 		#region data
 
@@ -50,11 +50,13 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
-		#region StoreOperationContainer
+		#region IStoreOperationOwner
 
-		internal override StoreService Store => _storeService;
+		public StoreService Store => _storeService;
 
-		internal override void AddOperation(StoreOperation op)
+		public TraceSource TraceSource => _console;
+
+		public void AddOperation(StoreOperation op)
 		{
 			Debug.Assert(!_disposed);
 
@@ -92,7 +94,7 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		internal override void ReleaseOperation(StoreOperation op)
+		public void ReleaseOperation(StoreOperation op)
 		{
 			if (op == _initializeOp)
 			{
