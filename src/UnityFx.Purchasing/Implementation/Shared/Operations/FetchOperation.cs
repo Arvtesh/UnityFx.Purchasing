@@ -22,11 +22,9 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public FetchOperation(IStoreOperationOwner parent, StoreOperationType opType, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
-			: base(parent, opType, asyncCallback, asyncState)
+		public FetchOperation(IStoreOperationOwner parent, Action onComplete, Action<InitializationFailureReason> onFailed, AsyncCallback asyncCallback, object asyncState)
+			: base(parent, StoreOperationType.Fetch, asyncCallback, asyncState)
 		{
-			Debug.Assert((opType & StoreOperationType.Fetch) != 0);
-
 			_fetchComplete = onComplete;
 			_fetchFailed = onFailed;
 

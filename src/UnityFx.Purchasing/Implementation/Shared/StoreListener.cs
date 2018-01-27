@@ -281,7 +281,7 @@ namespace UnityFx.Purchasing
 						// A restored transaction.
 						if (product != null)
 						{
-							op = new PurchaseOperation(this, StoreOperationType.Purchase, productId, true, null, null);
+							op = new PurchaseOperation(this, productId, true, null, null);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else

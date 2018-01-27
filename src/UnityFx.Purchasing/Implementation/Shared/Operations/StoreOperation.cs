@@ -27,8 +27,7 @@ namespace UnityFx.Purchasing
 		private const int _statusCompleted = 4;
 		private const int _statusFaulted = 8;
 		private const int _statusCanceled = 16;
-		private const int _typeMask = 0xf;
-		private const int _typeMask2 = 0x3;
+		private const int _typeMask = 0x3;
 
 		private readonly int _id;
 		private readonly IStoreOperationOwner _owner;
@@ -82,7 +81,7 @@ namespace UnityFx.Purchasing
 
 		protected StoreOperation(IStoreOperationOwner owner, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
 		{
-			_id = (++_lastId << 4) | (int)opType;
+			_id = (++_lastId << 2) | (int)opType;
 			_owner = owner;
 			_asyncCallback = asyncCallback;
 			_asyncState = asyncState;
@@ -335,7 +334,7 @@ namespace UnityFx.Purchasing
 
 		private string GetOperationName()
 		{
-			var result = (StoreOperationType)(_id & _typeMask2);
+			var result = (StoreOperationType)(_id & _typeMask);
 			return $"{result.ToString()} ({_id.ToString(CultureInfo.InvariantCulture)})";
 		}
 
