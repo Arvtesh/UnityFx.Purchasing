@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 		{
 			if (TrySetCompleted())
 			{
-				InvokeCompleted();
+				InvokeCompleted(StoreFetchError.None, null);
 			}
 		}
 
@@ -40,7 +40,7 @@ namespace UnityFx.Purchasing
 
 			if (TrySetException(new StoreFetchException(this, reason)))
 			{
-				InvokeFailed(reason, null);
+				InvokeCompleted(reason, Exception);
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace UnityFx.Purchasing
 
 			if (TrySetException(new StoreFetchException(this, reason, e)))
 			{
-				InvokeFailed(reason, e);
+				InvokeCompleted(reason, e);
 			}
 		}
 
@@ -60,12 +60,11 @@ namespace UnityFx.Purchasing
 
 			if (TrySetException(e, completedSynchronously))
 			{
-				InvokeFailed(e is StoreFetchException sfe ? sfe.Reason : StoreFetchError.Unknown, e);
+				InvokeCompleted(e is StoreFetchException sfe ? sfe.Reason : StoreFetchError.Unknown, e);
 			}
 		}
 
-		protected abstract void InvokeCompleted();
-		protected abstract void InvokeFailed(StoreFetchError reason, Exception e);
+		protected abstract void InvokeCompleted(StoreFetchError reason, Exception e);
 		protected abstract void Initiate(StoreConfig storeConfig);
 
 		#endregion

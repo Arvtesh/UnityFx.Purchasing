@@ -41,12 +41,7 @@ namespace UnityFx.Purchasing
 			Store.Controller.FetchAdditionalProducts(productSet, _fetchComplete, _fetchFailed);
 		}
 
-		protected override void InvokeCompleted()
-		{
-			Store.OnFetchCompleted(this, StoreFetchError.None, null);
-		}
-
-		protected override void InvokeFailed(StoreFetchError reason, Exception e)
+		protected override void InvokeCompleted(StoreFetchError reason, Exception e)
 		{
 			Store.OnFetchCompleted(this, reason, e);
 		}

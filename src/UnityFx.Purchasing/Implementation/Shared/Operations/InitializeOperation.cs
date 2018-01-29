@@ -43,12 +43,7 @@ namespace UnityFx.Purchasing
 			UnityPurchasing.Initialize(_storeListener, configurationBuilder);
 		}
 
-		protected override void InvokeCompleted()
-		{
-			Store.OnInitializeCompleted(this, StoreFetchError.None, null);
-		}
-
-		protected override void InvokeFailed(StoreFetchError reason, Exception e)
+		protected override void InvokeCompleted(StoreFetchError reason, Exception e)
 		{
 			Store.OnInitializeCompleted(this, reason, e);
 		}
