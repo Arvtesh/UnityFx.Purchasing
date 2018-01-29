@@ -2,9 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-#if UNITYFX_SUPPORT_TAP
-using System.Threading.Tasks;
-#endif
+using System.Threading;
 
 namespace UnityFx.Purchasing
 {
@@ -15,6 +13,7 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
+		private int _threadId;
 		private bool _getConfigCompleted;
 
 		#endregion
@@ -24,6 +23,7 @@ namespace UnityFx.Purchasing
 		public StoreConfigOperation(IStoreOperationOwner parent, StoreOperationType opId, AsyncCallback asyncCallback, object asyncState)
 			: base(parent, opId, asyncCallback, asyncState, null)
 		{
+			_threadId = Thread.CurrentThread.ManagedThreadId;
 		}
 
 		public void SetCompleted()
@@ -78,15 +78,23 @@ namespace UnityFx.Purchasing
 			{
 				_getConfigCompleted = true;
 
-				Store.QueueOnMainThread(
-					args =>
-					{
-						if (!IsCompleted)
+				// No need to queue the action if we got result synchronously.
+				if (_threadId == Thread.CurrentThread.ManagedThreadId)
+				{
+					TryInitiate(storeConfig);
+				}
+				else
+				{
+					Store.QueueOnMainThread(
+						args =>
 						{
-							TryInitiate(args as StoreConfig);
-						}
-					},
-					storeConfig);
+							if (!IsCompleted)
+							{
+								TryInitiate(args as StoreConfig);
+							}
+						},
+						storeConfig);
+				}
 			}
 		}
 
@@ -96,15 +104,23 @@ namespace UnityFx.Purchasing
 			{
 				_getConfigCompleted = true;
 
-				Store.QueueOnMainThread(
-					args =>
-					{
-						if (!IsCompleted)
+				// No need to queue the action if we got result synchronously.
+				if (_threadId == Thread.CurrentThread.ManagedThreadId)
+				{
+					SetFailed(StoreFetchError.StoreConfigUnavailable, e);
+				}
+				else
+				{
+					Store.QueueOnMainThread(
+						args =>
 						{
-							SetFailed(StoreFetchError.StoreConfigUnavailable, args as Exception);
-						}
-					},
-					e);
+							if (!IsCompleted)
+							{
+								SetFailed(StoreFetchError.StoreConfigUnavailable, args as Exception);
+							}
+						},
+						e);
+				}
 			}
 		}
 

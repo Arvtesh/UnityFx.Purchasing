@@ -3,9 +3,7 @@
 
 using System;
 using System.Diagnostics;
-#if UNITYFX_SUPPORT_TAP
-using System.Threading.Tasks;
-#endif
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -26,6 +24,7 @@ namespace UnityFx.Purchasing
 		private Product _product;
 		private string _receipt;
 		private PurchaseValidationResult _validationResult;
+		private int _threadId;
 		private bool _validateCompleted;
 
 		#endregion
@@ -96,6 +95,8 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
+					_threadId = Thread.CurrentThread.ManagedThreadId;
+
 					try
 					{
 						Store.ValidatePurchase(this, this);
@@ -122,7 +123,7 @@ namespace UnityFx.Purchasing
 			return PurchaseProcessingResult.Complete;
 		}
 
-		public void SetCompleted(PurchaseValidationResult validationResult)
+		public void SetCompleted()
 		{
 			if (TrySetCompleted())
 			{
@@ -132,7 +133,17 @@ namespace UnityFx.Purchasing
 
 		public void SetFailed(StorePurchaseError reason, Exception e = null)
 		{
-			SetFailed(default(PurchaseValidationResult), reason, e);
+			TraceError(reason.ToString());
+
+			if (e == null)
+			{
+				e = new StorePurchaseException(this, reason, e);
+			}
+
+			if (TrySetException(e))
+			{
+				Store.OnPurchaseCompleted(this, reason, e);
+			}
 		}
 
 		public void SetFailed(Exception e, bool completedSynchronously = false)
@@ -178,21 +189,6 @@ namespace UnityFx.Purchasing
 			}
 		}
 
-		public void SetFailed(PurchaseValidationResult validationResult, StorePurchaseError reason, Exception e = null)
-		{
-			TraceError(reason.ToString());
-
-			if (e == null)
-			{
-				e = new StorePurchaseException(this, reason, e);
-			}
-
-			if (TrySetException(e))
-			{
-				Store.OnPurchaseCompleted(this, reason, e);
-			}
-		}
-
 		public bool IsSame(Product product)
 		{
 			return product != null && product.definition.id == _productId;
@@ -207,17 +203,24 @@ namespace UnityFx.Purchasing
 			if (!_validateCompleted)
 			{
 				_validateCompleted = true;
+				_validationResult = validationResult;
 
-				Store.QueueOnMainThread(
-					args =>
-					{
-						if (!IsCompleted)
+				if (_threadId == Thread.CurrentThread.ManagedThreadId)
+				{
+					ProcessValidationResult(true);
+				}
+				else
+				{
+					Store.QueueOnMainThread(
+						args =>
 						{
-							_validationResult = args as PurchaseValidationResult;
-							ProcessValidationResult();
-						}
-					},
-					validationResult);
+							if (!IsCompleted)
+							{
+								ProcessValidationResult(false);
+							}
+						},
+						validationResult);
+				}
 			}
 		}
 
@@ -227,15 +230,22 @@ namespace UnityFx.Purchasing
 			{
 				_validateCompleted = true;
 
-				Store.QueueOnMainThread(
-					args =>
-					{
-						if (!IsCompleted)
+				if (_threadId == Thread.CurrentThread.ManagedThreadId)
+				{
+					SetFailed(StorePurchaseError.ReceiptValidationFailed, e);
+				}
+				else
+				{
+					Store.QueueOnMainThread(
+						args =>
 						{
-							SetFailed(StorePurchaseError.ReceiptValidationFailed, args as Exception);
-						}
-					},
-					e);
+							if (!IsCompleted)
+							{
+								SetFailed(StorePurchaseError.ReceiptValidationFailed, args as Exception);
+							}
+						},
+						e);
+				}
 			}
 		}
 
@@ -284,7 +294,7 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private void ProcessValidationResult()
+		private void ProcessValidationResult(bool calledSynchronously)
 		{
 			Debug.Assert(_product != null);
 
@@ -301,22 +311,25 @@ namespace UnityFx.Purchasing
 				if (status == PurchaseValidationStatus.NotAvailable)
 				{
 					// Need to re-validate the purchase: do not confirm.
-					SetFailed(_validationResult, StorePurchaseError.ReceiptValidationNotAvailable);
+					SetFailed(StorePurchaseError.ReceiptValidationNotAvailable);
 				}
 				else
 				{
-					TraceEvent(TraceEventType.Verbose, "ConfirmPendingPurchase: " + product.definition.id);
-					Store.Controller.ConfirmPendingPurchase(product);
+					if (!calledSynchronously)
+					{
+						TraceEvent(TraceEventType.Verbose, "ConfirmPendingPurchase: " + product.definition.id);
+						Store.Controller.ConfirmPendingPurchase(product);
+					}
 
 					if (status == PurchaseValidationStatus.Failure)
 					{
 						// The purchase validation failed.
-						SetFailed(_validationResult, StorePurchaseError.ReceiptValidationFailed);
+						SetFailed(StorePurchaseError.ReceiptValidationFailed);
 					}
 					else
 					{
 						// The purchase validation succeeded.
-						SetCompleted(_validationResult);
+						SetCompleted();
 					}
 				}
 			}
