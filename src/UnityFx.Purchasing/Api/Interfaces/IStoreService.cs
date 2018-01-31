@@ -213,8 +213,6 @@ namespace UnityFx.Purchasing
 		/// Returns store products list. Read only.
 		/// </summary>
 		/// <value>Read-only collection of products available in the store.</value>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized yet.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		IStoreProductCollection Products { get; }
 
 		/// <summary>
@@ -225,21 +223,17 @@ namespace UnityFx.Purchasing
 		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
-		/// Returns <c>Unity3d</c> store controller. Read only.
+		/// Returns <c>Unity3d</c> store controller. Returns <see langword="null"/> if the store is not initialized. Read only.
 		/// </summary>
 		/// <value><c>Unity3d</c> controller that is responsible for all store operations.</value>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso cref="IsInitialized"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IStoreController Controller { get; }
 
 		/// <summary>
-		/// Returns store extensions provider. Read only.
+		/// Returns store extensions provider. Returns <see langword="null"/> if the store is not initialized. Read only.
 		/// </summary>
 		/// <value><c>Unity3d</c> controller that provides access for store-specific extensions.</value>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso cref="IsInitialized"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IExtensionProvider Extensions { get; }

@@ -423,7 +423,6 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
 				return this;
 			}
 		}
@@ -433,9 +432,6 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
-				ThrowIfNotInitialized();
-
 				if (_products == null)
 				{
 					_products = new StoreProductCollection(_storeController);
@@ -451,8 +447,6 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
-				ThrowIfNotInitialized();
 				return _storeController;
 			}
 		}
@@ -463,8 +457,6 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
-				ThrowIfNotInitialized();
 				return _storeExtensions;
 			}
 		}
