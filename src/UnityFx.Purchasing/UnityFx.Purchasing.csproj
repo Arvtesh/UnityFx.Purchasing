@@ -40,7 +40,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="All" />
+		<PackageReference Include="UnityFx.Async" Version="0.7.0-unstable0015" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">

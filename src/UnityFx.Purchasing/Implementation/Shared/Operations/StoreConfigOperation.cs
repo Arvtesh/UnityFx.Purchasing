@@ -28,7 +28,7 @@ namespace UnityFx.Purchasing
 
 		public void SetCompleted()
 		{
-			if (TrySetCompleted())
+			if (TrySetCompleted(false))
 			{
 				InvokeCompleted(StoreFetchError.None, null);
 			}
@@ -38,7 +38,7 @@ namespace UnityFx.Purchasing
 		{
 			TraceError(reason.ToString());
 
-			if (TrySetException(new StoreFetchException(this, reason)))
+			if (TrySetException(new StoreFetchException(this, reason), false))
 			{
 				InvokeCompleted(reason, Exception);
 			}
@@ -48,7 +48,7 @@ namespace UnityFx.Purchasing
 		{
 			TraceException(e);
 
-			if (TrySetException(new StoreFetchException(this, reason, e)))
+			if (TrySetException(new StoreFetchException(this, reason, e), false))
 			{
 				InvokeCompleted(reason, e);
 			}

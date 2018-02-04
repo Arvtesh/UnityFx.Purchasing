@@ -125,7 +125,7 @@ namespace UnityFx.Purchasing
 
 		public void SetCompleted()
 		{
-			if (TrySetCompleted())
+			if (TrySetCompleted(false))
 			{
 				Store.OnPurchaseCompleted(this, StorePurchaseError.None, null);
 			}
@@ -140,7 +140,7 @@ namespace UnityFx.Purchasing
 				e = new StorePurchaseException(this, reason, e);
 			}
 
-			if (TrySetException(e))
+			if (TrySetException(e, false))
 			{
 				Store.OnPurchaseCompleted(this, reason, e);
 			}
@@ -178,12 +178,12 @@ namespace UnityFx.Purchasing
 
 			if (reason == StorePurchaseError.UserCanceled)
 			{
-				if (TrySetCanceled())
+				if (TrySetCanceled(false))
 				{
 					Store.OnPurchaseCompleted(this, reason, e);
 				}
 			}
-			else if (TrySetException(e))
+			else if (TrySetException(e, false))
 			{
 				Store.OnPurchaseCompleted(this, reason, e);
 			}
@@ -284,8 +284,11 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				ThrowIfDisposed();
-				ThrowIfNotCompletedSuccessfully();
+				if (!IsCompletedSuccessfully)
+				{
+					throw new InvalidOperationException("The operation result is not available.");
+				}
+
 				return new PurchaseResult(this);
 			}
 		}
@@ -336,7 +339,7 @@ namespace UnityFx.Purchasing
 			catch (Exception e)
 			{
 				TraceException(e);
-				TrySetException(e);
+				TrySetException(e, false);
 			}
 		}
 

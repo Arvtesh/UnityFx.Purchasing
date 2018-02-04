@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
+using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
@@ -753,13 +754,11 @@ namespace UnityFx.Purchasing
 
 				if (fetchOp != null)
 				{
-					fetchOp.AddCompletionHandler(asyncResult =>
+					fetchOp.AddCompletionCallback(() =>
 					{
 						if (!_disposed)
 						{
-							var op = asyncResult as IStoreOperation;
-
-							if (op.IsCompletedSuccessfully)
+							if (fetchOp.IsCompletedSuccessfully)
 							{
 								try
 								{
@@ -772,7 +771,7 @@ namespace UnityFx.Purchasing
 							}
 							else
 							{
-								result.SetFailed(op.Exception);
+								result.SetFailed(fetchOp.Exception);
 							}
 						}
 					});
