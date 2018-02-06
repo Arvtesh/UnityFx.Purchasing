@@ -17,11 +17,5 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <value>An unique operation identifier.</value>
 		int Id { get; }
-
-		/// <summary>
-		/// Returns user-defined data assosiated with the operation (if any). Read only.
-		/// </summary>
-		/// <value>User-defined data.</value>
-		object UserState { get; }
 	}
 }
