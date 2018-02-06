@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
@@ -14,9 +15,56 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
-	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IAsyncCompletionSource<PurchaseValidationResult>, IPurchaseResult
+	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IPurchaseResult
 	{
 		#region data
+
+		private class CompletionSource : AsyncCompletionSource<PurchaseValidationResult>
+		{
+			private readonly PurchaseOperation _op;
+			private bool _completed;
+
+			public CompletionSource(PurchaseOperation op)
+			{
+				_op = op;
+			}
+
+			public override bool TrySetCanceled()
+			{
+				if (!_completed)
+				{
+					_completed = true;
+					_op.SetValidationException(null);
+					return true;
+				}
+
+				return false;
+			}
+
+			public override bool TrySetException(Exception e)
+			{
+				if (!_completed)
+				{
+					_completed = true;
+					_op.SetValidationException(e);
+					return true;
+				}
+
+				return false;
+			}
+
+			public override bool TrySetResult(PurchaseValidationResult result)
+			{
+				if (!_completed)
+				{
+					_completed = true;
+					_op.SetValidationResult(result);
+					return true;
+				}
+
+				return false;
+			}
+		}
 
 		private readonly string _productId;
 		private readonly bool _restored;
@@ -25,7 +73,6 @@ namespace UnityFx.Purchasing
 		private string _receipt;
 		private PurchaseValidationResult _validationResult;
 		private int _threadId;
-		private bool _validateCompleted;
 
 		#endregion
 
@@ -99,7 +146,7 @@ namespace UnityFx.Purchasing
 
 					try
 					{
-						Store.ValidatePurchase(this, this);
+						Store.ValidatePurchase(this, new CompletionSource(this));
 					}
 					catch (Exception e)
 					{
@@ -121,14 +168,6 @@ namespace UnityFx.Purchasing
 			}
 
 			return PurchaseProcessingResult.Complete;
-		}
-
-		public void SetCompleted()
-		{
-			if (TrySetCompleted(false))
-			{
-				Store.OnPurchaseCompleted(this, StorePurchaseError.None, null);
-			}
 		}
 
 		public void SetFailed(StorePurchaseError reason, Exception e = null)
@@ -192,61 +231,6 @@ namespace UnityFx.Purchasing
 		public bool IsSame(Product product)
 		{
 			return product != null && product.definition.id == _productId;
-		}
-
-		#endregion
-
-		#region IAsyncCompletionSource
-
-		void IAsyncCompletionSource<PurchaseValidationResult>.SetResult(PurchaseValidationResult validationResult)
-		{
-			if (!_validateCompleted)
-			{
-				_validateCompleted = true;
-				_validationResult = validationResult;
-
-				if (_threadId == Thread.CurrentThread.ManagedThreadId)
-				{
-					ProcessValidationResult(true);
-				}
-				else
-				{
-					Store.QueueOnMainThread(
-						args =>
-						{
-							if (!IsCompleted)
-							{
-								ProcessValidationResult(false);
-							}
-						},
-						validationResult);
-				}
-			}
-		}
-
-		void IAsyncCompletionSource<PurchaseValidationResult>.SetException(Exception e)
-		{
-			if (!_validateCompleted)
-			{
-				_validateCompleted = true;
-
-				if (_threadId == Thread.CurrentThread.ManagedThreadId)
-				{
-					SetFailed(StorePurchaseError.ReceiptValidationFailed, e);
-				}
-				else
-				{
-					Store.QueueOnMainThread(
-						args =>
-						{
-							if (!IsCompleted)
-							{
-								SetFailed(StorePurchaseError.ReceiptValidationFailed, args as Exception);
-							}
-						},
-						e);
-				}
-			}
 		}
 
 		#endregion
@@ -332,7 +316,10 @@ namespace UnityFx.Purchasing
 					else
 					{
 						// The purchase validation succeeded.
-						SetCompleted();
+						if (TrySetCompleted(false))
+						{
+							Store.OnPurchaseCompleted(this, StorePurchaseError.None, null);
+						}
 					}
 				}
 			}
@@ -340,6 +327,48 @@ namespace UnityFx.Purchasing
 			{
 				TraceException(e);
 				TrySetException(e, false);
+			}
+		}
+
+		private void SetValidationResult(PurchaseValidationResult validationResult)
+		{
+			_validationResult = validationResult;
+
+			if (_threadId == Thread.CurrentThread.ManagedThreadId)
+			{
+				ProcessValidationResult(true);
+			}
+			else
+			{
+				Store.QueueOnMainThread(
+					args =>
+					{
+						if (!IsCompleted)
+						{
+							ProcessValidationResult(false);
+						}
+					},
+					validationResult);
+			}
+		}
+
+		private void SetValidationException(Exception e)
+		{
+			if (_threadId == Thread.CurrentThread.ManagedThreadId)
+			{
+				SetFailed(StorePurchaseError.ReceiptValidationFailed, e);
+			}
+			else
+			{
+				Store.QueueOnMainThread(
+					args =>
+					{
+						if (!IsCompleted)
+						{
+							SetFailed(StorePurchaseError.ReceiptValidationFailed, args as Exception);
+						}
+					},
+					e);
 			}
 		}
 

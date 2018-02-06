@@ -41,7 +41,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta006" PrivateAssets="All" />
-		<PackageReference Include="UnityFx.Async" Version="0.7.0-beta0001" />
+		<PackageReference Include="UnityFx.Async" Version="0.7.0-beta0020" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">

@@ -702,7 +702,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				GetStoreConfig(result);
+				GetStoreConfig(result.GetCompletionSource());
 			}
 			catch (Exception e)
 			{
@@ -722,7 +722,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				GetStoreConfig(result);
+				GetStoreConfig(result.GetCompletionSource());
 			}
 			catch (Exception e)
 			{
