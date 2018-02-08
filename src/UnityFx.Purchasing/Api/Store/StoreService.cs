@@ -525,9 +525,8 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
 			ThrowIfInitialized();
-			ThrowIfInitializePending();
 
-			return InitializeInternal(userCallback, stateObject);
+			return _storeListener.InitializeOp ?? InitializeInternal(userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -549,9 +548,8 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
 			ThrowIfNotInitialized();
-			ThrowIfFetchPending();
 
-			return FetchInternal(userCallback, stateObject);
+			return _storeListener.FetchOp ?? FetchInternal(userCallback, stateObject);
 		}
 
 		/// <inheritdoc/>
@@ -600,11 +598,17 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
 			ThrowIfInitialized();
-			ThrowIfInitializePending();
 
-			var tcs = new TaskCompletionSource<object>();
-			InitializeInternal(FetchCompletionCallback, tcs);
-			return tcs.Task;
+			if (_storeListener.InitializeOp != null)
+			{
+				return _storeListener.InitializeOp.ToTask();
+			}
+			else
+			{
+				var tcs = new TaskCompletionSource<object>();
+				InitializeInternal(FetchCompletionCallback, tcs);
+				return tcs.Task;
+			}
 		}
 
 		/// <inheritdoc/>
@@ -613,11 +617,17 @@ namespace UnityFx.Purchasing
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
 			ThrowIfNotInitialized();
-			ThrowIfFetchPending();
 
-			var tcs = new TaskCompletionSource<object>();
-			FetchInternal(FetchCompletionCallback, tcs);
-			return tcs.Task;
+			if (_storeListener.FetchOp != null)
+			{
+				return _storeListener.FetchOp.ToTask();
+			}
+			else
+			{
+				var tcs = new TaskCompletionSource<object>();
+				FetchInternal(FetchCompletionCallback, tcs);
+				return tcs.Task;
+			}
 		}
 
 		/// <inheritdoc/>
@@ -762,7 +772,7 @@ namespace UnityFx.Purchasing
 							{
 								try
 								{
-									_storeListener.TryInitiatePurchase(result);
+									_storeListener.Enqueue(result);
 								}
 								catch (Exception e)
 								{
@@ -778,7 +788,7 @@ namespace UnityFx.Purchasing
 				}
 				else
 				{
-					_storeListener.TryInitiatePurchase(result);
+					_storeListener.Enqueue(result);
 				}
 			}
 			catch (Exception e)
@@ -855,22 +865,6 @@ namespace UnityFx.Purchasing
 			if (_storeController != null)
 			{
 				throw new InvalidOperationException(_serviceName + " is already initialized.");
-			}
-		}
-
-		private void ThrowIfInitializePending()
-		{
-			if (_storeListener.InitializeOp != null)
-			{
-				throw new InvalidOperationException(_serviceName + " Initialize is pending.");
-			}
-		}
-
-		private void ThrowIfFetchPending()
-		{
-			if (_storeListener.FetchOp != null)
-			{
-				throw new InvalidOperationException(_serviceName + " Fetch is pending.");
 			}
 		}
 

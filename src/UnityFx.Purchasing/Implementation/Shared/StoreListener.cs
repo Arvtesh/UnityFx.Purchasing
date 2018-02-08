@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine.Purchasing;
+using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
@@ -20,7 +21,7 @@ namespace UnityFx.Purchasing
 
 		private InitializeOperation _initializeOp;
 		private FetchOperation _fetchOp;
-		private List<PurchaseOperation> _purchaseOps;
+		private AsyncResultQueue _purchaseOps;
 		private bool _disposed;
 
 		#endregion
@@ -37,15 +38,12 @@ namespace UnityFx.Purchasing
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
-			_purchaseOps = new List<PurchaseOperation>();
+			_purchaseOps = new AsyncResultQueue();
 		}
 
-		public void TryInitiatePurchase(PurchaseOperation op)
+		public void Enqueue(PurchaseOperation op)
 		{
-			if (_purchaseOps[0] == op)
-			{
-				op.Initiate();
-			}
+			_purchaseOps.Add(op);
 		}
 
 		#endregion
@@ -60,21 +58,7 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(!_disposed);
 
-			if (op is PurchaseOperation pop)
-			{
-				Debug.Assert(_initializeOp == null);
-				Debug.Assert(_fetchOp == null);
-
-				if (_purchaseOps.Count < _storeService.MaxNumberOfPendingPurchases)
-				{
-					_purchaseOps.Add(pop);
-				}
-				else
-				{
-					throw new InvalidOperationException("Maximum number of concurrent purchase operations is exceeded.");
-				}
-			}
-			else if (op is FetchOperation fop)
+			if (op is FetchOperation fop)
 			{
 				Debug.Assert(_initializeOp == null);
 				Debug.Assert(_fetchOp == null);
@@ -88,10 +72,6 @@ namespace UnityFx.Purchasing
 
 				_initializeOp = iop;
 			}
-			else
-			{
-				Debug.Fail("Unknown operation type");
-			}
 		}
 
 		public void ReleaseOperation(StoreOperation op)
@@ -104,25 +84,8 @@ namespace UnityFx.Purchasing
 			{
 				_fetchOp = null;
 			}
-			else if (op is PurchaseOperation pop)
-			{
-				_purchaseOps.Remove(pop);
 
-				// Start next purchase operation in queue (if any).
-				if (_purchaseOps.Count > 0)
-				{
-					var popNext = _purchaseOps[0];
-
-					try
-					{
-						popNext.Initiate();
-					}
-					catch (Exception e)
-					{
-						popNext.SetFailed(e);
-					}
-				}
-			}
+			// NOTE: purchase operations should are aauto-dequeued when complete
 		}
 
 		#endregion
@@ -220,7 +183,7 @@ namespace UnityFx.Purchasing
 
 			if (!_disposed)
 			{
-				var op = _purchaseOps.Count > 0 ? _purchaseOps[0] : null;
+				var op = _purchaseOps.Current as PurchaseOperation;
 				var opId = op?.Id ?? 0;
 
 				try
@@ -233,8 +196,9 @@ namespace UnityFx.Purchasing
 
 					if (op == null)
 					{
-						// A restored transactions when the _purchaseOp is null.
+						// A restored transaction.
 						op = new PurchaseOperation(this, product, true);
+						_purchaseOps.Add(op);
 						return op.Validate();
 					}
 					else if (op.ProcessPurchase(product))
@@ -265,7 +229,7 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
-				var op = _purchaseOps.Count > 0 ? _purchaseOps[0] : null;
+				var op = _purchaseOps.Current as PurchaseOperation;
 				var opId = op?.Id ?? 0;
 
 				try
@@ -320,10 +284,11 @@ namespace UnityFx.Purchasing
 			{
 				_disposed = true;
 
-				while (_purchaseOps.Count > 0)
-				{
-					_purchaseOps[0].SetFailed(StorePurchaseError.StoreDisposed);
-				}
+				// TODO
+				////while (_purchaseOps.Count > 0)
+				////{
+				////	_purchaseOps[0].SetFailed(StorePurchaseError.StoreDisposed);
+				////}
 
 				_fetchOp?.SetFailed(StoreFetchError.StoreDisposed);
 				_initializeOp?.SetFailed(StoreFetchError.StoreDisposed);

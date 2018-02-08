@@ -99,21 +99,6 @@ namespace UnityFx.Purchasing
 			_receipt = product.GetNativeReceipt();
 		}
 
-		public void Initiate()
-		{
-			var product = Store.Controller.products.WithID(_productId);
-
-			if (product != null && product.availableToPurchase)
-			{
-				TraceEvent(TraceEventType.Verbose, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
-				Store.Controller.InitiatePurchase(product);
-			}
-			else
-			{
-				SetFailed(product, StorePurchaseError.ProductUnavailable);
-			}
-		}
-
 		public bool ProcessPurchase(Product product)
 		{
 			// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,
@@ -231,6 +216,30 @@ namespace UnityFx.Purchasing
 		public bool IsSame(Product product)
 		{
 			return product != null && product.definition.id == _productId;
+		}
+
+		#endregion
+
+		#region AsyncResult
+
+		protected override void OnStatusChanged(AsyncOperationStatus status)
+		{
+			base.OnStatusChanged(status);
+
+			if (status == AsyncOperationStatus.Running && !_restored)
+			{
+				var product = Store.Controller.products.WithID(_productId);
+
+				if (product != null && product.availableToPurchase)
+				{
+					TraceEvent(TraceEventType.Verbose, $"InitiatePurchase: {_productId} ({product.definition.storeSpecificId}), type={product.definition.type}, price={product.metadata.localizedPriceString}");
+					Store.Controller.InitiatePurchase(product);
+				}
+				else
+				{
+					SetFailed(product, StorePurchaseError.ProductUnavailable);
+				}
+			}
 		}
 
 		#endregion
