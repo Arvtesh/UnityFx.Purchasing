@@ -16,8 +16,6 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A yieldable asynchronous store operation.
 	/// </summary>
-	/// <seealso href="https://blogs.msdn.microsoft.com/nikos/2011/03/14/how-to-implement-the-iasyncresult-design-pattern/"/>
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	internal abstract class StoreOperation : AsyncResult, IStoreOperation, IStoreOperationInfo
 	{
 		#region data
@@ -25,6 +23,7 @@ namespace UnityFx.Purchasing
 		private const int _typeMask = 0x3;
 
 		private readonly int _id;
+		private readonly string _name;
 		private readonly IStoreOperationOwner _owner;
 
 		private static int _lastId;
@@ -39,18 +38,11 @@ namespace UnityFx.Purchasing
 			: base(asyncCallback, asyncState)
 		{
 			_id = (++_lastId << 2) | (int)opType;
+			_name = $"{opType.ToString()} ({_id.ToString(CultureInfo.InvariantCulture)})";
 			_owner = owner;
+			_owner.AddOperation(this);
 
-			owner.AddOperation(this);
-
-			var s = GetOperationName();
-
-			if (!string.IsNullOrEmpty(comment))
-			{
-				s += ": " + comment;
-			}
-
-			TraceEvent(TraceEventType.Start, s);
+			TraceStart(comment);
 		}
 
 		internal void Validate(object owner, StoreOperationType type)
@@ -68,7 +60,7 @@ namespace UnityFx.Purchasing
 
 		protected void TraceError(string s)
 		{
-			_owner.TraceSource.TraceEvent(TraceEventType.Error, _id, GetOperationName() + ": " + s);
+			_owner.TraceSource.TraceEvent(TraceEventType.Error, _id, _name + ": " + s);
 		}
 
 		protected void TraceException(Exception e)
@@ -90,20 +82,16 @@ namespace UnityFx.Purchasing
 
 		#region AsyncResult
 
+		protected override void OnStatusChanged(AsyncOperationStatus status)
+		{
+			base.OnStatusChanged(status);
+			TraceStop(status);
+		}
+
 		protected override void OnCompleted()
 		{
-			try
-			{
-				var s = GetOperationName() + (IsCompletedSuccessfully ? " completed" : " failed");
-
-				TraceEvent(TraceEventType.Stop, s);
-
-				base.OnCompleted();
-			}
-			finally
-			{
-				_owner.ReleaseOperation(this);
-			}
+			base.OnCompleted();
+			_owner.ReleaseOperation(this);
 		}
 
 		#endregion
@@ -123,10 +111,32 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private string GetOperationName()
+		private void TraceStart(string comment)
 		{
-			var result = (StoreOperationType)(_id & _typeMask);
-			return $"{result.ToString()} ({_id.ToString(CultureInfo.InvariantCulture)})";
+			var s = _name;
+
+			if (!string.IsNullOrEmpty(comment))
+			{
+				s += ": " + comment;
+			}
+
+			_owner.TraceSource.TraceEvent(TraceEventType.Start, _id, s);
+		}
+
+		private void TraceStop(AsyncOperationStatus status)
+		{
+			if (status == AsyncOperationStatus.RanToCompletion)
+			{
+				_owner.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " completed");
+			}
+			else if (status == AsyncOperationStatus.Faulted)
+			{
+				_owner.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " faulted");
+			}
+			else if (status == AsyncOperationStatus.Canceled)
+			{
+				_owner.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " canceled");
+			}
 		}
 
 		#endregion

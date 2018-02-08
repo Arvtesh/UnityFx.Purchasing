@@ -21,7 +21,7 @@ namespace UnityFx.Purchasing
 
 		private InitializeOperation _initializeOp;
 		private FetchOperation _fetchOp;
-		private AsyncResultQueue _purchaseOps;
+		private AsyncResultQueue<PurchaseOperation> _purchaseOps;
 		private bool _disposed;
 
 		#endregion
@@ -38,7 +38,7 @@ namespace UnityFx.Purchasing
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
-			_purchaseOps = new AsyncResultQueue();
+			_purchaseOps = new AsyncResultQueue<PurchaseOperation>();
 		}
 
 		public void Enqueue(PurchaseOperation op)
@@ -183,7 +183,7 @@ namespace UnityFx.Purchasing
 
 			if (!_disposed)
 			{
-				var op = _purchaseOps.Current as PurchaseOperation;
+				var op = _purchaseOps.Current;
 				var opId = op?.Id ?? 0;
 
 				try
@@ -229,7 +229,7 @@ namespace UnityFx.Purchasing
 		{
 			if (!_disposed)
 			{
-				var op = _purchaseOps.Current as PurchaseOperation;
+				var op = _purchaseOps.Current;
 				var opId = op?.Id ?? 0;
 
 				try
@@ -284,11 +284,10 @@ namespace UnityFx.Purchasing
 			{
 				_disposed = true;
 
-				// TODO
-				////while (_purchaseOps.Count > 0)
-				////{
-				////	_purchaseOps[0].SetFailed(StorePurchaseError.StoreDisposed);
-				////}
+				foreach (var op in _purchaseOps.ToArray())
+				{
+					op.SetFailed(StorePurchaseError.StoreDisposed);
+				}
 
 				_fetchOp?.SetFailed(StoreFetchError.StoreDisposed);
 				_initializeOp?.SetFailed(StoreFetchError.StoreDisposed);
