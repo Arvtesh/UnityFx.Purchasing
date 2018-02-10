@@ -764,27 +764,29 @@ namespace UnityFx.Purchasing
 
 				if (fetchOp != null)
 				{
-					fetchOp.AddCompletionCallback(() =>
-					{
-						if (!_disposed)
+					fetchOp.AddCompletionCallback(
+						op =>
 						{
-							if (fetchOp.IsCompletedSuccessfully)
+							if (!_disposed)
 							{
-								try
+								if (fetchOp.IsCompletedSuccessfully)
 								{
-									_storeListener.Enqueue(result);
+									try
+									{
+										_storeListener.Enqueue(result);
+									}
+									catch (Exception e)
+									{
+										result.SetFailed(e);
+									}
 								}
-								catch (Exception e)
+								else
 								{
-									result.SetFailed(e);
+									result.SetFailed(fetchOp.Exception);
 								}
 							}
-							else
-							{
-								result.SetFailed(fetchOp.Exception);
-							}
-						}
-					});
+						},
+						false);
 				}
 				else
 				{
