@@ -481,7 +481,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreOperation InitializeAsync()
+		public IAsyncOperation InitializeAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
@@ -491,7 +491,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreOperation FetchAsync()
+		public IAsyncOperation FetchAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
@@ -501,13 +501,13 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId)
+		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId)
 		{
 			return PurchaseAsync(productId, null);
 		}
 
 		/// <inheritdoc/>
-		public IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
+		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
 		{
 			ThrowIfDisposed();
 			ThrowIfInvalidProductId(productId);
@@ -824,7 +824,7 @@ namespace UnityFx.Purchasing
 
 		private static void FetchCompletionCallback(IAsyncResult asyncResult)
 		{
-			var storeOp = asyncResult as IStoreOperation;
+			var storeOp = asyncResult as IAsyncOperation;
 			var tcs = asyncResult.AsyncState as TaskCompletionSource<object>;
 
 			if (storeOp.IsCompletedSuccessfully)
@@ -843,7 +843,7 @@ namespace UnityFx.Purchasing
 
 		private static void PurchaseCompletionCallback(IAsyncResult asyncResult)
 		{
-			var storeOp = asyncResult as IStoreOperation<PurchaseResult>;
+			var storeOp = asyncResult as IAsyncOperation<PurchaseResult>;
 			var tcs = asyncResult.AsyncState as TaskCompletionSource<PurchaseResult>;
 
 			if (storeOp.IsCompletedSuccessfully)

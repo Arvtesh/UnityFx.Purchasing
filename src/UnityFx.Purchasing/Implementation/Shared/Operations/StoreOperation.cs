@@ -16,7 +16,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A yieldable asynchronous store operation.
 	/// </summary>
-	internal abstract class StoreOperation : AsyncResult, IStoreOperation, IStoreOperationInfo
+	internal abstract class StoreOperation : AsyncResult, IStoreOperationInfo
 	{
 		#region data
 
@@ -31,6 +31,8 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region interface
+
+		internal int Id => _id;
 
 		protected StoreService Store => _owner.Store;
 
@@ -100,12 +102,6 @@ namespace UnityFx.Purchasing
 
 		public int OperationId => _id;
 		public object UserState => AsyncState;
-
-		#endregion
-
-		#region IStoreOperation
-
-		public int Id => _id;
 
 		#endregion
 

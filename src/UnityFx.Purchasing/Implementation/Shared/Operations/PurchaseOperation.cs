@@ -15,7 +15,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A purchase operation.
 	/// </summary>
-	internal class PurchaseOperation : StoreOperation, IStoreOperation<PurchaseResult>, IPurchaseResult
+	internal class PurchaseOperation : StoreOperation, IAsyncOperation<PurchaseResult>, IPurchaseResult
 	{
 		#region data
 

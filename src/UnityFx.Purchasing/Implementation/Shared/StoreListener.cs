@@ -284,7 +284,7 @@ namespace UnityFx.Purchasing
 			{
 				_disposed = true;
 
-				foreach (var op in _purchaseOps.ToArray())
+				foreach (var op in _purchaseOps.Release())
 				{
 					op.SetFailed(StorePurchaseError.StoreDisposed);
 				}

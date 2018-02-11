@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 #endif
 using UnityEngine.Purchasing;
+using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
@@ -135,7 +136,6 @@ namespace UnityFx.Purchasing
 	/// </remarks>
 	/// <seealso href="https://docs.unity3d.com/Manual/UnityIAP.html"/>
 	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
-	/// <seealso cref="IStoreOperation"/>
 	/// <seealso cref="IStoreController"/>
 	/// <seealso cref="IExtensionProvider"/>
 	public interface IStoreService : IDisposable
@@ -264,7 +264,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
-		IStoreOperation InitializeAsync();
+		IAsyncOperation InitializeAsync();
 
 		/// <summary>
 		/// Initiates fetching product information from the store.
@@ -278,7 +278,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
-		IStoreOperation FetchAsync();
+		IAsyncOperation FetchAsync();
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -301,7 +301,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="IsBusy"/>
-		IStoreOperation<PurchaseResult> PurchaseAsync(string productId);
+		IAsyncOperation<PurchaseResult> PurchaseAsync(string productId);
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -333,7 +333,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="IsBusy"/>
-		IStoreOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject);
+		IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject);
 
 #if UNITYFX_SUPPORT_APM
 
