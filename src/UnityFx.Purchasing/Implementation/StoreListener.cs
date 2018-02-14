@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Extension;
 using UnityFx.Async;
 
 namespace UnityFx.Purchasing
@@ -12,7 +13,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Implementation of <see cref="IStoreListener"/>.
 	/// </summary>
-	internal sealed class StoreListener : IStoreOperationOwner, IStoreListener, IDisposable
+	internal sealed class StoreListener : IStoreListener, IDisposable
 	{
 		#region data
 
@@ -41,51 +42,43 @@ namespace UnityFx.Purchasing
 			_purchaseOps = new AsyncResultQueue<PurchaseOperation>();
 		}
 
-		public void Enqueue(PurchaseOperation op)
+		public InitializeOperation BeginInitialize(IPurchasingModule purchasingModule, AsyncCallback asyncCallback, object asyncState)
 		{
-			_purchaseOps.Add(op);
+			Debug.Assert(!_disposed);
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_fetchOp == null);
+
+			asyncCallback += new AsyncCallback(op => _initializeOp = null);
+			return _initializeOp = new InitializeOperation(_storeService, purchasingModule, this, asyncCallback, asyncState);
 		}
 
-		#endregion
+		public FetchOperation BeginFetch(AsyncCallback asyncCallback, object asyncState)
+		{
+			Debug.Assert(!_disposed);
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_fetchOp == null);
 
-		#region IStoreOperationOwner
+			asyncCallback += new AsyncCallback(op => _fetchOp = null);
+			return _fetchOp = new FetchOperation(_storeService, OnFetch, OnFetchFailed, asyncCallback, asyncState);
+		}
 
-		public StoreService Store => _storeService;
-
-		public TraceSource TraceSource => _console;
-
-		public void AddOperation(StoreOperation op)
+		public PurchaseOperation BeginPurchase(string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
 		{
 			Debug.Assert(!_disposed);
 
-			if (op is FetchOperation fop)
-			{
-				Debug.Assert(_initializeOp == null);
-				Debug.Assert(_fetchOp == null);
-
-				_fetchOp = fop;
-			}
-			else if (op is InitializeOperation iop)
-			{
-				Debug.Assert(_initializeOp == null);
-				Debug.Assert(_fetchOp == null);
-
-				_initializeOp = iop;
-			}
+			return new PurchaseOperation(_storeService, productId, restored, asyncCallback, asyncState);
 		}
 
-		public void ReleaseOperation(StoreOperation op)
+		public PurchaseOperation BeginPurchase(Product product, bool restored)
 		{
-			if (op == _initializeOp)
-			{
-				_initializeOp = null;
-			}
-			else if (op == _fetchOp)
-			{
-				_fetchOp = null;
-			}
+			Debug.Assert(!_disposed);
 
-			// NOTE: purchase operations should are aauto-dequeued when complete
+			return new PurchaseOperation(_storeService, product, restored);
+		}
+
+		public void Enqueue(PurchaseOperation op)
+		{
+			_purchaseOps.Add(op);
 		}
 
 		#endregion
@@ -197,7 +190,7 @@ namespace UnityFx.Purchasing
 					if (op == null)
 					{
 						// A restored transaction.
-						op = new PurchaseOperation(this, product, true);
+						op = BeginPurchase(product, true);
 						_purchaseOps.Add(op);
 						return op.Validate();
 					}
@@ -245,7 +238,7 @@ namespace UnityFx.Purchasing
 						// A restored transaction.
 						if (product != null)
 						{
-							op = new PurchaseOperation(this, productId, true, null, null);
+							op = BeginPurchase(productId, true, null, null);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else

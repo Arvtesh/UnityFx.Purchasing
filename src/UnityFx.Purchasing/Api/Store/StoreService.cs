@@ -708,7 +708,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_storeListener.InitializeOp == null);
 			Debug.Assert(_storeController == null);
 
-			var result = new InitializeOperation(_storeListener, _purchasingModule, _storeListener, userCallback, stateObject);
+			var result = _storeListener.BeginInitialize(_purchasingModule, userCallback, stateObject);
 
 			try
 			{
@@ -728,7 +728,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_storeListener.FetchOp == null);
 			Debug.Assert(_storeController != null);
 
-			var result = new FetchOperation(_storeListener, _storeListener.OnFetch, _storeListener.OnFetchFailed, userCallback, stateObject);
+			var result = _storeListener.BeginFetch(userCallback, stateObject);
 
 			try
 			{
@@ -747,7 +747,7 @@ namespace UnityFx.Purchasing
 		{
 			Debug.Assert(!string.IsNullOrEmpty(productId));
 
-			var result = new PurchaseOperation(_storeListener, productId, false, userCallback, stateObject);
+			var result = _storeListener.BeginPurchase(productId, false, userCallback, stateObject);
 
 			try
 			{

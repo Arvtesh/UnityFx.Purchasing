@@ -24,7 +24,7 @@ namespace UnityFx.Purchasing
 
 		private readonly int _id;
 		private readonly string _name;
-		private readonly IStoreOperationOwner _owner;
+		private readonly StoreService _store;
 
 		private static int _lastId;
 
@@ -34,15 +34,14 @@ namespace UnityFx.Purchasing
 
 		internal int Id => _id;
 
-		protected StoreService Store => _owner.Store;
+		protected StoreService Store => _store;
 
-		protected StoreOperation(IStoreOperationOwner owner, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
+		protected StoreOperation(StoreService store, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
 			: base(asyncCallback, asyncState)
 		{
 			_id = (++_lastId << 2) | (int)opType;
 			_name = $"{opType.ToString()} ({_id.ToString(CultureInfo.InvariantCulture)})";
-			_owner = owner;
-			_owner.AddOperation(this);
+			_store = store;
 
 			TraceStart(comment);
 		}
@@ -54,7 +53,7 @@ namespace UnityFx.Purchasing
 				throw new ArgumentException("Invalid operation type");
 			}
 
-			if (_owner != owner)
+			if (_store != owner)
 			{
 				throw new InvalidOperationException("Invalid operation owner");
 			}
@@ -62,22 +61,22 @@ namespace UnityFx.Purchasing
 
 		protected void TraceError(string s)
 		{
-			_owner.TraceSource.TraceEvent(TraceEventType.Error, _id, _name + ": " + s);
+			_store.TraceSource.TraceEvent(TraceEventType.Error, _id, _name + ": " + s);
 		}
 
 		protected void TraceException(Exception e)
 		{
-			_owner.TraceSource.TraceData(TraceEventType.Error, _id, e);
+			_store.TraceSource.TraceData(TraceEventType.Error, _id, e);
 		}
 
 		protected void TraceEvent(TraceEventType eventType, string s)
 		{
-			_owner.TraceSource.TraceEvent(eventType, _id, s);
+			_store.TraceSource.TraceEvent(eventType, _id, s);
 		}
 
 		protected void TraceData(TraceEventType eventType, object data)
 		{
-			_owner.TraceSource.TraceData(eventType, _id, data);
+			_store.TraceSource.TraceData(eventType, _id, data);
 		}
 
 		#endregion
@@ -88,12 +87,6 @@ namespace UnityFx.Purchasing
 		{
 			base.OnStatusChanged(status);
 			TraceStop(status);
-		}
-
-		protected override void OnCompleted()
-		{
-			base.OnCompleted();
-			_owner.ReleaseOperation(this);
 		}
 
 		#endregion
@@ -116,22 +109,22 @@ namespace UnityFx.Purchasing
 				s += ": " + comment;
 			}
 
-			_owner.TraceSource.TraceEvent(TraceEventType.Start, _id, s);
+			_store.TraceSource.TraceEvent(TraceEventType.Start, _id, s);
 		}
 
 		private void TraceStop(AsyncOperationStatus status)
 		{
 			if (status == AsyncOperationStatus.RanToCompletion)
 			{
-				_owner.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " completed");
+				_store.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " completed");
 			}
 			else if (status == AsyncOperationStatus.Faulted)
 			{
-				_owner.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " faulted");
+				_store.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " faulted");
 			}
 			else if (status == AsyncOperationStatus.Canceled)
 			{
-				_owner.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " canceled");
+				_store.TraceSource.TraceEvent(TraceEventType.Stop, _id, _name + " canceled");
 			}
 		}
 

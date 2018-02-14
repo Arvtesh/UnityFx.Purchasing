@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 namespace UnityFx.Purchasing
 {
+#if !NET35
+
 	/// <summary>
 	/// Implementation of <see cref="IObservable{T}"/>.
 	/// </summary>
@@ -113,4 +115,6 @@ namespace UnityFx.Purchasing
 
 		#endregion
 	}
+
+#endif
 }

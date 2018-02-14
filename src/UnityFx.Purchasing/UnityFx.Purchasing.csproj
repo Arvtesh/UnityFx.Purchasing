@@ -44,10 +44,6 @@
 		<PackageReference Include="UnityFx.Async" Version="0.7.*" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
-		<Compile Remove="Implementation/Net46/**" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<AdditionalFiles Include="../CodingConventions/Common/stylecop.json" />
 	</ItemGroup>
