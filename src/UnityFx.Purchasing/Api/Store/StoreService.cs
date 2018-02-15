@@ -712,6 +712,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
+				result.SetRunning();
 				GetStoreConfig(result.GetCompletionSource());
 			}
 			catch (Exception e)
@@ -732,6 +733,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
+				result.SetRunning();
 				GetStoreConfig(result.GetCompletionSource());
 			}
 			catch (Exception e)
@@ -764,6 +766,8 @@ namespace UnityFx.Purchasing
 
 				if (fetchOp != null)
 				{
+					result.SetScheduled();
+
 					fetchOp.AddCompletionCallback(
 						op =>
 						{
