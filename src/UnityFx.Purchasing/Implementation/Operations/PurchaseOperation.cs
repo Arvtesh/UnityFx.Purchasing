@@ -2,7 +2,9 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -47,6 +49,18 @@ namespace UnityFx.Purchasing
 				{
 					_completed = true;
 					_op.SetValidationException(e);
+					return true;
+				}
+
+				return false;
+			}
+
+			public override bool TrySetException(IEnumerable<Exception> e)
+			{
+				if (!_completed)
+				{
+					_completed = true;
+					_op.SetValidationException(e.FirstOrDefault());
 					return true;
 				}
 
