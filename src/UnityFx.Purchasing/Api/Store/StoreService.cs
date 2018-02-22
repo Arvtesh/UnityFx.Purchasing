@@ -38,10 +38,10 @@ namespace UnityFx.Purchasing
 	///     {
 	///     }
 	///
-	///     protected override void GetStoreConfig(IAsyncCompletionSource&lt;StoreConfig&gt; completionSource)
+	///     protected override IAsyncOperation&lt;StoreConfig&gt; GetStoreConfig()
 	///     {
 	///         var products = new ProductDefinition[] { new ProductDefinition("test_product", ProductType.Consumable) };
-	///         completionSource.SetResult(new StoreConfig(products));
+	///         return AsyncResult.FromResult(new StoreConfig(products));
 	///     }
 	/// }
 	/// </code>
@@ -129,34 +129,13 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Executes the delegate passed on sync context (if present). Otherwise just invokes the delegate.
-		/// </summary>
-		protected internal void QueueOnMainThread(SendOrPostCallback action, object args)
-		{
-			Debug.Assert(action != null);
-
-			if (!_disposed)
-			{
-				if (_syncContext != null)
-				{
-					_syncContext.Post(action, args);
-				}
-				else
-				{
-					action(args);
-				}
-			}
-		}
-
-		/// <summary>
 		/// Requests the store configuration.
 		/// </summary>
 		/// <remarks>
 		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
-		/// <param name="completionSource">A provider of completion notification.</param>
-		/// <seealso cref="ValidatePurchase(IStoreTransaction, IAsyncCompletionSource{PurchaseValidationResult})"/>
-		protected internal abstract void GetStoreConfig(IAsyncCompletionSource<StoreConfig> completionSource);
+		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
+		protected internal abstract IAsyncOperation<StoreConfig> GetStoreConfig();
 
 		/// <summary>
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
@@ -166,11 +145,10 @@ namespace UnityFx.Purchasing
 		/// Typical implementation would first do client validation of the purchase and (if that passes) initiate server-side validation.
 		/// </remarks>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
-		/// <param name="completionSource">A provider of completion notification.</param>
-		/// <seealso cref="GetStoreConfig(IAsyncCompletionSource{StoreConfig})"/>
-		protected internal virtual void ValidatePurchase(IStoreTransaction transactionInfo, IAsyncCompletionSource<PurchaseValidationResult> completionSource)
+		/// <seealso cref="GetStoreConfig"/>
+		protected internal virtual IAsyncOperation<PurchaseValidationResult> ValidatePurchase(IStoreTransaction transactionInfo)
 		{
-			completionSource.SetResult(PurchaseValidationResult.Suppressed);
+			return null;
 		}
 
 		/// <summary>
@@ -712,8 +690,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				result.SetRunning();
-				GetStoreConfig(result.GetCompletionSource());
+				result.Start();
 			}
 			catch (Exception e)
 			{
@@ -733,8 +710,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				result.SetRunning();
-				GetStoreConfig(result.GetCompletionSource());
+				result.Start();
 			}
 			catch (Exception e)
 			{
