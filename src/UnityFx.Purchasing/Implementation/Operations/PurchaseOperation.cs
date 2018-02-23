@@ -53,6 +53,11 @@ namespace UnityFx.Purchasing
 			_receipt = product.GetNativeReceipt();
 		}
 
+		public void SetScheduled()
+		{
+			TrySetScheduled();
+		}
+
 		public bool ProcessPurchase(Product product)
 		{
 			// NOTE: _purchaseOp equals to null if this call is a result of purchase restore process,

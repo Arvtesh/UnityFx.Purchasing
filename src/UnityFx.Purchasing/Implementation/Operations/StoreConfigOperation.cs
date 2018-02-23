@@ -24,23 +24,7 @@ namespace UnityFx.Purchasing
 		{
 		}
 
-		public void Start()
-		{
-			SetRunning();
-
-			var op = Store.GetStoreConfig();
-
-			if (op == null)
-			{
-				throw new StoreFetchException(this, StoreFetchError.StoreConfigUnavailable);
-			}
-			else if (!op.TryAddCompletionCallback(OnGetConfigCompleted, Store.SyncContext))
-			{
-				OnGetConfigCompleted(op);
-			}
-		}
-
-		public new void SetCompleted()
+		public void SetCompleted()
 		{
 			if (TrySetCompleted(false))
 			{
@@ -80,6 +64,22 @@ namespace UnityFx.Purchasing
 
 		protected abstract void InvokeCompleted(StoreFetchError reason, Exception e);
 		protected abstract void Initiate(StoreConfig storeConfig);
+
+		protected override void OnStarted()
+		{
+			base.OnStarted();
+
+			var op = Store.GetStoreConfig();
+
+			if (op == null)
+			{
+				throw new StoreFetchException(this, StoreFetchError.StoreConfigUnavailable);
+			}
+			else if (!op.TryAddCompletionCallback(OnGetConfigCompleted, Store.SyncContext))
+			{
+				OnGetConfigCompleted(op);
+			}
+		}
 
 		#endregion
 
