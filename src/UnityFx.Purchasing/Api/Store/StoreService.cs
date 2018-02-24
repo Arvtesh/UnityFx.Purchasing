@@ -26,7 +26,7 @@ namespace UnityFx.Purchasing
 	}
 
 	/// <summary>
-	/// Implementation of <see cref="IStoreService"/>.
+	/// Implementation of in-app store based on <c>Unity IAP</c>.
 	/// </summary>
 	/// <example>
 	/// The following sample demonstrates usage of this class:
@@ -40,7 +40,7 @@ namespace UnityFx.Purchasing
 	///
 	///     protected override IAsyncOperation&lt;StoreConfig&gt; GetStoreConfig()
 	///     {
-	///         var products = new ProductDefinition[] { new ProductDefinition("test_product", ProductType.Consumable) };
+	///         var products = new ProductDefinition[] { new ProductDefinition("my_test_product", ProductType.Consumable) };
 	///         return AsyncResult.FromResult(new StoreConfig(products));
 	///     }
 	/// }
@@ -48,7 +48,7 @@ namespace UnityFx.Purchasing
 	/// </example>
 	/// <threadsafety static="true" instance="false"/>
 	/// <seealso cref="IStoreService"/>
-	public abstract class StoreService : IStoreService, IStoreServiceSettings
+	public abstract class StoreService : IStoreService, IStoreServiceSettings, IDisposable
 	{
 		#region data
 
@@ -396,15 +396,6 @@ namespace UnityFx.Purchasing
 		}
 
 #endif
-
-		/// <inheritdoc/>
-		public IStoreServiceSettings Settings
-		{
-			get
-			{
-				return this;
-			}
-		}
 
 		/// <inheritdoc/>
 		public IStoreProductCollection Products

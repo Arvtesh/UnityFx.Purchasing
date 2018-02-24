@@ -140,7 +140,7 @@ namespace UnityFx.Purchasing
 	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/">Asynchronous Programming Patterns</seealso>
 	/// <seealso cref="IStoreController"/>
 	/// <seealso cref="IExtensionProvider"/>
-	public interface IStoreService : IDisposable
+	public interface IStoreService
 	{
 		/// <summary>
 		/// Raised when the store initialization has been initiated.
@@ -216,13 +216,6 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <value>Read-only collection of products available in the store.</value>
 		IStoreProductCollection Products { get; }
-
-		/// <summary>
-		/// Returns the service settings. Read only.
-		/// </summary>
-		/// <value>Store settings.</value>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		IStoreServiceSettings Settings { get; }
 
 		/// <summary>
 		/// Returns <c>Unity3d</c> store controller. Returns <see langword="null"/> if the store is not initialized. Read only.
