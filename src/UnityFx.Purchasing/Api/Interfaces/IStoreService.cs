@@ -14,6 +14,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Enumerates possible initialization errors.
 	/// </summary>
+	/// <seealso cref="IStoreService"/>
 	public enum StoreFetchError
 	{
 		/// <summary>
@@ -55,6 +56,7 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Enumerates possible purchase errors.
 	/// </summary>
+	/// <seealso cref="IStoreService"/>
 	public enum StorePurchaseError
 	{
 		/// <summary>
@@ -129,13 +131,13 @@ namespace UnityFx.Purchasing
 	}
 
 	/// <summary>
-	/// An in-app store service based on <see href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</see>.
+	/// An in-app store service based on <c>Unity IAP</c>.
 	/// </summary>
 	/// <remarks>
 	/// TODO
 	/// </remarks>
-	/// <seealso href="https://docs.unity3d.com/Manual/UnityIAP.html"/>
-	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+	/// <seealso href="https://docs.unity3d.com/Manual/UnityIAP.html">Unity IAP</seealso>
+	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/">Asynchronous Programming Patterns</seealso>
 	/// <seealso cref="IStoreController"/>
 	/// <seealso cref="IExtensionProvider"/>
 	public interface IStoreService : IDisposable
@@ -150,7 +152,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Raised when the store has been initialized.
 		/// </summary>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="InitializeInitiated"/>
 		event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
@@ -165,7 +167,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Raised when the store has been initialized.
 		/// </summary>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="FetchInitiated"/>
 		event EventHandler<FetchCompletedEventArgs> FetchCompleted;
@@ -181,7 +183,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Raised when a purchase has completed successfully.
 		/// </summary>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="PurchaseInitiated"/>
@@ -261,7 +263,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		IAsyncOperation InitializeAsync();
@@ -275,7 +277,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized or fetch operation is pending.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		IAsyncOperation FetchAsync();
@@ -296,7 +298,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
@@ -328,7 +330,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="PurchaseAsync(string)"/>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
@@ -349,7 +351,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
 		/// <seealso cref="EndInitialize(IAsyncResult)"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject);
@@ -367,7 +369,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="EndInitialize(IAsyncResult)"/> is called multiple times.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if either the store or <paramref name="asyncResult"/> is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
 		/// <seealso cref="BeginInitialize(AsyncCallback, object)"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		void EndInitialize(IAsyncResult asyncResult);
@@ -384,7 +386,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
 		/// <seealso cref="EndFetch(IAsyncResult)"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject);
@@ -401,7 +403,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginFetch(AsyncCallback, object)"/> on this class.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if either the store or <paramref name="asyncResult"/> is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
 		/// <seealso cref="BeginFetch(AsyncCallback, object)"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		void EndFetch(IAsyncResult asyncResult);
@@ -421,7 +423,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
 		/// <seealso cref="EndPurchase(IAsyncResult)"/>
 		/// <seealso cref="IsBusy"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -440,7 +442,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="EndPurchase(IAsyncResult)"/> is called multiple times.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if either the store or <paramref name="asyncResult"/> is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
 		/// <seealso cref="BeginPurchase(string, AsyncCallback, object)"/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		PurchaseResult EndPurchase(IAsyncResult asyncResult);
@@ -460,7 +462,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
 		/// <seealso cref="FetchTaskAsync()"/>
 		/// <seealso cref="PurchaseTaskAsync(string)"/>
 		Task InitializeTaskAsync();
@@ -476,7 +478,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if fetching fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
 		/// <seealso cref="InitializeTaskAsync()"/>
 		/// <seealso cref="PurchaseTaskAsync(string)"/>
 		Task FetchTaskAsync();
@@ -496,7 +498,7 @@ namespace UnityFx.Purchasing
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <exception cref="StoreFetchException">Thrown if the store initialization/fetch triggered/awaited by the call fails.</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
 		/// <seealso cref="InitializeTaskAsync()"/>
 		/// <seealso cref="FetchTaskAsync()"/>
 		/// <seealso cref="IsBusy"/>
