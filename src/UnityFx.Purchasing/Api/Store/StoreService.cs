@@ -618,7 +618,7 @@ namespace UnityFx.Purchasing
 					}
 					else
 					{
-						tcs.TrySetException(storeOp.Exception);
+						tcs.TrySetException(storeOp.Exception.InnerExceptions);
 					}
 				},
 				stateObject);
@@ -823,7 +823,7 @@ namespace UnityFx.Purchasing
 			}
 			else
 			{
-				tcs.TrySetException(storeOp.Exception);
+				tcs.TrySetException(storeOp.Exception.InnerExceptions);
 			}
 		}
 
