@@ -65,7 +65,6 @@ namespace UnityFx.Purchasing
 #endif
 		private IStoreController _storeController;
 		private IExtensionProvider _storeExtensions;
-		private int _maxPendingPurchases = 1;
 		private bool _disposed;
 
 		#endregion
@@ -454,9 +453,13 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
-			ThrowIfInitialized();
 
-			return _storeListener.InitializeOp ?? InitializeInternal(null, null);
+			if (_storeController == null)
+			{
+				return _storeListener.InitializeOp ?? InitializeInternal(null, null);
+			}
+
+			return AsyncResult.CompletedOperation;
 		}
 
 		/// <inheritdoc/>
@@ -560,18 +563,22 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
-			ThrowIfInitialized();
 
-			if (_storeListener.InitializeOp != null)
+			if (_storeController == null)
 			{
-				return _storeListener.InitializeOp.ToTask();
+				if (_storeListener.InitializeOp != null)
+				{
+					return _storeListener.InitializeOp.ToTask();
+				}
+				else
+				{
+					var tcs = new TaskCompletionSource<object>();
+					InitializeInternal(FetchCompletionCallback, tcs);
+					return tcs.Task;
+				}
 			}
-			else
-			{
-				var tcs = new TaskCompletionSource<object>();
-				InitializeInternal(FetchCompletionCallback, tcs);
-				return tcs.Task;
-			}
+
+			return Task.CompletedTask;
 		}
 
 		/// <inheritdoc/>
@@ -659,16 +666,11 @@ namespace UnityFx.Purchasing
 		{
 			get
 			{
-				return _maxPendingPurchases;
+				return _storeListener.MaxNumberOfPendingPurchases;
 			}
 			set
 			{
-				if (value <= 0)
-				{
-					throw new ArgumentOutOfRangeException("Only positive values allowed.");
-				}
-
-				_maxPendingPurchases = value;
+				_storeListener.MaxNumberOfPendingPurchases = value;
 			}
 		}
 
@@ -788,6 +790,8 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
+#if UNITYFX_SUPPORT_APM
+
 		private StoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationType type)
 		{
 			if (asyncResult == null)
@@ -805,6 +809,8 @@ namespace UnityFx.Purchasing
 				throw new ArgumentException("Invalid operation type", nameof(asyncResult));
 			}
 		}
+
+#endif
 
 #if UNITYFX_SUPPORT_TAP
 

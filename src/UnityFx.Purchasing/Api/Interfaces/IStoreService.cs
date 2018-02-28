@@ -251,7 +251,6 @@ namespace UnityFx.Purchasing
 		/// <returns>An object that can be used to track the operation progress.</returns>
 		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
 		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
@@ -426,10 +425,8 @@ namespace UnityFx.Purchasing
 		/// Please see <see cref="InitializeAsync()"/> documentation for more information.
 		/// </remarks>
 		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
-		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
 		/// <seealso cref="FetchTaskAsync()"/>
 		/// <seealso cref="PurchaseTaskAsync(string, object)"/>
@@ -445,7 +442,6 @@ namespace UnityFx.Purchasing
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <exception cref="StoreFetchException">Thrown if fetching fails.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
 		/// <seealso cref="InitializeTaskAsync()"/>
 		/// <seealso cref="PurchaseTaskAsync(string, object)"/>
@@ -465,7 +461,6 @@ namespace UnityFx.Purchasing
 		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <exception cref="StoreFetchException">Thrown if the store initialization/fetch triggered/awaited by the call fails.</exception>
 		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
 		/// <seealso cref="InitializeTaskAsync()"/>

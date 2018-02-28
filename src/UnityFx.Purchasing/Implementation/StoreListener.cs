@@ -35,11 +35,14 @@ namespace UnityFx.Purchasing
 
 		public bool IsBusy => _purchaseOps.Count > 0 || _fetchOp != null || _initializeOp != null;
 
+		public int MaxNumberOfPendingPurchases { get => _purchaseOps.MaxCount; set => _purchaseOps.MaxCount = value; }
+
 		public StoreListener(StoreService storeService)
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
 			_purchaseOps = new AsyncResultQueue<PurchaseOperation>();
+			_purchaseOps.MaxCount = 1;
 		}
 
 		public InitializeOperation BeginInitialize(IPurchasingModule purchasingModule, AsyncCallback asyncCallback, object asyncState)
