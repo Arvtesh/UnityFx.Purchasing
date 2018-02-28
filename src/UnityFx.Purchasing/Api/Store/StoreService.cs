@@ -470,13 +470,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId)
-		{
-			return PurchaseAsync(productId, null);
-		}
-
-		/// <inheritdoc/>
-		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject)
+		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject = null)
 		{
 			ThrowIfDisposed();
 			ThrowIfInvalidProductId(productId);
@@ -600,14 +594,35 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public Task<PurchaseResult> PurchaseTaskAsync(string productId)
+		public Task<PurchaseResult> PurchaseTaskAsync(string productId, object stateObject = null)
 		{
 			ThrowIfDisposed();
 			ThrowIfInvalidProductId(productId);
 			ThrowIfPlatformNotSupported();
 
-			var tcs = new TaskCompletionSource<PurchaseResult>();
-			PurchaseInternal(productId, PurchaseCompletionCallback, tcs);
+			var tcs = new TaskCompletionSource<PurchaseResult>(stateObject);
+
+			PurchaseInternal(
+				productId,
+				op =>
+				{
+					var storeOp = op as IAsyncOperation<PurchaseResult>;
+
+					if (storeOp.IsCompletedSuccessfully)
+					{
+						tcs.TrySetResult(storeOp.Result);
+					}
+					else if (storeOp.IsCanceled)
+					{
+						tcs.TrySetCanceled();
+					}
+					else
+					{
+						tcs.TrySetException(storeOp.Exception);
+					}
+				},
+				stateObject);
+
 			return tcs.Task;
 		}
 
@@ -801,25 +816,6 @@ namespace UnityFx.Purchasing
 			if (storeOp.IsCompletedSuccessfully)
 			{
 				tcs.TrySetResult(null);
-			}
-			else if (storeOp.IsCanceled)
-			{
-				tcs.TrySetCanceled();
-			}
-			else
-			{
-				tcs.TrySetException(storeOp.Exception);
-			}
-		}
-
-		private static void PurchaseCompletionCallback(IAsyncResult asyncResult)
-		{
-			var storeOp = asyncResult as IAsyncOperation<PurchaseResult>;
-			var tcs = asyncResult.AsyncState as TaskCompletionSource<PurchaseResult>;
-
-			if (storeOp.IsCompletedSuccessfully)
-			{
-				tcs.TrySetResult(storeOp.Result);
 			}
 			else if (storeOp.IsCanceled)
 			{
