@@ -397,7 +397,7 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <inheritdoc/>
-		public IStoreProductCollection Products
+		public IStoreProductCollection<Product> Products
 		{
 			get
 			{

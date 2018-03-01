@@ -10,10 +10,12 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// A read-only collection of <see cref="IStoreService"/> products.
 	/// </summary>
+	/// <typeparam name="T">Product type.</typeparam>
+	/// <seealso cref="IStoreService"/>
 #if NET35
-	public interface IStoreProductCollection : IEnumerable<Product>
+	public interface IStoreProductCollection<T> : IEnumerable<T>
 #else
-	public interface IStoreProductCollection : IReadOnlyCollection<Product>
+	public interface IStoreProductCollection<T> : IReadOnlyCollection<T>
 #endif
 	{
 #if NET35
@@ -30,7 +32,7 @@ namespace UnityFx.Purchasing
 		/// <param name="productId">The store product identifier.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown if no product with the specified identifier found.</exception>
-		Product this[string productId] { get; }
+		T this[string productId] { get; }
 
 		/// <summary>
 		/// Gets the product that is associated with the specified identifier.
@@ -39,7 +41,7 @@ namespace UnityFx.Purchasing
 		/// <param name="product">The product instance.</param>
 		/// <returns>Operation success flag.</returns>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
-		bool TryGetProduct(string productId, out Product product);
+		bool TryGetProduct(string productId, out T product);
 
 		/// <summary>
 		/// Determines whether a product with the specified identifier is present in the collection.

@@ -213,7 +213,7 @@ namespace UnityFx.Purchasing
 		/// Returns store products list. Read only.
 		/// </summary>
 		/// <value>Read-only collection of products available in the store.</value>
-		IStoreProductCollection Products { get; }
+		IStoreProductCollection<Product> Products { get; }
 
 		/// <summary>
 		/// Returns <c>Unity3d</c> store controller. Returns <see langword="null"/> if the store is not initialized. Read only.
