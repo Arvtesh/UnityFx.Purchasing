@@ -12,7 +12,7 @@ namespace UnityFx.Purchasing.Validation
 	public class AppStoreReceipt
 	{
 		/// <summary>
-		/// The app’s bundle identifier. Json field name is <c>bundle_id</c>.
+		/// Gets the app’s bundle identifier. Json field name is <c>bundle_id</c>.
 		/// </summary>
 		/// <remarks>
 		/// This corresponds to the value of <c>CFBundleIdentifier</c> in the <c>Info.plist</c> file.
@@ -21,7 +21,7 @@ namespace UnityFx.Purchasing.Validation
 		public string BundleId { get; internal set; }
 
 		/// <summary>
-		/// The app’s version number. Json field name is <c>application_version</c>.
+		/// Gets the app’s version number. Json field name is <c>application_version</c>.
 		/// </summary>
 		/// <remarks>
 		/// This corresponds to the value of <c>CFBundleVersion</c> (in iOS) or <c>CFBundleShortVersionString</c>
@@ -31,7 +31,7 @@ namespace UnityFx.Purchasing.Validation
 		public string AppVersion { get; internal set; }
 
 		/// <summary>
-		/// The version of the app that was originally purchased. Json field name is <c>original_application_version</c>.
+		/// Gets the version of the app that was originally purchased. Json field name is <c>original_application_version</c>.
 		/// </summary>
 		/// <remarks>
 		/// This corresponds to the value of <c>CFBundleVersion</c> (in iOS) or <c>CFBundleShortVersionString</c>
@@ -42,7 +42,7 @@ namespace UnityFx.Purchasing.Validation
 		public string OriginalAppVersion { get; internal set; }
 
 		/// <summary>
-		/// The date when the app receipt was created. Json field name is <c>receipt_creation_date</c>.
+		/// Gets the date when the app receipt was created. Json field name is <c>receipt_creation_date</c>.
 		/// </summary>
 		/// <remarks>
 		/// When validating a receipt, use this date to validate the receipt’s signature.
@@ -51,7 +51,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime CreationDate { get; internal set; }
 
 		/// <summary>
-		/// The date that the app receipt expires. Json field name is <c>expiration_date</c>.
+		/// Gets the date that the app receipt expires. Json field name is <c>expiration_date</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is present only for apps purchased through the Volume Purchase Program.
@@ -64,7 +64,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime? ExpirationDate { get; internal set; }
 
 		/// <summary>
-		/// The receipt for an in-app purchase. An empty array is a valid receipt. Json field name is <c>in_app</c>.
+		/// Gets the receipt for an in-app purchase. An empty array is a valid receipt. Json field name is <c>in_app</c>.
 		/// </summary>
 		/// <remarks>
 		/// <para>In the JSON file, the value of this key is an array containing all in-app purchase

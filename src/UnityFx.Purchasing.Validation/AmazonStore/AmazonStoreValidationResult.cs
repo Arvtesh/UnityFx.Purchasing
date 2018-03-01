@@ -16,12 +16,12 @@ namespace UnityFx.Purchasing.Validation
 		#region interface
 
 		/// <summary>
-		/// Returns the status code. Read only.
+		/// Gets the status code.
 		/// </summary>
 		public int StatusCode { get; }
 
 		/// <summary>
-		/// The Amazon Store receipt (id any). Read only.
+		/// Gets Amazon Store receipt (id any).
 		/// </summary>
 		public AmazonStoreReceipt Receipt { get; }
 

@@ -19,7 +19,7 @@ namespace UnityFx.Purchasing
 		SourceSwitch TraceSwitch { get; set; }
 
 		/// <summary>
-		/// Returns a collection of trace listeners for the service. Read only.
+		/// Gets a collection of trace listeners for the service.
 		/// </summary>
 		/// <value>A collection of <see cref="TraceListener"/> objects.</value>
 		TraceListenerCollection TraceListeners { get; }

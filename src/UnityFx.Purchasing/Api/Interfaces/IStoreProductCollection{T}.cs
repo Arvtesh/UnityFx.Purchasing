@@ -20,14 +20,14 @@ namespace UnityFx.Purchasing
 	{
 #if NET35
 		/// <summary>
-		/// Returns the number of elements in the collection. Read only.
+		/// Gets number of elements in the collection.
 		/// </summary>
 		/// <value>Number of products in the collection.</value>
 		int Count { get; }
 #endif
 
 		/// <summary>
-		/// Returns product for the specified identifier. Read only.
+		/// Gets product for the specified identifier.
 		/// </summary>
 		/// <param name="productId">The store product identifier.</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
@@ -35,7 +35,7 @@ namespace UnityFx.Purchasing
 		T this[string productId] { get; }
 
 		/// <summary>
-		/// Gets the product that is associated with the specified identifier.
+		/// Gets a product that is associated with the specified identifier.
 		/// </summary>
 		/// <param name="productId">The product identifier.</param>
 		/// <param name="product">The product instance.</param>

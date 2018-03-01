@@ -72,13 +72,13 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Returns the <see cref="System.Diagnostics.TraceSource"/> instance used by the service. Read only.
+		/// Gets a <see cref="System.Diagnostics.TraceSource"/> instance used by the service.
 		/// </summary>
 		/// <value>A <see cref="TraceSource"/> instance used for tracing.</value>
 		protected internal TraceSource TraceSource => _console;
 
 		/// <summary>
-		/// Returns <see cref="SynchronizationContext"/> instance used to forward execution to the main thread (can be <see langword="null"/>). Read only.
+		/// Gets a <see cref="SynchronizationContext"/> instance used to forward execution to the main thread (can be <see langword="null"/>).
 		/// </summary>
 		/// <value>An object used to forward execution to the main thread.</value>
 		protected internal SynchronizationContext SyncContext => _syncContext;

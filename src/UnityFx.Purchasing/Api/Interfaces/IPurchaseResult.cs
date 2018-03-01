@@ -13,7 +13,7 @@ namespace UnityFx.Purchasing
 	public interface IPurchaseResult : IStoreTransaction, IStoreOperationInfo
 	{
 		/// <summary>
-		/// Returns product validation result or <see langword="null"/> if not available. Read only.
+		/// Gets product validation result or <see langword="null"/> if not available.
 		/// </summary>
 		PurchaseValidationResult ValidationResult { get; }
 	}

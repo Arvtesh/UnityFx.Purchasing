@@ -11,27 +11,27 @@ namespace UnityFx.Purchasing.Validation
 	public interface IPurchaseReceipt
 	{
 		/// <summary>
-		/// Returns the transaction identifier of the item that was purchased. Read only.
+		/// Gets the transaction identifier of the item that was purchased.
 		/// </summary>
 		string TransactionId { get; }
 
 		/// <summary>
-		/// Returns the product identifier of the item that was purchased (SKU). Read only.
+		/// Gets the product identifier of the item that was purchased (SKU).
 		/// </summary>
 		string ProductId { get; }
 
 		/// <summary>
-		/// Returns the number of items purchased (<c>0</c> if not applicable). Read only.
+		/// Gets the number of items purchased (<c>0</c> if not applicable).
 		/// </summary>
 		int Quantity { get; }
 
 		/// <summary>
-		/// Returns the date of the purchase (renew) operation. Read only.
+		/// Gets the date of the purchase (renew) operation.
 		/// </summary>
 		DateTime Timestamp { get; }
 
 		/// <summary>
-		/// Returns the date of the purchase (or the date of the first subscription) operation. Read only.
+		/// Gets the date of the purchase (or the date of the first subscription) operation.
 		/// </summary>
 		DateTime Timestamp0 { get; }
 	}

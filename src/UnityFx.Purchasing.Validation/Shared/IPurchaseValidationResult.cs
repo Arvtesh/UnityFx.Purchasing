@@ -12,22 +12,22 @@ namespace UnityFx.Purchasing.Validation
 	public interface IPurchaseValidationResult : IEnumerable<IPurchaseReceipt>
 	{
 		/// <summary>
-		/// Returns raw store validation response. Read only.
+		/// Gets raw store validation response.
 		/// </summary>
 		string RawResult { get; }
 
 		/// <summary>
-		/// Returns response status description. Read only.
+		/// Gets response status description.
 		/// </summary>
 		string Status { get; }
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the validation succeeded; <see langword="false"/> otherwise. Read only.
+		/// Gets a value indicating whether the validation succeeded.
 		/// </summary>
 		bool IsOK { get; }
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the validation failed for any reason; <see langword="false"/> otherwise. Read only.
+		/// Gets a value indicating whether the validation failed for any reason.
 		/// </summary>
 		bool IsFailed { get; }
 	}

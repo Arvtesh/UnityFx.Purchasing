@@ -35,7 +35,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Returns the purchase error identifier. Read only.
+		/// Gets the purchase error identifier.
 		/// </summary>
 		public StorePurchaseError Reason => _reason;
 

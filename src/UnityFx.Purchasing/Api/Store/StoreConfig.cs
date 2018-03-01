@@ -13,7 +13,7 @@ namespace UnityFx.Purchasing
 	public class StoreConfig
 	{
 		/// <summary>
-		/// Returns the validation status. Read only.
+		/// Gets the validation status.
 		/// </summary>
 		public IEnumerable<ProductDefinition> Products { get; }
 

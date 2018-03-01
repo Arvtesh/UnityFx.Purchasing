@@ -12,12 +12,12 @@ namespace UnityFx.Purchasing.Validation
 	public static class PurhaseValidator
 	{
 		/// <summary>
-		/// Returns test AppStore receipt. Read only.
+		/// Gets test AppStore receipt.
 		/// </summary>
 		public static string TestAppStoreReceipt => AppStoreValidator.TestReceipt2;
 
 		/// <summary>
-		/// Returns test Amazon Store receipt. Read only.
+		/// Gets test Amazon Store receipt.
 		/// </summary>
 		public static string TestAmazonStoreReceipt => AmazonStoreValidator.TestReceipt;
 

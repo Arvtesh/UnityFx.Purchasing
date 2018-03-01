@@ -68,7 +68,7 @@ namespace UnityFx.Purchasing.Validation
 		#region interface
 
 		/// <summary>
-		/// The number of items purchased. Json field name is <c>quantity</c>.
+		/// Gets the number of items purchased. Json field name is <c>quantity</c>.
 		/// </summary>
 		/// <remarks>
 		/// This value corresponds to the <c>quantity</c> property of the <c>SKPayment</c> object stored in the transaction’s payment property.
@@ -76,7 +76,7 @@ namespace UnityFx.Purchasing.Validation
 		public int Quantity { get; internal set; }
 
 		/// <summary>
-		/// The product identifier of the item that was purchased. Json field name is <c>product_id</c>.
+		/// Gets the product identifier of the item that was purchased. Json field name is <c>product_id</c>.
 		/// </summary>
 		/// <remarks>
 		/// This value corresponds to the <c>productIdentifier</c> property of the <c>SKPayment</c> object stored in the transaction’s payment property.
@@ -84,7 +84,7 @@ namespace UnityFx.Purchasing.Validation
 		public string ProductId { get; internal set; }
 
 		/// <summary>
-		/// The transaction identifier of the item that was purchased. Json field name is <c>transaction_id</c>.
+		/// Gets the transaction identifier of the item that was purchased. Json field name is <c>transaction_id</c>.
 		/// </summary>
 		/// <remarks>
 		/// This value corresponds to the transaction’s <c>transactionIdentifier</c> property. For a transaction that
@@ -96,7 +96,7 @@ namespace UnityFx.Purchasing.Validation
 		public string TransactionId { get; internal set; }
 
 		/// <summary>
-		/// For a transaction that restores a previous transaction, the transaction identifier of the original transaction.
+		/// Gets, for a transaction that restores a previous transaction, the transaction identifier of the original transaction.
 		/// Otherwise, identical to the transaction identifier. Json field name is <c>original_transaction_id</c>.
 		/// </summary>
 		/// <remarks>
@@ -108,7 +108,7 @@ namespace UnityFx.Purchasing.Validation
 		public string OriginalTransactionId { get; internal set; }
 
 		/// <summary>
-		/// The date and time that the item was purchased. Json field name is <c>purchase_date</c>.
+		/// Gets the date and time that the item was purchased. Json field name is <c>purchase_date</c>.
 		/// </summary>
 		/// <remarks>
 		/// This value corresponds to the transaction’s <c>transactionDate</c> property. For a transaction
@@ -124,7 +124,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime PurchaseDate { get; internal set; }
 
 		/// <summary>
-		/// For a transaction that restores a previous transaction, the date of the original transaction.
+		/// Gets, for a transaction that restores a previous transaction, the date of the original transaction.
 		/// Json field name is <c>original_purchase_date</c>.
 		/// </summary>
 		/// <remarks>
@@ -136,7 +136,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime OriginalPurchaseDate { get; internal set; }
 
 		/// <summary>
-		/// The expiration date for the subscription. Json field name is <c>expires_date</c>.
+		/// Gets the expiration date for the subscription. Json field name is <c>expires_date</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for auto-renewable subscription receipts. Use this value to identify the date
@@ -149,7 +149,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime? SubscriptionExpirationDate { get; internal set; }
 
 		/// <summary>
-		/// For an expired subscription, the reason for the subscription expiration. Json field name is <c>expiration_intent</c>.
+		/// Gets, for an expired subscription, the reason for the subscription expiration. Json field name is <c>expiration_intent</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for a receipt containing an expired auto-renewable subscription. You can use this value to
@@ -158,7 +158,7 @@ namespace UnityFx.Purchasing.Validation
 		public AppStoreSubcriptionExpirationReason? SubscriptionExpirationIntent { get; internal set; }
 
 		/// <summary>
-		/// For an expired subscription, whether or not Apple is still attempting to automatically renew the subscription.
+		/// Gets, for an expired subscription, whether or not Apple is still attempting to automatically renew the subscription.
 		/// Json field name is <c>is_in_billing_retry_period</c>.
 		/// </summary>
 		/// <remarks>
@@ -169,7 +169,7 @@ namespace UnityFx.Purchasing.Validation
 		public bool? SubscriptionRetryFlag { get; internal set; }
 
 		/// <summary>
-		/// For a subscription, whether or not it is in the Free Trial period. Json field name is <c>is_trial_period</c>.
+		/// Gets, for a subscription, whether or not it is in the Free Trial period. Json field name is <c>is_trial_period</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for auto-renewable subscription receipts. The value for this key is <see langword="true"/>
@@ -178,7 +178,7 @@ namespace UnityFx.Purchasing.Validation
 		public bool? SubscriptionTrialPeriod { get; internal set; }
 
 		/// <summary>
-		/// For a transaction that was canceled by Apple customer support, the time and date of the cancellation.
+		/// Gets, for a transaction that was canceled by Apple customer support, the time and date of the cancellation.
 		/// For an auto-renewable subscription plan that was upgraded, the time and date of the upgrade transaction.
 		/// Json field name is <c>cancellation_date</c>.
 		/// </summary>
@@ -191,7 +191,7 @@ namespace UnityFx.Purchasing.Validation
 		public DateTime? CancellationDate { get; internal set; }
 
 		/// <summary>
-		/// For a transaction that was cancelled, the reason for cancellation. Json field name is <c>cancellation_reason</c>.
+		/// Gets, for a transaction that was cancelled, the reason for cancellation. Json field name is <c>cancellation_reason</c>.
 		/// </summary>
 		/// <remarks>
 		/// Use this value along with the <see cref="CancellationDate"/> to identify possible issues in your app that may lead customers to contact Apple customer support.
@@ -200,7 +200,7 @@ namespace UnityFx.Purchasing.Validation
 		public AppStorePurchaseCancellationReason? CancellationReason { get; internal set; }
 
 		/// <summary>
-		/// A string that the App Store uses to uniquely identify the application that created the transaction. Json field name is <c>app_item_id</c>.
+		/// Gets a string that the App Store uses to uniquely identify the application that created the transaction. Json field name is <c>app_item_id</c>.
 		/// </summary>
 		/// <remarks>
 		/// If your server supports multiple applications, you can use this value to differentiate between them. Apps are assigned an identifier
@@ -209,7 +209,7 @@ namespace UnityFx.Purchasing.Validation
 		public string AppItemId { get; internal set; }
 
 		/// <summary>
-		/// An arbitrary number that uniquely identifies a revision of your application. Json field name is <c>version_external_identifier</c>.
+		/// Gets an arbitrary number that uniquely identifies a revision of your application. Json field name is <c>version_external_identifier</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is not present for receipts created in the test environment. Use this value to identify the version of the app that the customer bought.
@@ -217,7 +217,7 @@ namespace UnityFx.Purchasing.Validation
 		public string ExternalVersionId { get; internal set; }
 
 		/// <summary>
-		/// The primary key for identifying subscription purchases. Json field name is <c>web_order_line_item_id</c>.
+		/// Gets the primary key for identifying subscription purchases. Json field name is <c>web_order_line_item_id</c>.
 		/// </summary>
 		/// <remarks>
 		/// This value is a unique ID that identifies purchase events across devices, including subscription renewal purchase events.
@@ -225,7 +225,7 @@ namespace UnityFx.Purchasing.Validation
 		public string WebOrderLineItemId { get; internal set; }
 
 		/// <summary>
-		/// The current renewal status for the auto-renewable subscription. Json field name is <c>auto_renew_status</c>.
+		/// Gets the current renewal status for the auto-renewable subscription. Json field name is <c>auto_renew_status</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for auto-renewable subscription receipts, for active or expired subscriptions. The value for this key should not be
@@ -236,7 +236,7 @@ namespace UnityFx.Purchasing.Validation
 		public bool? SubscriptionAutoRenewStatus { get; internal set; }
 
 		/// <summary>
-		/// The current renewal preference for the auto-renewable subscription. Json field name is <c>auto_renew_product_id</c>.
+		/// Gets the current renewal preference for the auto-renewable subscription. Json field name is <c>auto_renew_product_id</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for auto-renewable subscription receipts. The value for this key corresponds to the <c>productIdentifier</c> property
@@ -247,7 +247,7 @@ namespace UnityFx.Purchasing.Validation
 		public string SubscriptionAutoRenewPreference { get; internal set; }
 
 		/// <summary>
-		/// The current price consent status for a subscription price increase. Json field name is <c>price_consent_status</c>.
+		/// Gets a value indicating whether current price consent status for a subscription price increase. Json field name is <c>price_consent_status</c>.
 		/// </summary>
 		/// <remarks>
 		/// This key is only present for auto-renewable subscription receipts if the subscription price was increased without keeping

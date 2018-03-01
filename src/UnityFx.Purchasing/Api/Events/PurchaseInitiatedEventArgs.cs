@@ -11,12 +11,12 @@ namespace UnityFx.Purchasing
 	public class PurchaseInitiatedEventArgs : StoreOperationEventArgs
 	{
 		/// <summary>
-		/// Returns the product identifier. Read only.
+		/// Gets the product identifier.
 		/// </summary>
 		public string ProductId { get; }
 
 		/// <summary>
-		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
+		/// Gets a value indicating whether the purchase was auto-restored.
 		/// </summary>
 		public bool Restored { get; }
 

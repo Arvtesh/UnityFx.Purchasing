@@ -51,7 +51,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Ok"/>. Read only.
+		/// Gets a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Ok"/>.
 		/// </summary>
 		public static PurchaseValidationResult Success
 		{
@@ -67,7 +67,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Failure"/>. Read only.
+		/// Gets a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Failure"/>.
 		/// </summary>
 		public static PurchaseValidationResult Failure
 		{
@@ -83,7 +83,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.NotAvailable"/>. Read only.
+		/// Gets a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.NotAvailable"/>.
 		/// </summary>
 		public static PurchaseValidationResult NotAvailable
 		{
@@ -99,7 +99,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Returns a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Suppressed"/>. Read only.
+		/// Gets a <see cref="PurchaseValidationResult"/> instance with status <see cref="PurchaseValidationStatus.Suppressed"/>.
 		/// </summary>
 		public static PurchaseValidationResult Suppressed
 		{
@@ -115,7 +115,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Returns the validation status. Read only.
+		/// Gets the validation status.
 		/// </summary>
 		/// <value>Identifier of the validation status.</value>
 		public PurchaseValidationStatus Status => _status;

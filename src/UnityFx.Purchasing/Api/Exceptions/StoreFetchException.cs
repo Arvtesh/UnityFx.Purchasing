@@ -23,7 +23,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Returns initialization failure reason. Read only.
+		/// Gets initialization failure reason.
 		/// </summary>
 		public StoreFetchError Reason => _reason;
 

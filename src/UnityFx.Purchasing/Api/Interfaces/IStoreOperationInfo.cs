@@ -13,13 +13,13 @@ namespace UnityFx.Purchasing
 	public interface IStoreOperationInfo
 	{
 		/// <summary>
-		/// Returns identifier of the corresponding operation. Read only.
+		/// Gets identifier of the corresponding operation.
 		/// </summary>
 		/// <value>An unique operation identifier.</value>
 		int OperationId { get; }
 
 		/// <summary>
-		/// Returns user-defined data assosiated with the operation (if any). Read only.
+		/// Gets user-defined data assosiated with the operation (if any).
 		/// </summary>
 		/// <value>User-defined data.</value>
 		object UserState { get; }

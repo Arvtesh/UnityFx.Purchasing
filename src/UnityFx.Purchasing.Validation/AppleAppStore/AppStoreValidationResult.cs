@@ -15,17 +15,17 @@ namespace UnityFx.Purchasing.Validation
 		#region interface
 
 		/// <summary>
-		/// Returns App Store response status code. <c>0</c> means OK. Read only.
+		/// Gets App Store response status code. <c>0</c> means OK.
 		/// </summary>
 		public int StatusCode { get; internal set; }
 
 		/// <summary>
-		/// Returns the store environment identifier. Read only.
+		/// Gets the store environment identifier.
 		/// </summary>
 		public string Environment { get; internal set; }
 
 		/// <summary>
-		/// The App Store receipt if any. Read only.
+		/// Gets App Store receipt if any.
 		/// </summary>
 		public AppStoreReceipt Receipt { get; internal set; }
 

@@ -22,7 +22,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Returns purchase failure reason. Read only.
+		/// Gets purchase failure reason.
 		/// </summary>
 		public StorePurchaseError ErrorReason => _reason;
 
