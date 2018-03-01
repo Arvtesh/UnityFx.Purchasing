@@ -210,13 +210,13 @@ namespace UnityFx.Purchasing
 #endif
 
 		/// <summary>
-		/// Gets store products list.
+		/// Gets a read-only collection of <c>Unity3d</c> products.
 		/// </summary>
-		/// <value>Read-only collection of products available in the store.</value>
+		/// <value>Read-only collection of <c>Unity3d</c> products available in the store.</value>
 		IStoreProductCollection<Product> Products { get; }
 
 		/// <summary>
-		/// Gets <c>Unity3d</c> store controller. Returns <see langword="null"/> if the store is not initialized.
+		/// Gets <c>Unity3d</c> store controller. The value is <see langword="null"/> if the store is not initialized.
 		/// </summary>
 		/// <value><c>Unity3d</c> controller that is responsible for all store operations.</value>
 		/// <seealso cref="IsInitialized"/>
@@ -224,7 +224,7 @@ namespace UnityFx.Purchasing
 		IStoreController Controller { get; }
 
 		/// <summary>
-		/// Gets store extensions provider. Returns <see langword="null"/> if the store is not initialized.
+		/// Gets <c>Unity3d</c> store extensions provider. The value is <see langword="null"/> if the store is not initialized.
 		/// </summary>
 		/// <value><c>Unity3d</c> controller that provides access for store-specific extensions.</value>
 		/// <seealso cref="IsInitialized"/>
