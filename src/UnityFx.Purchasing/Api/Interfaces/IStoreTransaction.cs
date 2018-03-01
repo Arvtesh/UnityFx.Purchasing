@@ -40,5 +40,10 @@ namespace UnityFx.Purchasing
 		/// <value>The purchase receipt.</value>
 		/// <seealso cref="Product"/>
 		string Receipt { get; }
+
+		/// <summary>
+		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
+		/// </summary>
+		bool Restored { get; }
 	}
 }

@@ -128,9 +128,6 @@ namespace UnityFx.Purchasing
 		/// <inheritdoc/>
 		public PurchaseValidationResult ValidationResult => _validationResult;
 
-		/// <inheritdoc/>
-		public bool Restored => _restored;
-
 		#endregion
 
 		#region IStoreTransaction
@@ -146,6 +143,9 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		public string Receipt => _receipt;
+
+		/// <inheritdoc/>
+		public bool Restored => _restored;
 
 		#endregion
 

@@ -16,10 +16,5 @@ namespace UnityFx.Purchasing
 		/// Returns product validation result or <see langword="null"/> if not available. Read only.
 		/// </summary>
 		PurchaseValidationResult ValidationResult { get; }
-
-		/// <summary>
-		/// Returns <see langword="true"/> if the purchase was auto-restored; <see langword="false"/> otherwise. Read only.
-		/// </summary>
-		bool Restored { get; }
 	}
 }
