@@ -26,7 +26,7 @@ namespace UnityFx.Purchasing
 	}
 
 	/// <summary>
-	/// Implementation of in-app store based on <c>Unity IAP</c>.
+	/// An in-app store based on <c>Unity IAP</c>.
 	/// </summary>
 	/// <example>
 	/// The following sample demonstrates usage of this class:

@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
@@ -13,7 +12,7 @@ using UnityFx.Async;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// tt
+	/// A generic in-app store based on <c>Unity IAP</c> for user-defined products.
 	/// </summary>
 	/// <typeparam name="T">ttt</typeparam>
 	/// <threadsafety static="true" instance="false"/>
@@ -26,11 +25,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region interface
-
-		/// <summary>
-		/// Gets a read-only collection of the store products.
-		/// </summary>
-		public IStoreProductCollection<T> ProductsEx => _products;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService{T}"/> class.
@@ -73,9 +67,9 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// tttt
+		/// Creates a user-defened product for the specified <c>Unity3d</c> product.
 		/// </summary>
-		/// <param name="unityProduct"><c>Unity3d</c> product.</param>
+		/// <param name="unityProduct"><c>Unity3d</c> product instance.</param>
 		/// <returns>A user-defined product instance matching the <c>Unity</c> product specified.</returns>
 		protected abstract T CreateProduct(Product unityProduct);
 
@@ -107,13 +101,20 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
+		#region IStoreService
+
+		/// <inheritdoc/>
+		public new IStoreProductCollection<T> Products => _products;
+
+		#endregion
+
 		#region implementation
 
 		private void ResetProducts()
 		{
 			_products.Clear();
 
-			foreach (var unityProduct in Products)
+			foreach (var unityProduct in base.Products)
 			{
 				_products.Add(unityProduct.definition.id, CreateProduct(unityProduct));
 			}

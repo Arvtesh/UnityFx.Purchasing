@@ -185,11 +185,11 @@ namespace UnityFx.Purchasing
 
 		#region AsyncResult
 
-		protected override void OnStatusChanged(AsyncOperationStatus status)
+		protected override void OnStarted()
 		{
-			base.OnStatusChanged(status);
+			base.OnStarted();
 
-			if (status == AsyncOperationStatus.Running && !_restored)
+			if (!_restored)
 			{
 				var product = Store.Controller.products.WithID(_productId);
 
