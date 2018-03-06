@@ -84,6 +84,12 @@ namespace UnityFx.Purchasing
 		protected internal SynchronizationContext SyncContext => _syncContext;
 
 		/// <summary>
+		/// Gets a <see cref="IStoreListener"/> instance used by the store.
+		/// </summary>
+		/// <value>A store listener attached to the service.</value>
+		protected internal IStoreListener Listener => _storeListener;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
@@ -153,6 +159,7 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.
 		/// </summary>
+		/// <seealso cref="OnInitialize(ConfigurationBuilder, StoreConfig)"/>
 		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
 		protected internal virtual void OnInitializeInitiated(IStoreOperationInfo op)
 		{
@@ -160,9 +167,22 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
+		/// Called when a <see cref="StoreConfig"/> has been initialized. Default implementation calls <see cref="UnityPurchasing.Initialize(IStoreListener, ConfigurationBuilder)"/>.
+		/// </summary>
+		/// <param name="configurationBuilder">The <c>Unity3d</c> configuration builder instance.</param>
+		/// <param name="storeConfig">Store configuration returned by <see cref="GetStoreConfig"/>.</param>
+		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
+		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
+		protected internal virtual void OnInitialize(ConfigurationBuilder configurationBuilder, StoreConfig storeConfig)
+		{
+			UnityPurchasing.Initialize(_storeListener, configurationBuilder);
+		}
+
+		/// <summary>
 		/// Called when the store initialization has succeeded. Default implementation raises <see cref="InitializeCompleted"/> event.
 		/// </summary>
 		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
+		/// <seealso cref="OnInitialize(ConfigurationBuilder, StoreConfig)"/>
 		protected internal virtual void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
 		{
 			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReason, e));
@@ -269,10 +289,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="ThrowIfBusy"/>
 		protected void ThrowIfPlatformNotSupported()
 		{
-			if (!IsPlatformSupported())
-			{
-				throw new PlatformNotSupportedException();
-			}
+			// TODO
 		}
 
 		/// <summary>
@@ -841,11 +858,6 @@ namespace UnityFx.Purchasing
 			{
 				throw new InvalidOperationException(_serviceName + " is already initialized.");
 			}
-		}
-
-		private static bool IsPlatformSupported()
-		{
-			return Application.isMobilePlatform || Application.isEditor;
 		}
 
 		#endregion

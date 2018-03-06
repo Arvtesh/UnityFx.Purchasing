@@ -41,8 +41,10 @@ namespace UnityFx.Purchasing
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
-			_purchaseOps = new AsyncResultQueue<PurchaseOperation>();
-			_purchaseOps.MaxCount = 1;
+			_purchaseOps = new AsyncResultQueue<PurchaseOperation>
+			{
+				MaxCount = 1
+			};
 		}
 
 		public InitializeOperation BeginInitialize(IPurchasingModule purchasingModule, AsyncCallback asyncCallback, object asyncState)
@@ -52,7 +54,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_fetchOp == null);
 
 			asyncCallback += new AsyncCallback(op => _initializeOp = null);
-			return _initializeOp = new InitializeOperation(_storeService, purchasingModule, this, asyncCallback, asyncState);
+			return _initializeOp = new InitializeOperation(_storeService, purchasingModule, asyncCallback, asyncState);
 		}
 
 		public FetchOperation BeginFetch(AsyncCallback asyncCallback, object asyncState)

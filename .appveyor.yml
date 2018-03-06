@@ -4,10 +4,13 @@ branches:
   only:
     - master
     - develop
+    - /release\/.+/
+    - /hotfix\/.+/
 
 skip_commits:
   files:
     - '**/*.md'
+    - '**/*.txt'
 
 install:
   - cmd: git submodule -q update --init
@@ -18,10 +21,8 @@ build_script:
 artifacts:
   - path: .\bin\net35
     name: UnityFx.Purchasing-net35
-
   - path: .\bin\net46
     name: UnityFx.Purchasing-net46
-
   - path: .\bin\netstandard2.0
     name: UnityFx.Purchasing-netstandard2.0
 
