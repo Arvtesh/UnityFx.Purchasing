@@ -38,7 +38,7 @@ namespace UnityFx.Purchasing
 	///     {
 	///     }
 	///
-	///     protected override IAsyncOperation&lt;StoreConfig&gt; GetStoreConfig()
+	///     protected override AsyncResult&lt;StoreConfig&gt; GetStoreConfig()
 	///     {
 	///         var products = new ProductDefinition[] { new ProductDefinition("my_test_product", ProductType.Consumable) };
 	///         return AsyncResult.FromResult(new StoreConfig(products));
@@ -572,7 +572,7 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public IPurchaseResult EndPurchase(IAsyncResult asyncResult)
+		public PurchaseResult EndPurchase(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
 

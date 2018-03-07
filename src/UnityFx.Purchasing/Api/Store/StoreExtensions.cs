@@ -20,11 +20,13 @@ namespace UnityFx.Purchasing
 		private struct UnityReceiptData
 		{
 			public string Store;
+			public string TransactionID;
 			public string Payload;
 
-			public UnityReceiptData(string store, string payload)
+			public UnityReceiptData(string store, string transactionId, string payload)
 			{
 				Store = store;
+				TransactionID = transactionId;
 				Payload = payload;
 			}
 		}
