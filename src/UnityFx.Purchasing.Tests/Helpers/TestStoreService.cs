@@ -32,7 +32,7 @@ namespace UnityFx.Purchasing
 
 		#region StoreService
 
-		protected override IAsyncOperation<StoreConfig> GetStoreConfig()
+		protected override AsyncResult<StoreConfig> GetStoreConfig()
 		{
 			var products = new ProductDefinition[]
 			{

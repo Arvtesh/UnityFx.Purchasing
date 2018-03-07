@@ -6,7 +6,7 @@ using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	internal abstract class StoreConfigOperation : StoreOperation
+	internal abstract class StoreConfigOperation : StoreOperation<object>
 	{
 		#region data
 		#endregion

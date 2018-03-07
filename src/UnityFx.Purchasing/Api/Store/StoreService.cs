@@ -141,7 +141,7 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		/// <seealso cref="Configure(ConfigurationBuilder, StoreConfig)"/>
 		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
-		protected internal abstract IAsyncOperation<StoreConfig> GetStoreConfig();
+		protected internal abstract AsyncResult<StoreConfig> GetStoreConfig();
 
 		/// <summary>
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
@@ -153,7 +153,7 @@ namespace UnityFx.Purchasing
 		/// <param name="transactionInfo">The transaction data to validate.</param>
 		/// <seealso cref="GetStoreConfig"/>
 		/// <seealso cref="Configure(ConfigurationBuilder, StoreConfig)"/>
-		protected internal virtual IAsyncOperation<PurchaseValidationResult> ValidatePurchase(IStoreTransaction transactionInfo)
+		protected internal virtual AsyncResult<PurchaseValidationResult> ValidatePurchase(IStoreTransaction transactionInfo)
 		{
 			return null;
 		}
@@ -478,7 +478,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IAsyncOperation InitializeAsync()
+		public AsyncResult InitializeAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
@@ -492,7 +492,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IAsyncOperation FetchAsync()
+		public AsyncResult FetchAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
@@ -502,7 +502,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject = null)
+		public AsyncResult<PurchaseResult> PurchaseAsync(string productId, object stateObject = null)
 		{
 			ThrowIfDisposed();
 			ThrowIfInvalidProductId(productId);
@@ -530,7 +530,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation(asyncResult, StoreOperationType.Initialize))
+			using (var op = ValidateOperation<object>(asyncResult, StoreOperationType.Initialize))
 			{
 				op.Join();
 			}
@@ -553,7 +553,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation(asyncResult, StoreOperationType.Fetch))
+			using (var op = ValidateOperation<object>(asyncResult, StoreOperationType.Fetch))
 			{
 				op.Join();
 			}
@@ -572,14 +572,13 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public PurchaseResult EndPurchase(IAsyncResult asyncResult)
+		public IPurchaseResult EndPurchase(IAsyncResult asyncResult)
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation(asyncResult, StoreOperationType.Purchase))
+			using (var op = ValidateOperation<IPurchaseResult>(asyncResult, StoreOperationType.Purchase))
 			{
-				op.Join();
-				return (op as PurchaseOperation).ResultUnsafe;
+				return op.Join();
 			}
 		}
 
@@ -718,7 +717,7 @@ namespace UnityFx.Purchasing
 
 		#region implementation
 
-		private StoreOperation InitializeInternal(AsyncCallback userCallback, object stateObject)
+		private InitializeOperation InitializeInternal(AsyncCallback userCallback, object stateObject)
 		{
 			Debug.Assert(_storeListener.InitializeOp == null);
 			Debug.Assert(_storeController == null);
@@ -738,7 +737,7 @@ namespace UnityFx.Purchasing
 			return result;
 		}
 
-		private StoreOperation FetchInternal(AsyncCallback userCallback, object stateObject)
+		private FetchOperation FetchInternal(AsyncCallback userCallback, object stateObject)
 		{
 			Debug.Assert(_storeListener.FetchOp == null);
 			Debug.Assert(_storeController != null);
@@ -766,7 +765,7 @@ namespace UnityFx.Purchasing
 
 			try
 			{
-				StoreOperation fetchOp = null;
+				StoreOperation<object> fetchOp = null;
 
 				if (_storeController == null)
 				{
@@ -821,14 +820,14 @@ namespace UnityFx.Purchasing
 
 #if UNITYFX_SUPPORT_APM
 
-		private StoreOperation ValidateOperation(IAsyncResult asyncResult, StoreOperationType type)
+		private StoreOperation<T> ValidateOperation<T>(IAsyncResult asyncResult, StoreOperationType type)
 		{
 			if (asyncResult == null)
 			{
 				throw new ArgumentNullException(nameof(asyncResult));
 			}
 
-			if (asyncResult is StoreOperation result)
+			if (asyncResult is StoreOperation<T> result)
 			{
 				result.Validate(_storeListener, type);
 				return result;

@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 {
 	using Debug = System.Diagnostics.Debug;
 
-	internal class PurchaseOperation : StoreOperation, IAsyncOperation<PurchaseResult>, IPurchaseResult
+	internal class PurchaseOperation : StoreOperation<PurchaseResult>, IPurchaseResult
 	{
 		#region data
 
@@ -25,8 +25,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region interface
-
-		internal PurchaseResult ResultUnsafe => new PurchaseResult(this);
 
 		public PurchaseOperation(StoreService store, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
 			: base(store, StoreOperationType.Purchase, asyncCallback, asyncState, GetComment(productId, restored))
@@ -227,24 +225,6 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
-		#region IStoreOperation
-
-		/// <inheritdoc/>
-		public PurchaseResult Result
-		{
-			get
-			{
-				if (!IsCompletedSuccessfully)
-				{
-					throw new InvalidOperationException("The operation result is not available.");
-				}
-
-				return new PurchaseResult(this);
-			}
-		}
-
-		#endregion
-
 		#region implementation
 
 		private void SetValidationResult(PurchaseValidationResult validationResult, bool calledSynchronously)
@@ -286,7 +266,7 @@ namespace UnityFx.Purchasing
 					else
 					{
 						// The purchase validation succeeded.
-						if (TrySetCompleted(false))
+						if (TrySetResult(new PurchaseResult(this), false))
 						{
 							Store.OnPurchaseCompleted(this, StorePurchaseError.None, null);
 						}

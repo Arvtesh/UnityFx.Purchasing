@@ -8,7 +8,7 @@ using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	internal abstract class StoreOperation : AsyncResult, IStoreOperationInfo
+	internal abstract class StoreOperation<T> : AsyncResult<T>, IStoreOperationInfo
 	{
 		#region data
 
