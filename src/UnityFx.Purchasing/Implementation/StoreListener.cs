@@ -10,9 +10,6 @@ using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// Implementation of <see cref="IStoreListener"/>.
-	/// </summary>
 	internal sealed class StoreListener : IStoreListener, IDisposable
 	{
 		#region data

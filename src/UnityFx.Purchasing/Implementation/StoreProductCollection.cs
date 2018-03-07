@@ -9,9 +9,6 @@ using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// Implementation of <see cref="IStoreProductCollection{T}"/>.
-	/// </summary>
 	internal class StoreProductCollection : IStoreProductCollection<Product>
 	{
 		#region data

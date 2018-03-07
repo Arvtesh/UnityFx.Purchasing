@@ -7,9 +7,6 @@ using System.Collections.Generic;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// Implementation of <see cref="IStoreProductCollection{T}"/>.
-	/// </summary>
 	internal class StoreProductCollection<T> : IStoreProductCollection<T>
 	{
 		#region data

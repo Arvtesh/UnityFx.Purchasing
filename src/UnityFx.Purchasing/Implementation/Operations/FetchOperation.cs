@@ -8,9 +8,6 @@ using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// A fetch operation.
-	/// </summary>
 	internal class FetchOperation : StoreConfigOperation
 	{
 		#region data

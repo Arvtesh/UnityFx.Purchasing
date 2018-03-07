@@ -8,9 +8,6 @@ namespace UnityFx.Purchasing
 {
 #if !NET35
 
-	/// <summary>
-	/// Implementation of <see cref="IObservable{T}"/>.
-	/// </summary>
 	internal class StoreObservable<T> : IObservable<T>, IObserver<T>
 	{
 		#region data
@@ -19,7 +16,7 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
-		#region IObservable
+		#region IObserver
 
 		public void OnNext(T data)
 		{

@@ -8,9 +8,6 @@ using UnityEngine.Purchasing.Extension;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// An initialize operation.
-	/// </summary>
 	internal class InitializeOperation : StoreConfigOperation
 	{
 		#region data
@@ -25,7 +22,6 @@ namespace UnityFx.Purchasing
 			: base(store, StoreOperationType.Initialize, asyncCallback, asyncState)
 		{
 			_purchasingModule = purchasingModule;
-
 			Store.OnInitializeInitiated(this);
 		}
 
@@ -36,8 +32,8 @@ namespace UnityFx.Purchasing
 		protected override void Initiate(StoreConfig storeConfig)
 		{
 			var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-			configurationBuilder.AddProducts(storeConfig.Products);
-			Store.OnInitialize(configurationBuilder, storeConfig);
+			Store.Configure(configurationBuilder, storeConfig);
+			Store.OnInitialize(this, configurationBuilder);
 		}
 
 		protected override void InvokeCompleted(StoreFetchError reason, Exception e)

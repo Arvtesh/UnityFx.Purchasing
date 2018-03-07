@@ -2,16 +2,10 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// Shared functionality of initialize/fetch operations.
-	/// </summary>
 	internal abstract class StoreConfigOperation : StoreOperation
 	{
 		#region data

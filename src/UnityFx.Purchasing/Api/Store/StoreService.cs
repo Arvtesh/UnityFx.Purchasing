@@ -139,6 +139,7 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
+		/// <seealso cref="Configure(ConfigurationBuilder, StoreConfig)"/>
 		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
 		protected internal abstract IAsyncOperation<StoreConfig> GetStoreConfig();
 
@@ -151,15 +152,28 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
 		/// <seealso cref="GetStoreConfig"/>
+		/// <seealso cref="Configure(ConfigurationBuilder, StoreConfig)"/>
 		protected internal virtual IAsyncOperation<PurchaseValidationResult> ValidatePurchase(IStoreTransaction transactionInfo)
 		{
 			return null;
 		}
 
 		/// <summary>
+		/// Configures <c>Unity3d</c> store. Default implementation adds products from <paramref name="storeConfig"/>.
+		/// </summary>
+		/// <param name="configurationBuilder">Unity store configurator.</param>
+		/// <param name="storeConfig">Store configuration returned by <see cref="GetStoreConfig"/>.</param>
+		/// <seealso cref="GetStoreConfig"/>
+		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
+		protected internal virtual void Configure(ConfigurationBuilder configurationBuilder, StoreConfig storeConfig)
+		{
+			configurationBuilder.AddProducts(storeConfig.Products);
+		}
+
+		/// <summary>
 		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.
 		/// </summary>
-		/// <seealso cref="OnInitialize(ConfigurationBuilder, StoreConfig)"/>
+		/// <seealso cref="OnInitialize(IStoreOperationInfo, ConfigurationBuilder)"/>
 		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
 		protected internal virtual void OnInitializeInitiated(IStoreOperationInfo op)
 		{
@@ -169,20 +183,18 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when a <see cref="StoreConfig"/> has been initialized. Default implementation calls <see cref="UnityPurchasing.Initialize(IStoreListener, ConfigurationBuilder)"/>.
 		/// </summary>
-		/// <param name="configurationBuilder">The <c>Unity3d</c> configuration builder instance.</param>
-		/// <param name="storeConfig">Store configuration returned by <see cref="GetStoreConfig"/>.</param>
 		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
 		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
-		protected internal virtual void OnInitialize(ConfigurationBuilder configurationBuilder, StoreConfig storeConfig)
+		protected internal virtual void OnInitialize(IStoreOperationInfo op, ConfigurationBuilder configuration)
 		{
-			UnityPurchasing.Initialize(_storeListener, configurationBuilder);
+			UnityPurchasing.Initialize(_storeListener, configuration);
 		}
 
 		/// <summary>
 		/// Called when the store initialization has succeeded. Default implementation raises <see cref="InitializeCompleted"/> event.
 		/// </summary>
 		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
-		/// <seealso cref="OnInitialize(ConfigurationBuilder, StoreConfig)"/>
+		/// <seealso cref="OnInitialize(IStoreOperationInfo, ConfigurationBuilder)"/>
 		protected internal virtual void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
 		{
 			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReason, e));

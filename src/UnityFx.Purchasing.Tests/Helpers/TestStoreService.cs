@@ -46,7 +46,7 @@ namespace UnityFx.Purchasing
 			return AsyncResult.FromResult(new StoreConfig(products));
 		}
 
-		protected override void OnInitialize(ConfigurationBuilder configurationBuilder, StoreConfig storeConfig)
+		protected override void OnInitialize(IStoreOperationInfo op, ConfigurationBuilder configurationBuilder)
 		{
 			
 		}

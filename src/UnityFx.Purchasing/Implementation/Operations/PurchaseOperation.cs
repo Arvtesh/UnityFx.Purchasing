@@ -2,10 +2,7 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityFx.Async;
@@ -14,9 +11,6 @@ namespace UnityFx.Purchasing
 {
 	using Debug = System.Diagnostics.Debug;
 
-	/// <summary>
-	/// A purchase operation.
-	/// </summary>
 	internal class PurchaseOperation : StoreOperation, IAsyncOperation<PurchaseResult>, IPurchaseResult
 	{
 		#region data

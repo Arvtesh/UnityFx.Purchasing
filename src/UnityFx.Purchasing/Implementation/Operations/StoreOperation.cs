@@ -2,20 +2,12 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
-#if !NET35
-using System.Runtime.ExceptionServices;
-#endif
-using System.Threading;
 using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	/// <summary>
-	/// A yieldable asynchronous store operation.
-	/// </summary>
 	internal abstract class StoreOperation : AsyncResult, IStoreOperationInfo
 	{
 		#region data
