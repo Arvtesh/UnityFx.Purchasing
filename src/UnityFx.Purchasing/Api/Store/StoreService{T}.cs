@@ -29,19 +29,16 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService{T}"/> class.
 		/// </summary>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
-		protected StoreService(IPurchasingModule purchasingModule)
-			: base(purchasingModule)
+		protected StoreService()
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService{T}"/> class.
 		/// </summary>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
 		/// <param name="syncContext">A synchronization context used to forward execution to the main thread.</param>
-		protected StoreService(IPurchasingModule purchasingModule, SynchronizationContext syncContext)
-			: base(purchasingModule, syncContext)
+		protected StoreService(SynchronizationContext syncContext)
+			: base(syncContext)
 		{
 		}
 
@@ -49,9 +46,8 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StoreService{T}"/> class.
 		/// </summary>
 		/// <param name="name">Name of the store service (<c>Purchasing</c> is used by default).</param>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
-		protected StoreService(string name, IPurchasingModule purchasingModule)
-			: base(name, purchasingModule)
+		protected StoreService(string name)
+			: base(name)
 		{
 		}
 
@@ -59,10 +55,9 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StoreService{T}"/> class.
 		/// </summary>
 		/// <param name="name">Name of the store service (<c>Purchasing</c> is used by default).</param>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
 		/// <param name="syncContext">A synchronization context used to forward execution to the main thread.</param>
-		protected StoreService(string name, IPurchasingModule purchasingModule, SynchronizationContext syncContext)
-			: base(name, purchasingModule, syncContext)
+		protected StoreService(string name, SynchronizationContext syncContext)
+			: base(name, syncContext)
 		{
 		}
 

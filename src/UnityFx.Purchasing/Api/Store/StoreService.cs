@@ -30,15 +30,17 @@ namespace UnityFx.Purchasing
 	/// <code>
 	/// public class MySimpleStore : StoreService
 	/// {
-	///     public MySimpleStore()
-	///         : base(StandardPurchasingModule.Instance())
-	///     {
-	///     }
-	///
 	///     protected override IAsyncOperation&lt;StoreConfig&gt; GetStoreConfig()
 	///     {
 	///         var products = new ProductDefinition[] { new ProductDefinition("my_test_product", ProductType.Consumable) };
 	///         return AsyncResult.FromResult(new StoreConfig(products));
+	///     }
+	///
+	///     protected override ConfigurationBuilder Configure(StoreConfig storeConfig)
+	///     {
+	///         var purchasingModule = StandardPurchasingModule.Instance();
+	///         var configurationBuilder = ConfigurationBuilder.Instance(purchasingModule);
+	///         return configurationBuilder.AddProducts(storeConfig.Products);
 	///     }
 	/// }
 	/// </code>
@@ -52,7 +54,6 @@ namespace UnityFx.Purchasing
 		private readonly string _serviceName;
 		private readonly TraceSource _console;
 		private readonly StoreListener _storeListener;
-		private readonly IPurchasingModule _purchasingModule;
 		private readonly SynchronizationContext _syncContext;
 		private readonly StoreServiceSettings _settings;
 
@@ -96,19 +97,17 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
-		protected StoreService(IPurchasingModule purchasingModule)
-			: this(null, purchasingModule, SynchronizationContext.Current)
+		protected StoreService()
+			: this(null, SynchronizationContext.Current)
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
 		/// <param name="syncContext">A synchronization context used to forward execution to the main thread.</param>
-		protected StoreService(IPurchasingModule purchasingModule, SynchronizationContext syncContext)
-			: this(null, purchasingModule, syncContext)
+		protected StoreService(SynchronizationContext syncContext)
+			: this(null, syncContext)
 		{
 		}
 
@@ -116,9 +115,8 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		/// <param name="name">Name of the store service (<c>Purchasing</c> is used by default).</param>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
-		protected StoreService(string name, IPurchasingModule purchasingModule)
-			: this(name, purchasingModule, SynchronizationContext.Current)
+		protected StoreService(string name)
+			: this(name, SynchronizationContext.Current)
 		{
 		}
 
@@ -126,13 +124,11 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="StoreService"/> class.
 		/// </summary>
 		/// <param name="name">Name of the store service (<c>Purchasing</c> is used by default).</param>
-		/// <param name="purchasingModule">A purchasing module. Typically an instance of built-in <c>StandardPurchasingModule</c>.</param>
 		/// <param name="syncContext">A synchronization context used to forward execution to the main thread.</param>
-		protected StoreService(string name, IPurchasingModule purchasingModule, SynchronizationContext syncContext)
+		protected StoreService(string name, SynchronizationContext syncContext)
 		{
 			_serviceName = string.IsNullOrEmpty(name) ? "Purchasing" : name;
 			_console = new TraceSource(_serviceName);
-			_purchasingModule = purchasingModule;
 			_storeListener = new StoreListener(this);
 			_syncContext = syncContext;
 			_settings = new StoreServiceSettings(_console, _storeListener);
@@ -144,9 +140,34 @@ namespace UnityFx.Purchasing
 		/// <remarks>
 		/// Typlical implementation would connect to the app server for information on products available.
 		/// </remarks>
-		/// <seealso cref="Configure(ConfigurationBuilder, StoreConfig)"/>
+		/// <seealso cref="Configure(StoreConfig)"/>
 		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
-		protected internal abstract AsyncResult<StoreConfig> GetStoreConfig();
+		protected internal abstract IAsyncOperation<StoreConfig> GetStoreConfig();
+
+		/// <summary>
+		/// Configures <c>Unity3d</c> store based on <paramref name="storeConfig"/> data.
+		/// </summary>
+		/// <remarks>
+		/// The method is called when <see cref="GetStoreConfig"/> completes to construct <c>Unity3d</c> store
+		/// configuration. It should use <see cref="IPurchasingModule"/> to create a <see cref="ConfigurationBuilder"/>
+		/// instance and then fill it according to <paramref name="storeConfig"/>.
+		/// </remarks>
+		/// <example>
+		/// The code below demostrates typical implementation of this method:
+		/// <code>
+		/// protected override ConfigurationBuilder Configure(StoreConfig storeConfig)
+		/// {
+		///     var purchasingModule = StandardPurchasingModule.Instance();
+		///     var configurationBuilder = ConfigurationBuilder.Instance(purchasingModule);
+		///     return configurationBuilder.AddProducts(storeConfig.Products);
+		/// }
+		/// </code>
+		/// </example>
+		/// <param name="storeConfig">Store configuration returned by <see cref="GetStoreConfig"/>.</param>
+		/// <returns>An instance of <see cref="ConfigurationBuilder"/>.</returns>
+		/// <seealso cref="GetStoreConfig"/>
+		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
+		protected internal abstract ConfigurationBuilder Configure(StoreConfig storeConfig);
 
 		/// <summary>
 		/// Validates a purchase. Inherited classes may override this method if purchase validation is required.
@@ -157,28 +178,15 @@ namespace UnityFx.Purchasing
 		/// </remarks>
 		/// <param name="transactionInfo">The transaction data to validate.</param>
 		/// <seealso cref="GetStoreConfig"/>
-		/// <seealso cref="Configure(ConfigurationBuilder, StoreConfig)"/>
-		protected internal virtual AsyncResult<PurchaseValidationResult> ValidatePurchase(IStoreTransaction transactionInfo)
+		/// <seealso cref="Configure(StoreConfig)"/>
+		protected internal virtual IAsyncOperation<PurchaseValidationResult> ValidatePurchase(IStoreTransaction transactionInfo)
 		{
 			return null;
 		}
 
 		/// <summary>
-		/// Configures <c>Unity3d</c> store. Default implementation adds products from <paramref name="storeConfig"/>.
-		/// </summary>
-		/// <param name="configurationBuilder">Unity store configurator.</param>
-		/// <param name="storeConfig">Store configuration returned by <see cref="GetStoreConfig"/>.</param>
-		/// <seealso cref="GetStoreConfig"/>
-		/// <seealso cref="ValidatePurchase(IStoreTransaction)"/>
-		protected internal virtual void Configure(ConfigurationBuilder configurationBuilder, StoreConfig storeConfig)
-		{
-			configurationBuilder.AddProducts(storeConfig.Products);
-		}
-
-		/// <summary>
 		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.
 		/// </summary>
-		/// <seealso cref="OnInitialize(IStoreOperationInfo, ConfigurationBuilder)"/>
 		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
 		protected internal virtual void OnInitializeInitiated(IStoreOperationInfo op)
 		{
@@ -186,20 +194,9 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when a <see cref="StoreConfig"/> has been initialized. Default implementation calls <see cref="UnityPurchasing.Initialize(IStoreListener, ConfigurationBuilder)"/>.
-		/// </summary>
-		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
-		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
-		protected internal virtual void OnInitialize(IStoreOperationInfo op, ConfigurationBuilder configuration)
-		{
-			UnityPurchasing.Initialize(_storeListener, configuration);
-		}
-
-		/// <summary>
 		/// Called when the store initialization has succeeded. Default implementation raises <see cref="InitializeCompleted"/> event.
 		/// </summary>
 		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
-		/// <seealso cref="OnInitialize(IStoreOperationInfo, ConfigurationBuilder)"/>
 		protected internal virtual void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
 		{
 			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReason, e));
@@ -688,7 +685,7 @@ namespace UnityFx.Purchasing
 			Debug.Assert(_storeListener.InitializeOp == null);
 			Debug.Assert(_storeController == null);
 
-			var result = _storeListener.BeginInitialize(_purchasingModule, userCallback, stateObject);
+			var result = _storeListener.BeginInitialize(userCallback, stateObject);
 
 			try
 			{

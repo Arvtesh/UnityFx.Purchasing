@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
@@ -38,20 +37,20 @@ namespace UnityFx.Purchasing
 		{
 			_storeService = storeService;
 			_console = storeService.TraceSource;
-			_purchaseOps = new AsyncResultQueue<PurchaseOperation>
+			_purchaseOps = new AsyncResultQueue<PurchaseOperation>(storeService.SyncContext)
 			{
 				MaxCount = 1
 			};
 		}
 
-		public InitializeOperation BeginInitialize(IPurchasingModule purchasingModule, AsyncCallback asyncCallback, object asyncState)
+		public InitializeOperation BeginInitialize(AsyncCallback asyncCallback, object asyncState)
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
 			asyncCallback += new AsyncCallback(op => _initializeOp = null);
-			return _initializeOp = new InitializeOperation(_storeService, purchasingModule, asyncCallback, asyncState);
+			return _initializeOp = new InitializeOperation(_storeService, this, asyncCallback, asyncState);
 		}
 
 		public FetchOperation BeginFetch(AsyncCallback asyncCallback, object asyncState)

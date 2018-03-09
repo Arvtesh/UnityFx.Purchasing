@@ -12,16 +12,16 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private readonly IPurchasingModule _purchasingModule;
+		private readonly IStoreListener _storeListener;
 
 		#endregion
 
 		#region interface
 
-		public InitializeOperation(StoreService store, IPurchasingModule purchasingModule, AsyncCallback asyncCallback, object asyncState)
+		public InitializeOperation(StoreService store, IStoreListener storeListener, AsyncCallback asyncCallback, object asyncState)
 			: base(store, StoreOperationType.Initialize, asyncCallback, asyncState)
 		{
-			_purchasingModule = purchasingModule;
+			_storeListener = storeListener;
 			Store.OnInitializeInitiated(this);
 		}
 
@@ -31,9 +31,8 @@ namespace UnityFx.Purchasing
 
 		protected override void Initiate(StoreConfig storeConfig)
 		{
-			var configurationBuilder = ConfigurationBuilder.Instance(_purchasingModule);
-			Store.Configure(configurationBuilder, storeConfig);
-			Store.OnInitialize(this, configurationBuilder);
+			var config = Store.Configure(storeConfig);
+			UnityPurchasing.Initialize(_storeListener, config);
 		}
 
 		protected override void InvokeCompleted(StoreFetchError reason, Exception e)

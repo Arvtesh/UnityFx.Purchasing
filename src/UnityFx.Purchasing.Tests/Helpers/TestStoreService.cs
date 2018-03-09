@@ -23,7 +23,6 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		public TestStoreService()
-			: base(new TestPurchasingModule())
 		{
 			_store.Initialize(this);
 		}
@@ -32,7 +31,7 @@ namespace UnityFx.Purchasing
 
 		#region StoreService
 
-		protected override AsyncResult<StoreConfig> GetStoreConfig()
+		protected override IAsyncOperation<StoreConfig> GetStoreConfig()
 		{
 			var products = new ProductDefinition[]
 			{
@@ -46,9 +45,9 @@ namespace UnityFx.Purchasing
 			return AsyncResult.FromResult(new StoreConfig(products));
 		}
 
-		protected override void OnInitialize(IStoreOperationInfo op, ConfigurationBuilder configurationBuilder)
+		protected override ConfigurationBuilder Configure(StoreConfig storeConfig)
 		{
-			
+			return null;
 		}
 
 		#endregion
