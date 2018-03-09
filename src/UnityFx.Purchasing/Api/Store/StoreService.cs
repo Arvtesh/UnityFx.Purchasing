@@ -8,15 +8,12 @@ using System.Threading;
 #if UNITYFX_SUPPORT_TAP
 using System.Threading.Tasks;
 #endif
-using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	using Debug = System.Diagnostics.Debug;
-
 	internal enum StoreOperationType
 	{
 		Unknown,
@@ -38,7 +35,7 @@ namespace UnityFx.Purchasing
 	///     {
 	///     }
 	///
-	///     protected override AsyncResult&lt;StoreConfig&gt; GetStoreConfig()
+	///     protected override IAsyncOperation&lt;StoreConfig&gt; GetStoreConfig()
 	///     {
 	///         var products = new ProductDefinition[] { new ProductDefinition("my_test_product", ProductType.Consumable) };
 	///         return AsyncResult.FromResult(new StoreConfig(products));
@@ -48,7 +45,7 @@ namespace UnityFx.Purchasing
 	/// </example>
 	/// <threadsafety static="true" instance="false"/>
 	/// <seealso cref="IStoreService"/>
-	public abstract class StoreService : IStoreService, IStoreServiceSettings, IDisposable
+	public abstract class StoreService : IStoreService, IDisposable
 	{
 		#region data
 
@@ -57,6 +54,7 @@ namespace UnityFx.Purchasing
 		private readonly StoreListener _storeListener;
 		private readonly IPurchasingModule _purchasingModule;
 		private readonly SynchronizationContext _syncContext;
+		private readonly StoreServiceSettings _settings;
 
 		private StoreProductCollection _products;
 #if !NET35
@@ -70,6 +68,12 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region interface
+
+		/// <summary>
+		/// Gets the store settings.
+		/// </summary>
+		/// <value>An instance of store settings controller.</value>
+		public IStoreServiceSettings Settings => _settings;
 
 		/// <summary>
 		/// Gets a <see cref="System.Diagnostics.TraceSource"/> instance used by the service.
@@ -131,6 +135,7 @@ namespace UnityFx.Purchasing
 			_purchasingModule = purchasingModule;
 			_storeListener = new StoreListener(this);
 			_syncContext = syncContext;
+			_settings = new StoreServiceSettings(_console, _storeListener);
 		}
 
 		/// <summary>
@@ -478,7 +483,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public AsyncResult InitializeAsync()
+		public IAsyncOperation InitializeAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
@@ -492,7 +497,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public AsyncResult FetchAsync()
+		public IAsyncOperation FetchAsync()
 		{
 			ThrowIfDisposed();
 			ThrowIfPlatformNotSupported();
@@ -502,7 +507,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
-		public AsyncResult<PurchaseResult> PurchaseAsync(string productId, object stateObject = null)
+		public IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject = null)
 		{
 			ThrowIfDisposed();
 			ThrowIfInvalidProductId(productId);
@@ -576,7 +581,7 @@ namespace UnityFx.Purchasing
 		{
 			ThrowIfDisposed();
 
-			using (var op = ValidateOperation<IPurchaseResult>(asyncResult, StoreOperationType.Purchase))
+			using (var op = ValidateOperation<PurchaseResult>(asyncResult, StoreOperationType.Purchase))
 			{
 				return op.Join();
 			}
@@ -662,45 +667,6 @@ namespace UnityFx.Purchasing
 		}
 
 #endif
-
-		#endregion
-
-		#region IStoreServiceSettings
-
-		/// <inheritdoc/>
-		public SourceSwitch TraceSwitch
-		{
-			get
-			{
-				return _console.Switch;
-			}
-			set
-			{
-				_console.Switch = value;
-			}
-		}
-
-		/// <inheritdoc/>
-		public TraceListenerCollection TraceListeners
-		{
-			get
-			{
-				return _console.Listeners;
-			}
-		}
-
-		/// <inheritdoc/>
-		public int MaxNumberOfPendingPurchases
-		{
-			get
-			{
-				return _storeListener.MaxNumberOfPendingPurchases;
-			}
-			set
-			{
-				_storeListener.MaxNumberOfPendingPurchases = value;
-			}
-		}
 
 		#endregion
 

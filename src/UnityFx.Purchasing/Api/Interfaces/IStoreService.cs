@@ -256,7 +256,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
-		AsyncResult InitializeAsync();
+		IAsyncOperation InitializeAsync();
 
 		/// <summary>
 		/// Initiates fetching product information from the store.
@@ -270,7 +270,7 @@ namespace UnityFx.Purchasing
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
-		AsyncResult FetchAsync();
+		IAsyncOperation FetchAsync();
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -302,7 +302,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="IsBusy"/>
-		AsyncResult<PurchaseResult> PurchaseAsync(string productId, object stateObject = null);
+		IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject = null);
 
 #if UNITYFX_SUPPORT_APM
 
