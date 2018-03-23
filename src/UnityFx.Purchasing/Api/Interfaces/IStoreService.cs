@@ -415,59 +415,5 @@ namespace UnityFx.Purchasing
 		PurchaseResult EndPurchase(IAsyncResult asyncResult);
 
 #endif
-
-#if UNITYFX_SUPPORT_TAP
-
-		/// <summary>
-		/// Initiates the store initialization.
-		/// </summary>
-		/// <remarks>
-		/// Please see <see cref="InitializeAsync()"/> documentation for more information.
-		/// </remarks>
-		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
-		/// <seealso cref="FetchTaskAsync()"/>
-		/// <seealso cref="PurchaseTaskAsync(string, object)"/>
-		Task InitializeTaskAsync();
-
-		/// <summary>
-		/// Fetches product information from the store.
-		/// </summary>
-		/// <remarks>
-		/// Please see <see cref="FetchAsync()"/> documentation for more information.
-		/// </remarks>
-		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
-		/// <seealso cref="InitializeTaskAsync()"/>
-		/// <seealso cref="PurchaseTaskAsync(string, object)"/>
-		Task FetchTaskAsync();
-
-		/// <summary>
-		/// Initiates purchase of the specified product.
-		/// </summary>
-		/// <remarks>
-		/// Please see <see cref="PurchaseAsync(string, object)"/> documentation for more information.
-		/// </remarks>
-		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular operation from others.</param>
-		/// <returns>A <see cref="Task"/> instance that can be used to track the operation progress.</returns>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="productId"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">Thrown if <paramref name="productId"/> is an empty string.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <exception cref="StorePurchaseException">Thrown in case of purchase-related errors.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">Task-based Asynchronous Pattern (TAP)</seealso>
-		/// <seealso cref="InitializeTaskAsync()"/>
-		/// <seealso cref="FetchTaskAsync()"/>
-		/// <seealso cref="IsBusy"/>
-		Task<PurchaseResult> PurchaseTaskAsync(string productId, object stateObject = null);
-
-#endif
 	}
 }

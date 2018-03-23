@@ -586,85 +586,6 @@ namespace UnityFx.Purchasing
 
 #endif
 
-#if UNITYFX_SUPPORT_TAP
-
-		/// <inheritdoc/>
-		public Task InitializeTaskAsync()
-		{
-			ThrowIfDisposed();
-			ThrowIfPlatformNotSupported();
-
-			if (_storeController == null)
-			{
-				if (_storeListener.InitializeOp != null)
-				{
-					return _storeListener.InitializeOp.ToTask();
-				}
-				else
-				{
-					var tcs = new TaskCompletionSource<object>();
-					InitializeInternal(FetchCompletionCallback, tcs);
-					return tcs.Task;
-				}
-			}
-
-			return Task.CompletedTask;
-		}
-
-		/// <inheritdoc/>
-		public Task FetchTaskAsync()
-		{
-			ThrowIfDisposed();
-			ThrowIfPlatformNotSupported();
-			ThrowIfNotInitialized();
-
-			if (_storeListener.FetchOp != null)
-			{
-				return _storeListener.FetchOp.ToTask();
-			}
-			else
-			{
-				var tcs = new TaskCompletionSource<object>();
-				FetchInternal(FetchCompletionCallback, tcs);
-				return tcs.Task;
-			}
-		}
-
-		/// <inheritdoc/>
-		public Task<PurchaseResult> PurchaseTaskAsync(string productId, object stateObject = null)
-		{
-			ThrowIfDisposed();
-			ThrowIfInvalidProductId(productId);
-			ThrowIfPlatformNotSupported();
-
-			var tcs = new TaskCompletionSource<PurchaseResult>(stateObject);
-
-			PurchaseInternal(
-				productId,
-				op =>
-				{
-					var storeOp = op as IAsyncOperation<PurchaseResult>;
-
-					if (storeOp.IsCompletedSuccessfully)
-					{
-						tcs.TrySetResult(storeOp.Result);
-					}
-					else if (storeOp.IsCanceled)
-					{
-						tcs.TrySetCanceled();
-					}
-					else
-					{
-						tcs.TrySetException(storeOp.Exception.InnerExceptions);
-					}
-				},
-				stateObject);
-
-			return tcs.Task;
-		}
-
-#endif
-
 		#endregion
 
 		#region IDisposable
@@ -798,29 +719,6 @@ namespace UnityFx.Purchasing
 			else
 			{
 				throw new ArgumentException("Invalid operation type", nameof(asyncResult));
-			}
-		}
-
-#endif
-
-#if UNITYFX_SUPPORT_TAP
-
-		private static void FetchCompletionCallback(IAsyncResult asyncResult)
-		{
-			var storeOp = asyncResult as IAsyncOperation;
-			var tcs = asyncResult.AsyncState as TaskCompletionSource<object>;
-
-			if (storeOp.IsCompletedSuccessfully)
-			{
-				tcs.TrySetResult(null);
-			}
-			else if (storeOp.IsCanceled)
-			{
-				tcs.TrySetCanceled();
-			}
-			else
-			{
-				tcs.TrySetException(storeOp.Exception.InnerExceptions);
 			}
 		}
 
