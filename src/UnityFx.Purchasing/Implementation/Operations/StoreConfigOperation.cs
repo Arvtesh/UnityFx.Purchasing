@@ -69,7 +69,7 @@ namespace UnityFx.Purchasing
 			{
 				throw new StoreFetchException(this, StoreFetchError.StoreConfigUnavailable);
 			}
-			else if (!op.TryAddCompletionCallback(OnGetConfigCompleted, Store.SyncContext))
+			else if (!op.TryAddContinuation(OnGetConfigCompleted, Store.SyncContext))
 			{
 				OnGetConfigCompleted(op);
 			}
