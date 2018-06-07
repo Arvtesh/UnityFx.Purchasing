@@ -3,9 +3,6 @@
 
 using System;
 using System.ComponentModel;
-#if UNITYFX_SUPPORT_TAP
-using System.Threading.Tasks;
-#endif
 using UnityEngine.Purchasing;
 using UnityFx.Async;
 
@@ -187,7 +184,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="PurchaseInitiated"/>
 		event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 
-#if UNITYFX_SUPPORT_OBSERVABLES
+#if !NET35
 
 		/// <summary>
 		/// Gets push notification provider of the store transactions.
@@ -220,7 +217,6 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <value><c>Unity3d</c> controller that is responsible for all store operations.</value>
 		/// <seealso cref="IsInitialized"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IStoreController Controller { get; }
 
 		/// <summary>
@@ -228,7 +224,6 @@ namespace UnityFx.Purchasing
 		/// </summary>
 		/// <value><c>Unity3d</c> controller that provides access for store-specific extensions.</value>
 		/// <seealso cref="IsInitialized"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		IExtensionProvider Extensions { get; }
 
 		/// <summary>
@@ -303,117 +298,5 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="FetchAsync()"/>
 		/// <seealso cref="IsBusy"/>
 		IAsyncOperation<PurchaseResult> PurchaseAsync(string productId, object stateObject = null);
-
-#if UNITYFX_SUPPORT_APM
-
-		/// <summary>
-		/// Begins an asynchronous initialize operation.
-		/// </summary>
-		/// <remarks>
-		/// Please see <see cref="InitializeAsync()"/> documentation for more information.
-		/// </remarks>
-		/// <param name="userCallback">The method to be called when the asynchronous initialize operation is completed.</param>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous initialize operation from other operations.</param>
-		/// <returns>An object that references the asynchronous initialize operation.</returns>
-		/// <exception cref="InvalidOperationException">Thrown if the store is already initialized.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
-		/// <seealso cref="EndInitialize(IAsyncResult)"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		IAsyncResult BeginInitialize(AsyncCallback userCallback, object stateObject);
-
-		/// <summary>
-		/// Waits for the pending asynchronous initialize operation to complete.
-		/// </summary>
-		/// <remarks>
-		/// The method will block until the operation has completed. <see cref="EndInitialize(IAsyncResult)"/> must be called
-		/// exactly for every call to <see cref="BeginInitialize(AsyncCallback, object)"/>.
-		/// </remarks>
-		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginInitialize(AsyncCallback, object)"/> on this class.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="EndInitialize(IAsyncResult)"/> is called multiple times.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if either the store or <paramref name="asyncResult"/> is disposed.</exception>
-		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
-		/// <seealso cref="BeginInitialize(AsyncCallback, object)"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		void EndInitialize(IAsyncResult asyncResult);
-
-		/// <summary>
-		/// Begins an asynchronous fetch operation.
-		/// </summary>
-		/// <remarks>
-		/// Please see <see cref="FetchAsync()"/> documentation for more information.
-		/// </remarks>
-		/// <param name="userCallback">The method to be called when the asynchronous fetch operation is completed.</param>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous fetch operation from other operations.</param>
-		/// <returns>An object that references the asynchronous fetch operation.</returns>
-		/// <exception cref="InvalidOperationException">Thrown if the store is not initialized.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
-		/// <seealso cref="EndFetch(IAsyncResult)"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		IAsyncResult BeginFetch(AsyncCallback userCallback, object stateObject);
-
-		/// <summary>
-		/// Waits for the pending asynchronous fetch operation to complete.
-		/// </summary>
-		/// <remarks>
-		/// The method will block until the operation has completed. <see cref="EndFetch(IAsyncResult)"/> must be called
-		/// exactly for every call to <see cref="BeginFetch(AsyncCallback, object)"/>.
-		/// </remarks>
-		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginFetch(AsyncCallback, object)"/> on this class.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if either the store or <paramref name="asyncResult"/> is disposed.</exception>
-		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
-		/// <seealso cref="BeginFetch(AsyncCallback, object)"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		void EndFetch(IAsyncResult asyncResult);
-
-		/// <summary>
-		/// Begins an asynchronous purchase operation of the specified product.
-		/// </summary>
-		/// <remarks>
-		/// Please see <see cref="PurchaseAsync(string, object)"/> documentation for more information.
-		/// </remarks>
-		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
-		/// <param name="userCallback">The method to be called when the asynchronous purchase operation is completed.</param>
-		/// <param name="stateObject">A user-provided object that distinguishes this particular asynchronous purchase operation from other operations.</param>
-		/// <returns>An object that references the asynchronous purchase operation.</returns>
-		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if the store state does not allow purchases (for example too many concurrent purchase operations).</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
-		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
-		/// <seealso cref="EndPurchase(IAsyncResult)"/>
-		/// <seealso cref="IsBusy"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		IAsyncResult BeginPurchase(string productId, AsyncCallback userCallback, object stateObject);
-
-		/// <summary>
-		/// Waits for the pending asynchronous purchase operation to complete.
-		/// </summary>
-		/// <remarks>
-		/// The method will block until the operation has completed. <see cref="EndPurchase(IAsyncResult)"/> must be called
-		/// exactly for every call to <see cref="BeginPurchase(string, AsyncCallback, object)"/>.
-		/// </remarks>
-		/// <param name="asyncResult">The reference to the pending asynchronous operation to wait for.</param>
-		/// <exception cref="ArgumentNullException">Thrown if <paramref name="asyncResult"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="asyncResult"/> object was not created by calling <see cref="BeginPurchase(string, AsyncCallback, object)"/> on this class.</exception>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="EndPurchase(IAsyncResult)"/> is called multiple times.</exception>
-		/// <exception cref="ObjectDisposedException">Thrown if either the store or <paramref name="asyncResult"/> is disposed.</exception>
-		/// <exception cref="StoreFetchException">Thrown if initialization fails.</exception>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/asynchronous-programming-model-apm">Asynchronous Programming Model (APM)</seealso>
-		/// <seealso cref="BeginPurchase(string, AsyncCallback, object)"/>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		PurchaseResult EndPurchase(IAsyncResult asyncResult);
-
-#endif
 	}
 }

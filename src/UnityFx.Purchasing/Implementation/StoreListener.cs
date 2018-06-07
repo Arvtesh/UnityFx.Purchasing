@@ -43,31 +43,35 @@ namespace UnityFx.Purchasing
 			};
 		}
 
-		public InitializeOperation BeginInitialize(AsyncCallback asyncCallback, object asyncState)
+		public InitializeOperation BeginInitialize(object asyncState)
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			asyncCallback += new AsyncCallback(op => _initializeOp = null);
-			return _initializeOp = new InitializeOperation(_storeService, this, asyncCallback, asyncState);
+			var op = new InitializeOperation(_storeService, this, asyncState);
+			_initializeOp = op;
+			_initializeOp.AddContinuation(o => _initializeOp = null);
+			return op;
 		}
 
-		public FetchOperation BeginFetch(AsyncCallback asyncCallback, object asyncState)
+		public FetchOperation BeginFetch(object asyncState)
 		{
 			Debug.Assert(!_disposed);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
 
-			asyncCallback += new AsyncCallback(op => _fetchOp = null);
-			return _fetchOp = new FetchOperation(_storeService, OnFetch, OnFetchFailed, asyncCallback, asyncState);
+			var op = new FetchOperation(_storeService, OnFetch, OnFetchFailed, asyncState);
+			_fetchOp = op;
+			_fetchOp.AddContinuation(o => _fetchOp = null);
+			return op;
 		}
 
-		public PurchaseOperation BeginPurchase(string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
+		public PurchaseOperation BeginPurchase(string productId, bool restored, object asyncState)
 		{
 			Debug.Assert(!_disposed);
 
-			return new PurchaseOperation(_storeService, productId, restored, asyncCallback, asyncState);
+			return new PurchaseOperation(_storeService, productId, restored, asyncState);
 		}
 
 		public PurchaseOperation BeginPurchase(Product product, bool restored)
@@ -239,7 +243,7 @@ namespace UnityFx.Purchasing
 						// A restored transaction.
 						if (product != null)
 						{
-							op = BeginPurchase(productId, true, null, null);
+							op = BeginPurchase(productId, true, null);
 							op.SetFailed(product, GetPurchaseError(reason));
 						}
 						else

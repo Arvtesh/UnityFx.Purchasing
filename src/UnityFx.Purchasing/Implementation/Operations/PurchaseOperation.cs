@@ -3,14 +3,11 @@
 
 using System;
 using System.Diagnostics;
-using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityFx.Async;
 
 namespace UnityFx.Purchasing
 {
-	using Debug = System.Diagnostics.Debug;
-
 	internal class PurchaseOperation : StoreOperation<PurchaseResult>, IPurchaseResult
 	{
 		#region data
@@ -26,8 +23,8 @@ namespace UnityFx.Purchasing
 
 		#region interface
 
-		public PurchaseOperation(StoreService store, string productId, bool restored, AsyncCallback asyncCallback, object asyncState)
-			: base(store, StoreOperationType.Purchase, asyncCallback, asyncState, GetComment(productId, restored))
+		public PurchaseOperation(StoreService store, string productId, bool restored, object asyncState)
+			: base(store, StoreOperationType.Purchase, asyncState, GetComment(productId, restored))
 		{
 			Debug.Assert(store != null);
 			Debug.Assert(productId != null);
@@ -39,7 +36,7 @@ namespace UnityFx.Purchasing
 		}
 
 		public PurchaseOperation(StoreService store, Product product, bool restored)
-			: this(store, product.definition.id, restored, null, null)
+			: this(store, product.definition.id, restored, null)
 		{
 			_product = product;
 			_receipt = product.GetNativeReceipt();

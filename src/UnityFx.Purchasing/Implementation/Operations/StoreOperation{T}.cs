@@ -12,8 +12,6 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private const int _typeMask = 0x3;
-
 		private readonly int _id;
 		private readonly string _name;
 		private readonly StoreService _store;
@@ -28,27 +26,14 @@ namespace UnityFx.Purchasing
 
 		protected StoreService Store => _store;
 
-		protected StoreOperation(StoreService store, StoreOperationType opType, AsyncCallback asyncCallback, object asyncState, string comment)
-			: base(asyncCallback, asyncState)
+		protected StoreOperation(StoreService store, StoreOperationType opType, object asyncState, string comment)
+			: base(null, asyncState)
 		{
-			_id = (++_lastId << 2) | (int)opType;
+			_id = ++_lastId;
 			_name = $"{opType.ToString()} ({_id.ToString(CultureInfo.InvariantCulture)})";
 			_store = store;
 
 			TraceStart(comment);
-		}
-
-		internal void Validate(object owner, StoreOperationType type)
-		{
-			if ((_id & _typeMask) != (int)type)
-			{
-				throw new ArgumentException("Invalid operation type");
-			}
-
-			if (_store != owner)
-			{
-				throw new InvalidOperationException("Invalid operation owner");
-			}
 		}
 
 		protected void TraceError(string s)
