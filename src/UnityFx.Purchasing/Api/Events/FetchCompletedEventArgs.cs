@@ -9,16 +9,21 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Event arguments for <see cref="IStoreService.FetchCompleted"/> and <see cref="IStoreService.InitializeCompleted"/>.
 	/// </summary>
-	public class FetchCompletedEventArgs : AsyncCompletedEventArgs, IStoreOperationInfo
+	public class FetchCompletedEventArgs : AsyncCompletedEventArgs
 	{
 		#region data
 
-		private readonly IStoreOperationInfo _result;
+		private readonly int _id;
 		private readonly StoreFetchError _reason;
 
 		#endregion
 
 		#region interface
+
+		/// <summary>
+		/// Gets identifier of the operation.
+		/// </summary>
+		public int OperationId => _id;
 
 		/// <summary>
 		/// Gets fetch failure reason.
@@ -28,28 +33,21 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
 		/// </summary>
-		public FetchCompletedEventArgs(IStoreOperationInfo op)
-			: base(null, false, op.UserState)
+		public FetchCompletedEventArgs(int opId, object userState)
+			: base(null, false, userState)
 		{
-			_result = op;
+			_id = opId;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
 		/// </summary>
-		public FetchCompletedEventArgs(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
-			: base(e, false, op.UserState)
+		public FetchCompletedEventArgs(StoreFetchError failReason, Exception e, int opId, object userState)
+			: base(e, false, userState)
 		{
-			_result = op;
+			_id = opId;
 			_reason = failReason;
 		}
-
-		#endregion
-
-		#region IStoreOperationInfo
-
-		/// <inheritdoc/>
-		public int OperationId => _result.OperationId;
 
 		#endregion
 	}

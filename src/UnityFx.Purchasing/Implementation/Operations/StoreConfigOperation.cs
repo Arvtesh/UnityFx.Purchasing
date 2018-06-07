@@ -30,7 +30,7 @@ namespace UnityFx.Purchasing
 		{
 			TraceError(reason.ToString());
 
-			if (TrySetException(new StoreFetchException(this, reason), false))
+			if (TrySetException(new StoreFetchException(reason, Id, AsyncState), false))
 			{
 				InvokeCompleted(reason, Exception);
 			}
@@ -40,7 +40,7 @@ namespace UnityFx.Purchasing
 		{
 			TraceException(e);
 
-			if (TrySetException(new StoreFetchException(this, reason, e), false))
+			if (TrySetException(new StoreFetchException(reason, e, Id, AsyncState), false))
 			{
 				InvokeCompleted(reason, e);
 			}
@@ -67,7 +67,7 @@ namespace UnityFx.Purchasing
 
 			if (op == null)
 			{
-				throw new StoreFetchException(this, StoreFetchError.StoreConfigUnavailable);
+				throw new StoreFetchException(StoreFetchError.StoreConfigUnavailable, Id, AsyncState);
 			}
 			else if (!op.TryAddContinuation(OnGetConfigCompleted, Store.SyncContext))
 			{

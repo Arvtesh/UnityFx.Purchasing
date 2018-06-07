@@ -10,7 +10,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public sealed class StoreFetchException : StoreException, IStoreOperationInfo
+	public sealed class StoreFetchException : StoreException
 	{
 		#region data
 
@@ -53,8 +53,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreFetchException(IStoreOperationInfo op, StoreFetchError reason)
-			: base(reason.ToString(), op)
+		public StoreFetchException(StoreFetchError reason, int opId, object userState)
+			: base(reason.ToString(), opId, userState)
 		{
 			_reason = reason;
 		}
@@ -62,8 +62,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreFetchException"/> class.
 		/// </summary>
-		public StoreFetchException(IStoreOperationInfo op, StoreFetchError reason, Exception innerException)
-			: base(reason.ToString(), op, innerException)
+		public StoreFetchException(StoreFetchError reason, Exception innerException, int opId, object userState)
+			: base(reason.ToString(), innerException, opId, userState)
 		{
 			_reason = reason;
 		}

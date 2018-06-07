@@ -187,55 +187,55 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.
 		/// </summary>
-		/// <seealso cref="OnInitializeCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
-		protected internal virtual void OnInitializeInitiated(IStoreOperationInfo op)
+		/// <seealso cref="OnInitializeCompleted(StoreFetchError, Exception, int, object)"/>
+		protected internal virtual void OnInitializeInitiated(int opId, object userState)
 		{
-			InitializeInitiated?.Invoke(this, new FetchInitiatedEventArgs(op));
+			InitializeInitiated?.Invoke(this, new FetchInitiatedEventArgs(opId, userState));
 		}
 
 		/// <summary>
 		/// Called when the store initialization has succeeded. Default implementation raises <see cref="InitializeCompleted"/> event.
 		/// </summary>
-		/// <seealso cref="OnInitializeInitiated(IStoreOperationInfo)"/>
-		protected internal virtual void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
+		/// <seealso cref="OnInitializeInitiated(int, object)"/>
+		protected internal virtual void OnInitializeCompleted(StoreFetchError failReason, Exception e, int opId, object userState)
 		{
-			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReason, e));
+			InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(failReason, e, opId, userState));
 		}
 
 		/// <summary>
 		/// Called when the store fetch operation has been initiated. Default implementation raises <see cref="FetchInitiated"/> event.
 		/// </summary>
-		/// <seealso cref="OnFetchCompleted(IStoreOperationInfo, StoreFetchError, Exception)"/>
-		protected internal virtual void OnFetchInitiated(IStoreOperationInfo op)
+		/// <seealso cref="OnFetchCompleted(StoreFetchError, Exception, int, object)"/>
+		protected internal virtual void OnFetchInitiated(int opId, object userState)
 		{
-			FetchInitiated?.Invoke(this, new FetchInitiatedEventArgs(op));
+			FetchInitiated?.Invoke(this, new FetchInitiatedEventArgs(opId, userState));
 		}
 
 		/// <summary>
 		/// Called when the store fetch has succeeded. Default implementation raises <see cref="FetchCompleted"/> event.
 		/// </summary>
-		/// <seealso cref="OnFetchInitiated(IStoreOperationInfo)"/>
-		protected internal virtual void OnFetchCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
+		/// <seealso cref="OnFetchInitiated(int, object)"/>
+		protected internal virtual void OnFetchCompleted(StoreFetchError failReason, Exception e, int opId, object userState)
 		{
-			FetchCompleted?.Invoke(this, new FetchCompletedEventArgs(op, failReason, e));
+			FetchCompleted?.Invoke(this, new FetchCompletedEventArgs(failReason, e, opId, userState));
 		}
 
 		/// <summary>
 		/// Called when the store purchase operation has been initiated. Default implementation raises <see cref="PurchaseInitiated"/> event.
 		/// </summary>
-		/// <seealso cref="OnPurchaseCompleted(IPurchaseResult, StorePurchaseError, Exception)"/>
-		protected internal virtual void OnPurchaseInitiated(IStoreOperationInfo op, string productId, bool restored)
+		/// <seealso cref="OnPurchaseCompleted(IPurchaseResult, StorePurchaseError, Exception, int, object)"/>
+		protected internal virtual void OnPurchaseInitiated(string productId, bool restored, int opId, object userState)
 		{
-			PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(op, productId, restored));
+			PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId, restored, opId, userState));
 		}
 
 		/// <summary>
 		/// Called when the store purchase operation succeded. Default implementation raises <see cref="PurchaseCompleted"/> event.
 		/// </summary>
-		/// <seealso cref="OnPurchaseInitiated(IStoreOperationInfo, string, bool)"/>
-		protected internal virtual void OnPurchaseCompleted(IPurchaseResult result, StorePurchaseError failReason, Exception e)
+		/// <seealso cref="OnPurchaseInitiated(string, bool, int, object)"/>
+		protected internal virtual void OnPurchaseCompleted(IPurchaseResult result, StorePurchaseError failReason, Exception e, int opId, object userState)
 		{
-			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(result, failReason, e));
+			PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(result, failReason, e, opId, userState));
 
 #if UNITYFX_SUPPORT_OBSERVABLES
 

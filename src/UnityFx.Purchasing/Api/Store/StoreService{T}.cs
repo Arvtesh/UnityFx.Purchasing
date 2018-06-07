@@ -73,25 +73,25 @@ namespace UnityFx.Purchasing
 		#region StoreService
 
 		/// <inheritdoc/>
-		protected internal override void OnInitializeCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
+		protected internal override void OnInitializeCompleted(StoreFetchError failReason, Exception e, int opId, object userState)
 		{
 			if (failReason == StoreFetchError.None)
 			{
 				ResetProducts();
 			}
 
-			base.OnInitializeCompleted(op, failReason, e);
+			base.OnInitializeCompleted(failReason, e, opId, userState);
 		}
 
 		/// <inheritdoc/>
-		protected internal override void OnFetchCompleted(IStoreOperationInfo op, StoreFetchError failReason, Exception e)
+		protected internal override void OnFetchCompleted(StoreFetchError failReason, Exception e, int opId, object userState)
 		{
 			if (failReason == StoreFetchError.None)
 			{
 				ResetProducts();
 			}
 
-			base.OnFetchCompleted(op, failReason, e);
+			base.OnFetchCompleted(failReason, e, opId, userState);
 		}
 
 		#endregion

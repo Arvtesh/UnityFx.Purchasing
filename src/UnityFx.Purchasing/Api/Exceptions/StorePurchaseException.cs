@@ -65,8 +65,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason)
-			: base(GetMessage(result.ProductId, reason), result)
+		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason, int opId, object userState)
+			: base(GetMessage(result.ProductId, reason), opId, userState)
 		{
 			_productId = result.ProductId;
 			_product = result.Product;
@@ -80,8 +80,8 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StorePurchaseException"/> class.
 		/// </summary>
-		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason, Exception innerException)
-			: base(GetMessage(result.ProductId, reason), result, innerException)
+		public StorePurchaseException(IPurchaseResult result, StorePurchaseError reason, Exception innerException, int opId, object userState)
+			: base(GetMessage(result.ProductId, reason), innerException, opId, userState)
 		{
 			_productId = result.ProductId;
 			_product = result.Product;

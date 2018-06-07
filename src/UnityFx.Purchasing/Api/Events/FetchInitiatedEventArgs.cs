@@ -8,14 +8,36 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Event arguments for <see cref="IStoreService.FetchInitiated"/> and <see cref="IStoreService.InitializeInitiated"/>.
 	/// </summary>
-	public class FetchInitiatedEventArgs : StoreOperationEventArgs
+	public class FetchInitiatedEventArgs : EventArgs
 	{
+		#region data
+
+		private readonly int _id;
+		private readonly object _userState;
+
+		#endregion
+
+		#region interface
+
+		/// <summary>
+		/// Gets identifier of the dismiss operation.
+		/// </summary>
+		public int OperationId => _id;
+
+		/// <summary>
+		/// Gets user-defined data assosisated with the operation.
+		/// </summary>
+		public object UserState => _userState;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchInitiatedEventArgs"/> class.
 		/// </summary>
-		public FetchInitiatedEventArgs(IStoreOperationInfo op)
-			: base(op)
+		public FetchInitiatedEventArgs(int opId, object userState)
 		{
+			_id = opId;
+			_userState = userState;
 		}
+
+		#endregion
 	}
 }

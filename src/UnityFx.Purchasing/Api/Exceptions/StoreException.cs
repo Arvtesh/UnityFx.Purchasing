@@ -10,7 +10,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public class StoreException : Exception, IStoreOperationInfo
+	public class StoreException : Exception
 	{
 		#region data
 
@@ -22,6 +22,16 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region interface
+
+		/// <summary>
+		/// Gets identifier of the dismiss operation.
+		/// </summary>
+		public int OperationId => _id;
+
+		/// <summary>
+		/// Gets user-defined data assosisated with the operation.
+		/// </summary>
+		public object UserState => _userState;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreException"/> class.
@@ -50,32 +60,22 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreException"/> class.
 		/// </summary>
-		public StoreException(string message, IStoreOperationInfo op)
+		public StoreException(string message, int opId, object userState)
 			: base(message)
 		{
-			_id = op.OperationId;
-			_userState = op.UserState;
+			_id = opId;
+			_userState = userState;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StoreException"/> class.
 		/// </summary>
-		public StoreException(string message, IStoreOperationInfo op, Exception innerException)
+		public StoreException(string message, Exception innerException, int opId, object userState)
 			: base(message, innerException)
 		{
-			_id = op.OperationId;
-			_userState = op.UserState;
+			_id = opId;
+			_userState = userState;
 		}
-
-		#endregion
-
-		#region IStoreOperationInfo
-
-		/// <inheritdoc/>
-		public int OperationId => _id;
-
-		/// <inheritdoc/>
-		public object UserState => _userState;
 
 		#endregion
 

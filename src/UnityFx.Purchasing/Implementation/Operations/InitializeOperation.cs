@@ -22,7 +22,7 @@ namespace UnityFx.Purchasing
 			: base(store, StoreOperationType.Initialize, asyncCallback, asyncState)
 		{
 			_storeListener = storeListener;
-			Store.OnInitializeInitiated(this);
+			Store.OnInitializeInitiated(Id, asyncState);
 		}
 
 		#endregion
@@ -37,7 +37,7 @@ namespace UnityFx.Purchasing
 
 		protected override void InvokeCompleted(StoreFetchError reason, Exception e)
 		{
-			Store.OnInitializeCompleted(this, reason, e);
+			Store.OnInitializeCompleted(reason, e, Id, AsyncState);
 		}
 
 		#endregion

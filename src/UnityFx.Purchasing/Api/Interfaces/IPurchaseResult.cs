@@ -10,7 +10,7 @@ namespace UnityFx.Purchasing
 	/// Result of a store purchase.
 	/// </summary>
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
-	public interface IPurchaseResult : IStoreTransaction, IStoreOperationInfo
+	public interface IPurchaseResult : IStoreTransaction
 	{
 		/// <summary>
 		/// Gets product validation result or <see langword="null"/> if not available.

@@ -14,12 +14,18 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
+		private readonly int _id;
 		private readonly IPurchaseResult _result;
 		private readonly StorePurchaseError _reason;
 
 		#endregion
 
 		#region interface
+
+		/// <summary>
+		/// Gets identifier of the dismiss operation.
+		/// </summary>
+		public int OperationId => _id;
 
 		/// <summary>
 		/// Gets purchase failure reason.
@@ -29,18 +35,20 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
 		/// </summary>
-		public PurchaseCompletedEventArgs(IPurchaseResult result)
-			: base(null, false, result.UserState)
+		public PurchaseCompletedEventArgs(IPurchaseResult result, int opId, object userState)
+			: base(null, false, userState)
 		{
+			_id = opId;
 			_result = result;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
 		/// </summary>
-		public PurchaseCompletedEventArgs(IPurchaseResult result, StorePurchaseError failReason, Exception e)
-			: base(e, failReason == StorePurchaseError.UserCanceled, result.UserState)
+		public PurchaseCompletedEventArgs(IPurchaseResult result, StorePurchaseError failReason, Exception e, int opId, object userState)
+			: base(e, failReason == StorePurchaseError.UserCanceled, userState)
 		{
+			_id = opId;
 			_result = result;
 			_reason = failReason;
 		}
@@ -70,13 +78,6 @@ namespace UnityFx.Purchasing
 
 		/// <inheritdoc/>
 		public bool Restored => _result.Restored;
-
-		#endregion
-
-		#region IStoreOperationInfo
-
-		/// <inheritdoc/>
-		public int OperationId => _result.OperationId;
 
 		#endregion
 	}

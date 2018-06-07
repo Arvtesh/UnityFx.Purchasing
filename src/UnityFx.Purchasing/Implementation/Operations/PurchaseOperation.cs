@@ -35,7 +35,7 @@ namespace UnityFx.Purchasing
 			_productId = productId;
 			_restored = restored;
 
-			Store.OnPurchaseInitiated(this, productId, restored);
+			Store.OnPurchaseInitiated(productId, restored, Id, asyncState);
 		}
 
 		public PurchaseOperation(StoreService store, Product product, bool restored)
@@ -116,12 +116,12 @@ namespace UnityFx.Purchasing
 
 			if (e == null)
 			{
-				e = new StorePurchaseException(this, reason, e);
+				e = new StorePurchaseException(this, reason, e, Id, AsyncState);
 			}
 
 			if (TrySetException(e, false))
 			{
-				Store.OnPurchaseCompleted(this, reason, e);
+				Store.OnPurchaseCompleted(this, reason, e, Id, AsyncState);
 			}
 		}
 
@@ -133,15 +133,15 @@ namespace UnityFx.Purchasing
 			{
 				if (e is StorePurchaseException spe)
 				{
-					Store.OnPurchaseCompleted(this, spe.Reason, e);
+					Store.OnPurchaseCompleted(this, spe.Reason, e, Id, AsyncState);
 				}
 				else if (e is StoreFetchException sfe)
 				{
-					Store.OnPurchaseCompleted(this, StorePurchaseError.StoreNotInitialized, e);
+					Store.OnPurchaseCompleted(this, StorePurchaseError.StoreNotInitialized, e, Id, AsyncState);
 				}
 				else
 				{
-					Store.OnPurchaseCompleted(this, StorePurchaseError.Unknown, e);
+					Store.OnPurchaseCompleted(this, StorePurchaseError.Unknown, e, Id, AsyncState);
 				}
 			}
 		}
@@ -152,19 +152,19 @@ namespace UnityFx.Purchasing
 
 			if (e == null)
 			{
-				e = new StorePurchaseException(this, reason, e);
+				e = new StorePurchaseException(this, reason, e, Id, AsyncState);
 			}
 
 			if (reason == StorePurchaseError.UserCanceled)
 			{
 				if (TrySetCanceled(false))
 				{
-					Store.OnPurchaseCompleted(this, reason, e);
+					Store.OnPurchaseCompleted(this, reason, e, Id, AsyncState);
 				}
 			}
 			else if (TrySetException(e, false))
 			{
-				Store.OnPurchaseCompleted(this, reason, e);
+				Store.OnPurchaseCompleted(this, reason, e, Id, AsyncState);
 			}
 		}
 
@@ -268,7 +268,7 @@ namespace UnityFx.Purchasing
 						// The purchase validation succeeded.
 						if (TrySetResult(new PurchaseResult(this), false))
 						{
-							Store.OnPurchaseCompleted(this, StorePurchaseError.None, null);
+							Store.OnPurchaseCompleted(this, StorePurchaseError.None, null, Id, AsyncState);
 						}
 					}
 				}

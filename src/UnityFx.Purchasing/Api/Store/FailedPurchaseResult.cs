@@ -76,15 +76,5 @@ namespace UnityFx.Purchasing
 		public string Receipt => _result.Receipt;
 
 		#endregion
-
-		#region IStoreOperationInfo
-
-		/// <inheritdoc/>
-		public int OperationId => _result.OperationId;
-
-		/// <inheritdoc/>
-		public object UserState => _result.UserState;
-
-		#endregion
 	}
 }

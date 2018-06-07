@@ -8,26 +8,50 @@ namespace UnityFx.Purchasing
 	/// <summary>
 	/// Event arguments for <see cref="IStoreService.PurchaseInitiated"/>.
 	/// </summary>
-	public class PurchaseInitiatedEventArgs : StoreOperationEventArgs
+	public class PurchaseInitiatedEventArgs : EventArgs
 	{
+		#region data
+
+		private readonly int _id;
+		private readonly object _userState;
+		private readonly string _productId;
+		private readonly bool _restored;
+
+		#endregion
+
+		#region interface
+
+		/// <summary>
+		/// Gets identifier of the dismiss operation.
+		/// </summary>
+		public int OperationId => _id;
+
+		/// <summary>
+		/// Gets user-defined data assosisated with the operation.
+		/// </summary>
+		public object UserState => _userState;
+
 		/// <summary>
 		/// Gets the product identifier.
 		/// </summary>
-		public string ProductId { get; }
+		public string ProductId => _productId;
 
 		/// <summary>
 		/// Gets a value indicating whether the purchase was auto-restored.
 		/// </summary>
-		public bool Restored { get; }
+		public bool Restored => _restored;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseInitiatedEventArgs"/> class.
 		/// </summary>
-		public PurchaseInitiatedEventArgs(IStoreOperationInfo op, string productId, bool restored)
-			: base(op)
+		public PurchaseInitiatedEventArgs(string productId, bool restored, int opId, object userState)
 		{
-			ProductId = productId;
-			Restored = restored;
+			_id = opId;
+			_userState = userState;
+			_productId = productId;
+			_restored = restored;
 		}
+
+		#endregion
 	}
 }
