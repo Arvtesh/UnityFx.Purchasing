@@ -83,7 +83,7 @@ namespace UnityFx.Purchasing
 						{
 							SetValidationResult(null, true);
 						}
-						else if (op.TryAddContinuation(OnValidateCompleted, Store.SyncContext))
+						else if (op.TryAddCompletionCallback(OnValidateCompleted, Store.SyncContext))
 						{
 							return PurchaseProcessingResult.Pending;
 						}

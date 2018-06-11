@@ -586,7 +586,7 @@ namespace UnityFx.Purchasing
 				{
 					result.SetScheduled();
 
-					fetchOp.AddContinuation(
+					fetchOp.AddCompletionCallback(
 						op =>
 						{
 							if (!_disposed)

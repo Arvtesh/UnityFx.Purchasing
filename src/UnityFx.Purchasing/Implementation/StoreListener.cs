@@ -51,7 +51,7 @@ namespace UnityFx.Purchasing
 
 			var op = new InitializeOperation(_storeService, this, asyncState);
 			_initializeOp = op;
-			_initializeOp.AddContinuation(o => _initializeOp = null);
+			_initializeOp.AddCompletionCallback(o => _initializeOp = null);
 			return op;
 		}
 
@@ -63,7 +63,7 @@ namespace UnityFx.Purchasing
 
 			var op = new FetchOperation(_storeService, OnFetch, OnFetchFailed, asyncState);
 			_fetchOp = op;
-			_fetchOp.AddContinuation(o => _fetchOp = null);
+			_fetchOp.AddCompletionCallback(o => _fetchOp = null);
 			return op;
 		}
 
