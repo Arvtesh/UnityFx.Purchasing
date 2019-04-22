@@ -3,11 +3,13 @@
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
-[Pp]rojectSettings/
-[Pp]ackages/
 [Bb]in/
 [Bb]uild/
 [Bb]uilds/
+[Pp]ackages/
+[Pp]roject[Ss]ettings/
+[Uu]nity[Pp]ackage[Mm]anager/
+[Aa]ssets/[Aa]sset[Ss]tore[Tt]ools/
 
 # Visual Studio cache directory
 .vs/
@@ -25,14 +27,12 @@ _site/
 *.booproj
 *.svd
 *.pdb
+*.sln
+*.csproj
+*.meta
 
 # Unity3D generated meta files
 *.pidb.meta
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
-
-# Builds
-*.ipa
-*.apk
-*.unitypackage
