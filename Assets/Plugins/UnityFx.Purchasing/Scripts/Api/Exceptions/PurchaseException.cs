@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public class PurchaseException : Exception
+	public class PurchaseException : StoreException
 	{
 		#region data
 
@@ -57,8 +57,28 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseException"/> class.
 		/// </summary>
+		public PurchaseException(Product product, PurchaseFailureReason reason, StoreSpecificPurchaseErrorCode nativeError)
+			: base(reason.ToString(), nativeError)
+		{
+			_product = product;
+			_reason = reason;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PurchaseException"/> class.
+		/// </summary>
 		public PurchaseException(Product product, PurchaseFailureReason reason, Exception innerException)
 			: base(reason.ToString(), innerException)
+		{
+			_product = product;
+			_reason = reason;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PurchaseException"/> class.
+		/// </summary>
+		public PurchaseException(Product product, PurchaseFailureReason reason, StoreSpecificPurchaseErrorCode nativeError, Exception innerException)
+			: base(reason.ToString(), nativeError, innerException)
 		{
 			_product = product;
 			_reason = reason;

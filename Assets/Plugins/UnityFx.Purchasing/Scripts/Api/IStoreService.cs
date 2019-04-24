@@ -111,30 +111,50 @@ namespace UnityFx.Purchasing
 		/// Initiates the store initialization. Returns a completed task if store is already initialized.
 		/// </summary>
 		/// <returns>A <see cref="Task"/> that can be used to track the operation progress.</returns>
-		/// <event cref="InitializeInitiated">Raised when the operation is created.</event>
+		/// <event cref="InitializeInitiated">Raised when the operation is initiated.</event>
 		/// <event cref="InitializeCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="StoreInitializeException">Thrown is the initialize operation has failed.</exception>
+		/// <exception cref="InitializeException">Thrown on an initialize-specific error.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="FetchAsync()"/>
+		/// <seealso cref="RestoreAsync()"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
+		/// <seealso cref="IsBusy"/>
+		/// <seealso cref="IsInitialized"/>
 		Task InitializeAsync();
 
 		/// <summary>
 		/// Initiates fetching product information from the store.
 		/// </summary>
 		/// <returns>A <see cref="Task"/> that can be used to track the operation progress.</returns>
-		/// <event cref="FetchInitiated">Raised when the operation is created.</event>
+		/// <event cref="FetchInitiated">Raised when the operation is initiated.</event>
 		/// <event cref="FetchCompleted">Raised when the operation has completed (either successfully or not).</event>
-		/// <exception cref="StoreFetchException">Thrown is the operation has failed.</exception>
+		/// <exception cref="FetchException">Thrown on a fetch-specific error.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the another async operation is pending.</exception>
 		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
 		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
 		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
 		/// <seealso cref="InitializeAsync()"/>
+		/// <seealso cref="RestoreAsync()"/>
 		/// <seealso cref="PurchaseAsync(string, object)"/>
+		/// <seealso cref="IsBusy"/>
 		Task FetchAsync();
+
+		/// <summary>
+		/// Initiates restoring transactions.
+		/// </summary>
+		/// <returns>A <see cref="Task"/> that can be used to track the operation progress.</returns>
+		/// <exception cref="RestoreException">Thrown on a restore-specific error.</exception>
+		/// <exception cref="InvalidOperationException">Thrown if the another async operation is pending.</exception>
+		/// <exception cref="PlatformNotSupportedException">Thrown if platform does not support purchasing.</exception>
+		/// <exception cref="ObjectDisposedException">Thrown if the store is disposed.</exception>
+		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
+		/// <seealso cref="InitializeAsync()"/>
+		/// <seealso cref="FetchAsync()"/>
+		/// <seealso cref="PurchaseAsync(string, object)"/>
+		/// <seealso cref="IsBusy"/>
+		Task RestoreAsync();
 
 		/// <summary>
 		/// Initiates purchase of the specified product.
@@ -145,8 +165,9 @@ namespace UnityFx.Purchasing
 		/// <param name="productId">Identifier of a product to purchase as specified in the store.</param>
 		/// <param name="asyncState">A user-provided object that distinguishes this particular operation from others.</param>
 		/// <returns>An object that can be used to track the operation progress.</returns>
-		/// <event cref="PurchaseInitiated">Raised when the operation is created.</event>
+		/// <event cref="PurchaseInitiated">Raised when the operation is initiated.</event>
 		/// <event cref="PurchaseCompleted">Raised when the operation has completed (either successfully or not).</event>
+		/// <exception cref="PurchaseException">Thrown on a purchase-specific error.</exception>
 		/// <exception cref="ArgumentNullException">Thrown if the <paramref name="productId"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the <paramref name="productId"/> is invalid.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if the another async operation is pending.</exception>
@@ -156,6 +177,7 @@ namespace UnityFx.Purchasing
 		/// <seealso cref="PurchaseAsync(string, object)"/>
 		/// <seealso cref="InitializeAsync()"/>
 		/// <seealso cref="FetchAsync()"/>
+		/// <seealso cref="RestoreAsync()"/>
 		/// <seealso cref="IsBusy"/>
 		Task<PurchaseResult> PurchaseAsync(string productId, object asyncState = null);
 	}

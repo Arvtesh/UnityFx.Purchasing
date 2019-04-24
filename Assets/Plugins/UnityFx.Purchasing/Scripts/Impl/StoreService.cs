@@ -351,6 +351,58 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
+		/// Called when the restore operation has been initiated.
+		/// </summary>
+		/// <remarks>
+		/// The implementation should not throw exceptions.
+		/// </remarks>
+		/// <seealso cref="OnRestoreCompleted(Exception, int, object)"/>
+		protected virtual void OnRestoreInitiated(int opId, object userState)
+		{
+			try
+			{
+				_console.TraceEvent(TraceEventType.Start, opId, nameof(OnRestoreInitiated));
+
+				// TODO
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogException(e);
+			}
+		}
+
+		/// <summary>
+		/// Called when the store fetch has succeeded. Default implementation raises <see cref="FetchCompleted"/> event.
+		/// </summary>
+		/// <remarks>
+		/// The implementation should not throw exceptions.
+		/// </remarks>
+		/// <seealso cref="OnRestoreInitiated(int, object)"/>
+		protected virtual void OnRestoreCompleted(Exception e, int opId, object userState)
+		{
+			try
+			{
+				_text.Clear();
+				_text.Append(nameof(OnRestoreCompleted));
+
+				if (e != null)
+				{
+					_text.Append(": ");
+					_text.Append(e.GetType().Name);
+					_text.Append('.');
+				}
+
+				_console.TraceEvent(TraceEventType.Stop, opId, _text.ToString());
+
+				// TODO
+			}
+			catch (Exception ex)
+			{
+				UnityEngine.Debug.LogException(ex);
+			}
+		}
+
+		/// <summary>
 		/// Called when the store purchase operation has been initiated. Default implementation raises <see cref="PurchaseInitiated"/> event.
 		/// </summary>
 		/// <remarks>
@@ -644,6 +696,17 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <inheritdoc/>
+		public Task RestoreAsync()
+		{
+			ThrowIfDisposed();
+			ThrowIfNotInitialized();
+			ThrowIfPlatformNotSupported();
+			ThrowIfBusy();
+
+			return RestoreInternal(null);
+		}
+
+		/// <inheritdoc/>
 		public Task<PurchaseResult> PurchaseAsync(string productId, object stateObject)
 		{
 			ThrowIfDisposed();
@@ -722,7 +785,7 @@ namespace UnityFx.Purchasing
 
 					OnInitializeCompleted(null, null, id, asyncState);
 				}
-				catch (StoreFetchException e)
+				catch (FetchException e)
 				{
 					OnInitializeCompleted(e.ErrorCode, e, id, asyncState);
 					throw;
@@ -782,7 +845,7 @@ namespace UnityFx.Purchasing
 				// 4) Finalize.
 				OnFetchCompleted(null, null, id, asyncState);
 			}
-			catch (StoreFetchException e)
+			catch (FetchException e)
 			{
 				OnFetchCompleted(e.ErrorCode, e, id, asyncState);
 				throw;
@@ -795,6 +858,37 @@ namespace UnityFx.Purchasing
 			finally
 			{
 				_fetchTask = null;
+				SetBusy(false);
+			}
+		}
+
+		private async Task RestoreInternal(object asyncState)
+		{
+			var id = ++_idCounter;
+
+			_console.TraceEvent(TraceEventType.Information, id, $"{nameof(RestoreAsync)}");
+
+			try
+			{
+				SetBusy(true);
+				OnRestoreInitiated(id, asyncState);
+
+				// 1) Restore transactions.
+				await _storeListener.RestoreAsync(id, asyncState);
+
+				// 2) Force a delay between the operation completion and its continuation code.
+				await Task.Yield();
+
+				// 4) Finalize.
+				OnRestoreCompleted(null, id, asyncState);
+			}
+			catch (Exception e)
+			{
+				OnRestoreCompleted(e, id, asyncState);
+				throw;
+			}
+			finally
+			{
 				SetBusy(false);
 			}
 		}

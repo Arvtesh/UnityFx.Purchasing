@@ -20,9 +20,11 @@ namespace UnityFx.Purchasing.Impl
 
 		private IStoreController _storeController;
 		private IExtensionProvider _storeExtensions;
+		private ITransactionHistoryExtensions _transactionHistoryExtensions;
 
 		private TaskCompletionSource<object> _initializeOp;
 		private TaskCompletionSource<object> _fetchOp;
+		private TaskCompletionSource<object> _restoreOp;
 		private TaskCompletionSource<Product> _purchaseOp;
 
 		private int _opId;
@@ -61,6 +63,7 @@ namespace UnityFx.Purchasing.Impl
 			Debug.Assert(!_disposed);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
+			Debug.Assert(_restoreOp == null);
 			Debug.Assert(_purchaseOp == null);
 
 			var op = _initializeOp = new TaskCompletionSource<object>(asyncState);
@@ -74,8 +77,10 @@ namespace UnityFx.Purchasing.Impl
 		public Task FetchAsync(IStoreConfig config, int opId, object asyncState)
 		{
 			Debug.Assert(!_disposed);
+			Debug.Assert(_storeController != null);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
+			Debug.Assert(_restoreOp == null);
 			Debug.Assert(_purchaseOp == null);
 
 			if (config != null)
@@ -94,11 +99,61 @@ namespace UnityFx.Purchasing.Impl
 			}
 		}
 
+		public Task RestoreAsync(int opId, object asyncState)
+		{
+			Debug.Assert(!_disposed);
+			Debug.Assert(_storeExtensions != null);
+			Debug.Assert(_initializeOp == null);
+			Debug.Assert(_fetchOp == null);
+			Debug.Assert(_restoreOp == null);
+			Debug.Assert(_purchaseOp == null);
+
+			var op = _restoreOp = new TaskCompletionSource<object>(asyncState);
+
+			_opId = opId;
+
+#if UNITY_IOS
+
+			_storeExtensions.GetExtension<IAppleExtensions>().RestoreTransactions(OnRestoreTransactions);
+
+#elif UNITY_ANDROID
+
+			var gpe = _storeExtensions.GetExtension<IGooglePlayStoreExtensions>();
+
+			if (gre != null)
+			{
+				gpe.RestoreTransactions(OnRestoreTransactions);
+			}
+			else
+			{
+				var sae = _storeExtensions.GetExtension<ISamsungAppsExtensions>();
+
+				if (sae != null)
+				{
+					sae.RestoreTransactions(OnRestoreTransactions);
+				}
+				else
+				{
+					op.TrySetException(new PlatformNotSupportedException());
+				}
+			}
+
+#else
+
+			op.TrySetException(new PlatformNotSupportedException());
+
+#endif
+
+			return op.Task;
+		}
+
 		public Task<Product> PurchaseAsync(string productId, int opId, object asyncState)
 		{
 			Debug.Assert(!_disposed);
+			Debug.Assert(_storeController != null);
 			Debug.Assert(_initializeOp == null);
 			Debug.Assert(_fetchOp == null);
+			Debug.Assert(_restoreOp == null);
 			Debug.Assert(_purchaseOp == null);
 
 			var op = _purchaseOp = new TaskCompletionSource<Product>(asyncState);
@@ -129,13 +184,14 @@ namespace UnityFx.Purchasing.Impl
 					_console.TraceEvent(TraceEventType.Verbose, _opId, nameof(IStoreListener.OnInitialized));
 					_storeController = controller;
 					_storeExtensions = extensions;
+					_transactionHistoryExtensions = extensions.GetExtension<ITransactionHistoryExtensions>();
 					_initializeOp.TrySetResult(null);
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _opId, e);
-					_initializeOp.TrySetException(new StoreInitializeException(InitializationFailureReason.PurchasingUnavailable, e));
+					_initializeOp.TrySetException(e);
 				}
 				finally
 				{
@@ -154,13 +210,13 @@ namespace UnityFx.Purchasing.Impl
 				try
 				{
 					_console.TraceEvent(TraceEventType.Verbose, _opId, $"{nameof(IStoreListener.OnInitializeFailed)}: {error}.");
-					_initializeOp.TrySetException(new StoreInitializeException(error));
+					_initializeOp.TrySetException(new InitializeException(error));
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _opId, e);
-					_initializeOp.TrySetException(new StoreInitializeException(error, e));
+					_initializeOp.TrySetException(new InitializeException(error, e));
 				}
 				finally
 				{
@@ -229,10 +285,13 @@ namespace UnityFx.Purchasing.Impl
 		{
 			if (!_disposed)
 			{
+				var nativeError = _transactionHistoryExtensions.GetLastStoreSpecificPurchaseErrorCode();
+
+				_console.TraceEvent(TraceEventType.Verbose, _opId, $"{nameof(IStoreListener.OnPurchaseFailed)}: {reason}, nativeError: {nativeError}.");
+
 				// NOTE: In some cases product might have null value.
 				if (product == null)
 				{
-					_console.TraceEvent(TraceEventType.Verbose, 0, $"{nameof(IStoreListener.OnPurchaseFailed)}: {reason}.");
 					_console.TraceEvent(TraceEventType.Warning, 0, $"{nameof(IStoreListener.OnPurchaseFailed)} is called with null product.");
 				}
 				else
@@ -240,8 +299,6 @@ namespace UnityFx.Purchasing.Impl
 					try
 					{
 						var productId = product.definition.id;
-
-						_console.TraceEvent(TraceEventType.Verbose, _opId, $"{nameof(IStoreListener.OnPurchaseFailed)}: {reason} ({productId}).");
 
 						if (_purchaseOp == null)
 						{
@@ -251,20 +308,20 @@ namespace UnityFx.Purchasing.Impl
 						else if (_productId == productId)
 						{
 							// Normal transaction initiated with IStoreService.Purchase()/IStoreService.PurchaseAsync() call.
-							_purchaseOp.TrySetException(new PurchaseException(product, reason));
+							_purchaseOp.TrySetException(new PurchaseException(product, reason, nativeError));
 						}
 						else
 						{
 							// Should not really get here. A wierd transaction initiated directly with IStoreController.InitiatePurchase() call (bypassing IStoreService API).
 							_console.TraceEvent(TraceEventType.Warning, _opId, $"{nameof(IStoreListener.OnPurchaseFailed)}: Unexpected product - got {productId} while {_productId} was expected.");
-							_purchaseOp.TrySetException(new PurchaseException(product, reason));
+							_purchaseOp.TrySetException(new PurchaseException(product, reason, nativeError));
 						}
 					}
 					catch (Exception e)
 					{
 						// NOTE: Should never get here. Exception means logic error in the store implementation.
 						_console.TraceData(TraceEventType.Critical, _opId, e);
-						_purchaseOp?.TrySetException(new PurchaseException(product, reason, e));
+						_purchaseOp?.TrySetException(new PurchaseException(product, reason, nativeError, e));
 					}
 					finally
 					{
@@ -287,6 +344,7 @@ namespace UnityFx.Purchasing.Impl
 				_disposed = true;
 				_initializeOp?.TrySetCanceled();
 				_fetchOp?.TrySetCanceled();
+				_restoreOp?.TrySetCanceled();
 				_purchaseOp?.TrySetCanceled();
 			}
 		}
@@ -303,14 +361,14 @@ namespace UnityFx.Purchasing.Impl
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, _opId, "OnFetch");
+					_console.TraceEvent(TraceEventType.Verbose, _opId, nameof(OnFetch));
 					_fetchOp.TrySetResult(null);
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _opId, e);
-					_fetchOp.TrySetException(new StoreFetchException(InitializationFailureReason.PurchasingUnavailable, e));
+					_fetchOp.TrySetException(e);
 				}
 				finally
 				{
@@ -328,14 +386,14 @@ namespace UnityFx.Purchasing.Impl
 
 				try
 				{
-					_console.TraceEvent(TraceEventType.Verbose, _opId, $"OnFetchFailed: {error}.");
-					_fetchOp.TrySetException(new StoreFetchException(error));
+					_console.TraceEvent(TraceEventType.Verbose, _opId, $"{nameof(OnFetchFailed)}: {error}.");
+					_fetchOp.TrySetException(new FetchException(error, _transactionHistoryExtensions.GetLastStoreSpecificPurchaseErrorCode()));
 				}
 				catch (Exception e)
 				{
 					// Should never get here.
 					_console.TraceData(TraceEventType.Critical, _opId, e);
-					_fetchOp.TrySetException(new StoreFetchException(error, e));
+					_fetchOp.TrySetException(new FetchException(error, _transactionHistoryExtensions.GetLastStoreSpecificPurchaseErrorCode(), e));
 				}
 				finally
 				{
@@ -345,14 +403,37 @@ namespace UnityFx.Purchasing.Impl
 			}
 		}
 
-		private PurchaseProcessingResult ValidateProduct(Product product)
+		private void OnRestoreTransactions(bool success)
 		{
-			return PurchaseProcessingResult.Pending;
-		}
+			if (!_disposed)
+			{
+				Debug.Assert(_restoreOp != null);
 
-		private void TraceUnexpectedProduct(string productId, string expectedProductId)
-		{
-			_console.TraceEvent(TraceEventType.Warning, 0, $"Unexpected product. Got {productId} while {expectedProductId} was expected.");
+				try
+				{
+					_console.TraceEvent(TraceEventType.Verbose, _opId, $"{nameof(OnRestoreTransactions)}: {success}.");
+
+					if (success)
+					{
+						_restoreOp.TrySetResult(null);
+					}
+					else
+					{
+						_restoreOp.TrySetException(new RestoreException(_transactionHistoryExtensions.GetLastStoreSpecificPurchaseErrorCode()));
+					}
+				}
+				catch (Exception e)
+				{
+					// Should never get here.
+					_console.TraceData(TraceEventType.Critical, _opId, e);
+					_restoreOp.TrySetException(e);
+				}
+				finally
+				{
+					_opId = 0;
+					_fetchOp = null;
+				}
+			}
 		}
 
 		#endregion

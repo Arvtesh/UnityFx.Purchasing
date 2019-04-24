@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public sealed class PurchaseValidationException : Exception
+	public sealed class PurchaseValidationException : StoreException
 	{
 		#region data
 

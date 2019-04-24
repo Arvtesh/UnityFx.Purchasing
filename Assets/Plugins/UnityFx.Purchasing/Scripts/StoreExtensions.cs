@@ -47,7 +47,7 @@ namespace UnityFx.Purchasing
 
 		#endregion
 
-		#region IStoreService
+		#region IStoreExtensions
 		#endregion
 	}
 }

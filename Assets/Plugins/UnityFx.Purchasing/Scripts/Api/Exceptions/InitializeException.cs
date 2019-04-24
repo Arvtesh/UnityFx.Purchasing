@@ -11,7 +11,7 @@ namespace UnityFx.Purchasing
 	/// A generic purchase exception.
 	/// </summary>
 	[Serializable]
-	public sealed class StoreInitializeException : StoreFetchException
+	public sealed class InitializeException : FetchException
 	{
 		#region data
 		#endregion
@@ -19,17 +19,17 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="InitializeException"/> class.
 		/// </summary>
-		public StoreInitializeException(InitializationFailureReason reason)
+		public InitializeException(InitializationFailureReason reason)
 			: base(reason)
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StoreInitializeException"/> class.
+		/// Initializes a new instance of the <see cref="InitializeException"/> class.
 		/// </summary>
-		public StoreInitializeException(InitializationFailureReason reason, Exception innerException)
+		public InitializeException(InitializationFailureReason reason, Exception innerException)
 			: base(reason, innerException)
 		{
 		}
