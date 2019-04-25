@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.ComponentModel;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -14,7 +13,6 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private readonly int _id;
 		private readonly InitializationFailureReason? _reason;
 
 		#endregion
@@ -22,18 +20,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Gets identifier of the operation.
-		/// </summary>
-		public int OperationId
-		{
-			get
-			{
-				return _id;
-			}
-		}
-
-		/// <summary>
-		/// Gets fetch failure reason.
+		/// Gets initiate/fetch failure reason.
 		/// </summary>
 		public InitializationFailureReason? ErrorCode
 		{
@@ -47,18 +34,33 @@ namespace UnityFx.Purchasing
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
 		/// </summary>
 		public FetchCompletedEventArgs(int opId, object userState)
-			: base(null, false, userState)
+			: base(opId, userState)
 		{
-			_id = opId;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
 		/// </summary>
-		public FetchCompletedEventArgs(InitializationFailureReason? failReason, Exception e, int opId, object userState)
-			: base(e, false, userState)
+		public FetchCompletedEventArgs(int opId, object userState, FetchException e)
+			: base(opId, userState, e, false)
 		{
-			_id = opId;
+			_reason = e.ErrorCode;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
+		/// </summary>
+		public FetchCompletedEventArgs(int opId, object userState, Exception e)
+			: base(opId, userState, e, false)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FetchCompletedEventArgs"/> class.
+		/// </summary>
+		public FetchCompletedEventArgs(int opId, object userState, Exception e, InitializationFailureReason failReason)
+			: base(opId, userState, e, false)
+		{
 			_reason = failReason;
 		}
 

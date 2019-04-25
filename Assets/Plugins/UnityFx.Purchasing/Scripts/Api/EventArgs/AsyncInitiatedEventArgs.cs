@@ -6,9 +6,9 @@ using System;
 namespace UnityFx.Purchasing
 {
 	/// <summary>
-	/// Event arguments for <see cref="IStoreService.FetchInitiated"/> and <see cref="IStoreService.InitializeInitiated"/>.
+	/// Event arguments for async operation initiate events.
 	/// </summary>
-	public class FetchInitiatedEventArgs : EventArgs
+	public class AsyncInitiatedEventArgs : EventArgs
 	{
 		#region data
 
@@ -20,7 +20,7 @@ namespace UnityFx.Purchasing
 		#region interface
 
 		/// <summary>
-		/// Gets identifier of the operation.
+		/// Gets the unique identifier for the asynchronous task.
 		/// </summary>
 		public int OperationId
 		{
@@ -31,7 +31,7 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Gets user-defined data assosisated with the operation.
+		/// Gets user-defined data assosisated with the task.
 		/// </summary>
 		public object UserState
 		{
@@ -42,9 +42,9 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FetchInitiatedEventArgs"/> class.
+		/// Initializes a new instance of the <see cref="AsyncInitiatedEventArgs"/> class.
 		/// </summary>
-		public FetchInitiatedEventArgs(int opId, object userState)
+		public AsyncInitiatedEventArgs(int opId, object userState)
 		{
 			_id = opId;
 			_userState = userState;

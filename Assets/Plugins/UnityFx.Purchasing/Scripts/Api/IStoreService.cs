@@ -16,53 +16,8 @@ namespace UnityFx.Purchasing
 	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/">Asynchronous Programming Patterns</seealso>
 	/// <seealso cref="IStoreController"/>
 	/// <seealso cref="IExtensionProvider"/>
-	public interface IStoreService : IDisposable
+	public interface IStoreService : IStoreEvents, IDisposable
 	{
-		/// <summary>
-		/// Raised when the store initialization has been initiated.
-		/// </summary>
-		/// <seealso cref="InitializeAsync()"/>
-		/// <seealso cref="InitializeCompleted"/>
-		event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
-
-		/// <summary>
-		/// Raised when the store has been initialized.
-		/// </summary>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
-		/// <seealso cref="InitializeAsync()"/>
-		/// <seealso cref="InitializeInitiated"/>
-		event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
-
-		/// <summary>
-		/// Raised when the store initialization has been initiated.
-		/// </summary>
-		/// <seealso cref="FetchAsync()"/>
-		/// <seealso cref="FetchCompleted"/>
-		event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
-
-		/// <summary>
-		/// Raised when the store has been initialized.
-		/// </summary>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
-		/// <seealso cref="FetchAsync()"/>
-		/// <seealso cref="FetchInitiated"/>
-		event EventHandler<FetchCompletedEventArgs> FetchCompleted;
-
-		/// <summary>
-		/// Raised when a new purchase is initiated.
-		/// </summary>
-		/// <seealso cref="PurchaseAsync(string, object)"/>
-		/// <seealso cref="PurchaseCompleted"/>
-		event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
-
-		/// <summary>
-		/// Raised when a purchase has completed successfully.
-		/// </summary>
-		/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/event-based-asynchronous-pattern-eap">Event-based Asynchronous Pattern (EAP)</seealso>
-		/// <seealso cref="PurchaseAsync(string, object)"/>
-		/// <seealso cref="PurchaseInitiated"/>
-		event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
-
 		/// <summary>
 		/// Gets a collection of trace listeners attached to the service.
 		/// </summary>

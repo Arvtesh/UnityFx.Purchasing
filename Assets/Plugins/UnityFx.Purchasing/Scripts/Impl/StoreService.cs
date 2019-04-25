@@ -41,7 +41,7 @@ namespace UnityFx.Purchasing
 	/// </example>
 	/// <threadsafety static="true" instance="false"/>
 	/// <seealso cref="IStoreService"/>
-	public class StoreService : IStoreService
+	public partial class StoreService : IStoreService
 	{
 		#region data
 
@@ -232,264 +232,6 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Called when the store initialize operation has been initiated. Default implementation raises <see cref="InitializeInitiated"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnInitializeCompleted(InitializationFailureReason, Exception, int, object)"/>
-		protected virtual void OnInitializeInitiated(int opId, object userState)
-		{
-			try
-			{
-				_text.Clear();
-				_text.Append(nameof(OnInitializeInitiated));
-				_text.Append(": UnityIAP v");
-				_text.Append(StandardPurchasingModule.k_PackageVersion);
-				_text.Append('.');
-
-				_console.TraceEvent(TraceEventType.Start, opId, _text.ToString());
-
-				InitializeInitiated?.Invoke(this, new FetchInitiatedEventArgs(opId, userState));
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
-			}
-		}
-
-		/// <summary>
-		/// Called when the store initialization has succeeded. Default implementation raises <see cref="InitializeCompleted"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnInitializeInitiated(int, object)"/>
-		protected virtual void OnInitializeCompleted(InitializationFailureReason? failReason, Exception e, int opId, object userState)
-		{
-			try
-			{
-				_text.Clear();
-				_text.Append(nameof(OnInitializeCompleted));
-
-				if (failReason != null || e != null)
-				{
-					_text.Append(", failReason: ");
-
-					if (failReason != null)
-					{
-						_text.Append(failReason.ToString());
-					}
-					else
-					{
-						_text.Append(e.GetType().ToString());
-					}
-
-					_text.Append('.');
-				}
-
-				_console.TraceEvent(TraceEventType.Stop, opId, _text.ToString());
-
-				InitializeCompleted?.Invoke(this, new FetchCompletedEventArgs(failReason, e, opId, userState));
-			}
-			catch (Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-			}
-		}
-
-		/// <summary>
-		/// Called when the store fetch operation has been initiated. Default implementation raises <see cref="FetchInitiated"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnFetchCompleted(FetchError, Exception, int, object)"/>
-		protected virtual void OnFetchInitiated(int opId, object userState)
-		{
-			try
-			{
-				_console.TraceEvent(TraceEventType.Start, opId, nameof(OnFetchInitiated));
-
-				FetchInitiated?.Invoke(this, new FetchInitiatedEventArgs(opId, userState));
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
-			}
-		}
-
-		/// <summary>
-		/// Called when the store fetch has succeeded. Default implementation raises <see cref="FetchCompleted"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnFetchInitiated(int, object)"/>
-		protected virtual void OnFetchCompleted(InitializationFailureReason? failReason, Exception e, int opId, object userState)
-		{
-			try
-			{
-				_text.Clear();
-				_text.Append(nameof(OnFetchCompleted));
-
-				if (failReason != null)
-				{
-					_text.Append(": ");
-					_text.Append(failReason.ToString());
-					_text.Append('.');
-				}
-
-				_console.TraceEvent(TraceEventType.Stop, opId, _text.ToString());
-
-				FetchCompleted?.Invoke(this, new FetchCompletedEventArgs(failReason, e, opId, userState));
-			}
-			catch (Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-			}
-		}
-
-		/// <summary>
-		/// Called when the restore operation has been initiated.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnRestoreCompleted(Exception, int, object)"/>
-		protected virtual void OnRestoreInitiated(int opId, object userState)
-		{
-			try
-			{
-				_console.TraceEvent(TraceEventType.Start, opId, nameof(OnRestoreInitiated));
-
-				// TODO
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
-			}
-		}
-
-		/// <summary>
-		/// Called when the store fetch has succeeded. Default implementation raises <see cref="FetchCompleted"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnRestoreInitiated(int, object)"/>
-		protected virtual void OnRestoreCompleted(Exception e, int opId, object userState)
-		{
-			try
-			{
-				_text.Clear();
-				_text.Append(nameof(OnRestoreCompleted));
-
-				if (e != null)
-				{
-					_text.Append(": ");
-					_text.Append(e.GetType().Name);
-					_text.Append('.');
-				}
-
-				_console.TraceEvent(TraceEventType.Stop, opId, _text.ToString());
-
-				// TODO
-			}
-			catch (Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-			}
-		}
-
-		/// <summary>
-		/// Called when the store purchase operation has been initiated. Default implementation raises <see cref="PurchaseInitiated"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnPurchaseCompleted(string, PurchaseFailureReason?, PurchaseValidationResult, Exception, bool, int, object)"/>
-		protected virtual void OnPurchaseInitiated(string productId, bool restored, int opId, object userState)
-		{
-			try
-			{
-				_text.Clear();
-				_text.Append(nameof(OnPurchaseInitiated));
-				_text.Append(": ");
-				_text.Append(productId);
-
-				if (restored)
-				{
-					_text.Append(", auto-restored.");
-				}
-				else
-				{
-					_text.Append('.');
-				}
-
-				_console.TraceEvent(TraceEventType.Start, opId, _text.ToString());
-
-				PurchaseInitiated?.Invoke(this, new PurchaseInitiatedEventArgs(productId, restored, opId, userState));
-			}
-			catch (Exception e)
-			{
-				UnityEngine.Debug.LogException(e);
-			}
-		}
-
-		/// <summary>
-		/// Called when the store purchase operation succeded. Default implementation raises <see cref="PurchaseCompleted"/> event.
-		/// </summary>
-		/// <remarks>
-		/// The implementation should not throw exceptions.
-		/// </remarks>
-		/// <seealso cref="OnPurchaseInitiated(string, bool, int, object)"/>
-		protected virtual void OnPurchaseCompleted(string productId, Product product, PurchaseValidationResult validationResult, PurchaseFailureReason? failReason, Exception e, bool restored, int opId, object userState)
-		{
-			try
-			{
-				_text.Clear();
-				_text.Append(nameof(OnPurchaseCompleted));
-				_text.Append(": ");
-				_text.Append(productId);
-
-				if (failReason != null || e != null)
-				{
-					_text.Append(", failReason: ");
-
-					if (failReason != null)
-					{
-						_text.Append(failReason.ToString());
-					}
-					else
-					{
-						_text.Append(e.GetType().ToString());
-					}
-				}
-
-				_text.Append(", validationResult: ");
-				_text.Append(validationResult.Status.ToString());
-
-				if (restored)
-				{
-					_text.Append(", auto-restored.");
-				}
-				else
-				{
-					_text.Append('.');
-				}
-
-				_console.TraceEvent(TraceEventType.Stop, opId, _text.ToString());
-
-				PurchaseCompleted?.Invoke(this, new PurchaseCompletedEventArgs(productId, product, validationResult, failReason, e, restored, opId, userState));
-			}
-			catch (Exception ex)
-			{
-				UnityEngine.Debug.LogException(ex);
-			}
-		}
-
-		/// <summary>
 		/// Releases unmanaged resources used by the service.
 		/// </summary>
 		/// <param name="disposing">Should be <see langword="true"/> if the method is called from <see cref="Dispose()"/>; <see langword="false"/> otherwise.</param>
@@ -594,24 +336,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region IStoreService
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchInitiatedEventArgs> InitializeInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchCompletedEventArgs> InitializeCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchInitiatedEventArgs> FetchInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<FetchCompletedEventArgs> FetchCompleted;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseInitiatedEventArgs> PurchaseInitiated;
-
-		/// <inheritdoc/>
-		public event EventHandler<PurchaseCompletedEventArgs> PurchaseCompleted;
 
 		/// <inheritdoc/>
 		public TraceListenerCollection TraceListeners
@@ -765,7 +489,7 @@ namespace UnityFx.Purchasing
 				try
 				{
 					SetBusy(true);
-					OnInitializeInitiated(id, asyncState);
+					OnInitializeInitiated(new AsyncInitiatedEventArgs(id, asyncState));
 
 					// 1) Load the store configuration.
 					var config = await GetStoreConfigAsync();
@@ -783,16 +507,16 @@ namespace UnityFx.Purchasing
 					_storeExtensions = _storeListener.Extensions;
 					_products.SetController(_storeController);
 
-					OnInitializeCompleted(null, null, id, asyncState);
+					OnInitializeCompleted(new FetchCompletedEventArgs(id, asyncState));
 				}
 				catch (FetchException e)
 				{
-					OnInitializeCompleted(e.ErrorCode, e, id, asyncState);
+					OnInitializeCompleted(new FetchCompletedEventArgs(id, asyncState, e));
 					throw;
 				}
 				catch (Exception e)
 				{
-					OnInitializeCompleted(null, e, id, asyncState);
+					OnInitializeCompleted(new FetchCompletedEventArgs(id, asyncState, e));
 					throw;
 				}
 				finally
@@ -831,7 +555,7 @@ namespace UnityFx.Purchasing
 			try
 			{
 				SetBusy(true);
-				OnFetchInitiated(id, asyncState);
+				OnFetchInitiated(new AsyncInitiatedEventArgs(id, asyncState));
 
 				// 1) Load the store configuration.
 				var config = await GetStoreConfigAsync();
@@ -843,16 +567,16 @@ namespace UnityFx.Purchasing
 				await Task.Yield();
 
 				// 4) Finalize.
-				OnFetchCompleted(null, null, id, asyncState);
+				OnFetchCompleted(new FetchCompletedEventArgs(id, asyncState));
 			}
 			catch (FetchException e)
 			{
-				OnFetchCompleted(e.ErrorCode, e, id, asyncState);
+				OnFetchCompleted(new FetchCompletedEventArgs(id, asyncState, e));
 				throw;
 			}
 			catch (Exception e)
 			{
-				OnFetchCompleted(null, e, id, asyncState);
+				OnFetchCompleted(new FetchCompletedEventArgs(id, asyncState, e));
 				throw;
 			}
 			finally
@@ -871,7 +595,7 @@ namespace UnityFx.Purchasing
 			try
 			{
 				SetBusy(true);
-				OnRestoreInitiated(id, asyncState);
+				OnRestoreInitiated(new AsyncInitiatedEventArgs(id, asyncState));
 
 				// 1) Restore transactions.
 				await _storeListener.RestoreAsync(id, asyncState);
@@ -880,11 +604,11 @@ namespace UnityFx.Purchasing
 				await Task.Yield();
 
 				// 4) Finalize.
-				OnRestoreCompleted(null, id, asyncState);
+				OnRestoreCompleted(new AsyncCompletedEventArgs(id, asyncState));
 			}
 			catch (Exception e)
 			{
-				OnRestoreCompleted(e, id, asyncState);
+				OnRestoreCompleted(new AsyncCompletedEventArgs(id, asyncState, e, false));
 				throw;
 			}
 			finally
@@ -922,7 +646,7 @@ namespace UnityFx.Purchasing
 
 				try
 				{
-					OnPurchaseInitiated(productId, false, id, asyncState);
+					OnPurchaseInitiated(new PurchaseInitiatedEventArgs(id, asyncState, productId, false));
 
 					// 4) Purchase the product.
 					var product = await _storeListener.PurchaseAsync(productId, id, asyncState);
@@ -938,7 +662,7 @@ namespace UnityFx.Purchasing
 					}
 
 					// 7) Finalize.
-					OnPurchaseCompleted(productId, product, validationResult, null, null, false, id, asyncState);
+					OnPurchaseCompleted(new PurchaseCompletedEventArgs(id, asyncState, product, validationResult, false));
 					return new PurchaseResult(product, validationResult, false);
 				}
 				catch (PurchaseValidationException e)
@@ -947,17 +671,17 @@ namespace UnityFx.Purchasing
 					_console.TraceEvent(TraceEventType.Information, id, $"{nameof(IStoreController.ConfirmPendingPurchase)}: {productId}.");
 					_storeController.ConfirmPendingPurchase(e.Product);
 
-					OnPurchaseCompleted(productId, e.Product, new PurchaseValidationResult(PurchaseValidationStatus.Failed), null, e, false, id, asyncState);
+					OnPurchaseCompleted(new PurchaseCompletedEventArgs(id, asyncState, e, false));
 					throw;
 				}
 				catch (PurchaseException e)
 				{
-					OnPurchaseCompleted(productId, e.Product, new PurchaseValidationResult(), e.ErrorCode, e, false, id, asyncState);
+					OnPurchaseCompleted(new PurchaseCompletedEventArgs(id, asyncState, e, false));
 					throw;
 				}
 				catch (Exception e)
 				{
-					OnPurchaseCompleted(productId, null, new PurchaseValidationResult(), PurchaseFailureReason.Unknown, e, false, id, asyncState);
+					OnPurchaseCompleted(new PurchaseCompletedEventArgs(id, asyncState, productId, e, false));
 					throw;
 				}
 			}
@@ -977,7 +701,7 @@ namespace UnityFx.Purchasing
 			try
 			{
 				SetBusy(true);
-				OnPurchaseInitiated(productId, true, 0, null);
+				OnPurchaseInitiated(new PurchaseInitiatedEventArgs(0, null, productId, true));
 
 				// 1) Validate the purchased product receipt.
 				var validationResult = await ValidateInternal(product);
@@ -990,18 +714,18 @@ namespace UnityFx.Purchasing
 				}
 
 				// 3) Finalize.
-				OnPurchaseCompleted(productId, product, validationResult, null, null, true, 0, null);
+				OnPurchaseCompleted(new PurchaseCompletedEventArgs(0, null, product, validationResult, true));
 			}
 			catch (PurchaseValidationException e)
 			{
 				_console.TraceEvent(TraceEventType.Information, 0, $"{nameof(IStoreController.ConfirmPendingPurchase)}: {productId}.");
 				_storeController.ConfirmPendingPurchase(e.Product);
 
-				OnPurchaseCompleted(productId, e.Product, new PurchaseValidationResult(PurchaseValidationStatus.Failed), null, e, false, 0, null);
+				OnPurchaseCompleted(new PurchaseCompletedEventArgs(0, null, e, true));
 			}
 			catch (Exception e)
 			{
-				OnPurchaseCompleted(productId, null, new PurchaseValidationResult(), PurchaseFailureReason.Unknown, e, false, 0, null);
+				OnPurchaseCompleted(new PurchaseCompletedEventArgs(0, null, product, e, true));
 			}
 			finally
 			{
@@ -1017,8 +741,8 @@ namespace UnityFx.Purchasing
 			try
 			{
 				SetBusy(true);
-				OnPurchaseInitiated(product.definition.id, true, 0, null);
-				OnPurchaseCompleted(product.definition.id, product, new PurchaseValidationResult(), reason, new PurchaseException(product, reason), true, 0, null);
+				OnPurchaseInitiated(new PurchaseInitiatedEventArgs(0, null, product.definition.id, true));
+				OnPurchaseCompleted(new PurchaseCompletedEventArgs(0, null, new PurchaseException(product, reason), true));
 			}
 			finally
 			{

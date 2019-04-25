@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
-using System.ComponentModel;
 using UnityEngine.Purchasing;
 
 namespace UnityFx.Purchasing
@@ -14,7 +13,6 @@ namespace UnityFx.Purchasing
 	{
 		#region data
 
-		private readonly int _id;
 		private readonly string _productId;
 		private readonly Product _product;
 		private readonly bool _restored;
@@ -24,17 +22,6 @@ namespace UnityFx.Purchasing
 		#endregion
 
 		#region interface
-
-		/// <summary>
-		/// Gets identifier of the purchase operation.
-		/// </summary>
-		public int OperationId
-		{
-			get
-			{
-				return _id;
-			}
-		}
 
 		/// <summary>
 		/// Gets identifier of the product.
@@ -92,24 +79,23 @@ namespace UnityFx.Purchasing
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the purchase is successful.
+		/// Gets the purchase validation status.
 		/// </summary>
-		public bool IsCompletedSuccessfully
+		public PurchaseValidationStatus ValidationStatus
 		{
 			get
 			{
-				return Error == null && !Cancelled && _product != null && _reason == null && _validationResult.Status == PurchaseValidationStatus.Ok;
+				return _validationResult.Status;
 			}
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
 		/// </summary>
-		public PurchaseCompletedEventArgs(string productId, Product product, PurchaseValidationResult validationResult, bool restored, int opId, object userState)
-			: base(null, false, userState)
+		public PurchaseCompletedEventArgs(int opId, object userState, Product product, PurchaseValidationResult validationResult, bool restored)
+			: base(opId, userState, null, false)
 		{
-			_id = opId;
-			_productId = productId;
+			_productId = product.definition.id;
 			_product = product;
 			_restored = restored;
 			_validationResult = validationResult;
@@ -118,15 +104,48 @@ namespace UnityFx.Purchasing
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
 		/// </summary>
-		public PurchaseCompletedEventArgs(string productId, Product product, PurchaseValidationResult validationResult, PurchaseFailureReason? failReason, Exception e, bool restored, int opId, object userState)
-			: base(e, failReason == PurchaseFailureReason.UserCancelled, userState)
+		public PurchaseCompletedEventArgs(int opId, object userState, PurchaseValidationException e, bool restored)
+			: base(opId, userState, e, false)
 		{
-			_id = opId;
+			_productId = e.Product.definition.id;
+			_product = e.Product;
+			_restored = restored;
+			_validationResult = new PurchaseValidationResult(PurchaseValidationStatus.Failed);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
+		/// </summary>
+		public PurchaseCompletedEventArgs(int opId, object userState, PurchaseException e, bool restored)
+			: base(opId, userState, e, e.ErrorCode == PurchaseFailureReason.UserCancelled)
+		{
+			_productId = e.Product.definition.id;
+			_product = e.Product;
+			_restored = restored;
+			_reason = e.ErrorCode;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
+		/// </summary>
+		public PurchaseCompletedEventArgs(int opId, object userState, string productId, Exception e, bool restored)
+			: base(opId, userState, e, false)
+		{
 			_productId = productId;
+			_restored = restored;
+			_reason = PurchaseFailureReason.Unknown;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PurchaseCompletedEventArgs"/> class.
+		/// </summary>
+		public PurchaseCompletedEventArgs(int opId, object userState, Product product, Exception e, bool restored)
+			: base(opId, userState, e, false)
+		{
+			_productId = product.definition.id;
 			_product = product;
 			_restored = restored;
-			_reason = failReason;
-			_validationResult = validationResult;
+			_reason = PurchaseFailureReason.Unknown;
 		}
 
 		#endregion
