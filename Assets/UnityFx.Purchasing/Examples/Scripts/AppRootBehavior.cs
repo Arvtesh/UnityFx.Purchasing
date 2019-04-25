@@ -9,42 +9,45 @@ using UnityFx.Purchasing;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
-public class AppRootBehavior : MonoBehaviour
+namespace UnityFx.Purchasing.Examples
 {
-	private IStoreService _store;
-
-	private void Awake()
+	public class AppRootBehavior : MonoBehaviour
 	{
-		var products = new ProductDefinition[]
+		private IStoreService _store;
+
+		private void Awake()
 		{
+			var products = new ProductDefinition[]
+			{
 			new ProductDefinition("product1", ProductType.Consumable),
 			new ProductDefinition("product2", ProductType.Consumable),
 			new ProductDefinition("product3", ProductType.NonConsumable),
 			new ProductDefinition("product4", "disabledNonConsumable", ProductType.NonConsumable, false),
 			new ProductDefinition("product5", "disabledConsumable", ProductType.NonConsumable, false)
-		};
+			};
 
-		_store = new StoreService(products);
-		_store.TraceListeners.Add(new UnityTraceListener());
-		_store.TraceSwitch.Level = System.Diagnostics.SourceLevels.All;
-	}
-
-	private void Start()
-	{
-		InitAsync();
-	}
-
-	private async void InitAsync()
-	{
-		try
-		{
-			await _store.InitializeAsync();
-			await _store.PurchaseAsync("product1");
-			await _store.PurchaseAsync("product2");
+			_store = new StoreService(products);
+			_store.TraceListeners.Add(new UnityTraceListener());
+			_store.TraceSwitch.Level = System.Diagnostics.SourceLevels.All;
 		}
-		catch (Exception e)
+
+		private void Start()
 		{
-			Debug.LogException(e, this);
+			InitAsync();
+		}
+
+		private async void InitAsync()
+		{
+			try
+			{
+				await _store.InitializeAsync();
+				await _store.PurchaseAsync("product1");
+				await _store.PurchaseAsync("product2");
+			}
+			catch (Exception e)
+			{
+				Debug.LogException(e, this);
+			}
 		}
 	}
 }
