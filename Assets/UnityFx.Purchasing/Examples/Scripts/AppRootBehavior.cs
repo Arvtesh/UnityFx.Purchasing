@@ -31,12 +31,7 @@ namespace UnityFx.Purchasing.Examples
 			_store.TraceSwitch.Level = System.Diagnostics.SourceLevels.All;
 		}
 
-		private void Start()
-		{
-			InitAsync();
-		}
-
-		private async void InitAsync()
+		private async void Start()
 		{
 			try
 			{
